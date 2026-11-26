@@ -21,6 +21,7 @@ Commits del sitio donde se publicó cada cambio.
 | `3a11b05` | Se regresan los archivos de la versión anterior: los teléfonos que la tenían abierta veían "Algo falló" en todas las pantallas. |
 | `fc6494a`, `a9e0aa5` | La app se recarga sola si cambió la versión; publicar ya no borra los archivos viejos; la pantalla de error solo tiene Reintentar y Reportar, y el reporte se manda con o sin cuenta. |
 | `a2866ce` (26-nov) | Plancha de frente ya no se mide como si fuera de lado (se pausaba a ratos estando recto); de lado se mide contra la línea del piso aunque el teléfono esté chueco; ya empezada tolera la orilla; avisos que dicen qué falla; tuck planche con la cadera alta, brazo de atrás mal visto y puntas colgando. |
+| `727c0b6` (26-nov) | Handstand toque de hombros a 7 repeticiones (antes "las que salgan"); tu rutina guardada se ajusta sola una vez. |
 
 ## Decisiones de Kiki
 

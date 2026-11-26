@@ -1777,6 +1777,13 @@ ok('cámara: medidor de profundidad, media repetición vale cero, ritmo y cuerpo
   const nueva = R.seedWeek().week.flatMap(r => r ? r.items : [])
   assert.ok(nueva.some(i => i.name === 'Dominadas' && i.target === 7) && nueva.some(i => i.name === 'Chin ups' && i.target === 7) && nueva.some(i => i.name === 'Curl de toalla inferior' && i.target === 20))
   assert.ok(!nueva.some(i => /lentas$/.test(i.name) && /^(Dominadas|Chin ups)/.test(i.name)))
+  const conToques = normalizeData({ ...EMPTY_DATA, profile: { name: 'K', onboardingComplete: true }, settings: { ...EMPTY_DATA.settings, train: { week: [{ title: 'Empuje', rounds: 3, items: [{ id: 't', name: 'Handstand toque de hombros', kind: 'reps', target: 3, quiet: '2026-11-20' }, { id: 'f', name: 'Fondos', kind: 'reps', target: 10 }] }, null, null, { title: 'Empuje B', rounds: 3, items: [{ id: 't2', name: 'Handstand toque de hombros', kind: 'reps', target: 3 }] }, null, null, null] } } })
+  const toques = normalizeData(R.toquesA7(conToques))
+  assert.deepEqual(toques.settings.train.week.flatMap(r => r ? r.items.map(i => [i.name, i.target]) : []), [['Handstand toque de hombros', 7], ['Fondos', 10], ['Handstand toque de hombros', 7]], 'toque de hombros pasa de 3 a 7 en todos los días')
+  assert.equal(toques.settings.train.week[0].rounds, 3, 'las series no cambian')
+  assert.equal(toques.settings.toques2611, true)
+  assert.equal(R.label(toques.settings.train.week[0].items[0]), '7 reps')
+  assert.ok(nueva.filter(i => i.name === 'Handstand toque de hombros').every(i => i.target === 7) && nueva.some(i => i.name === 'Handstand toque de hombros'), 'la rutina nueva ya trae 7')
 }
 ok('rutina de Kiki: dominadas y chin ups normales a 7, curl de toalla inferior a 20, una sola vez')
 

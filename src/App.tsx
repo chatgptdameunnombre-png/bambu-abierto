@@ -9,7 +9,7 @@ import { StatsBar } from './DuoTop'
 import { DuoIcon, type DuoIconName } from './DuoIcons'
 import { activeHabits, dateKey, EMPTY_DATA, modulesOf, type AppData } from './lib/model'
 import { bedAction, nfcServerAction, trainingAction } from './lib/nfcActions'
-import { ajustarRutina2611, clockOf, deshacerRondas2611, seedWeek } from './lib/rutina'
+import { ajustarRutina2611, clockOf, deshacerRondas2611, seedWeek, toquesA7 } from './lib/rutina'
 import { applyRecords, diffRecords, toRecords, type RecordRow } from './lib/records'
 import { SyncEngine, type SyncStatus } from './lib/sync'
 import { cuenta, cuentaActiva as cloudConfigured, remoto, reportarFallo, type Sesion } from './lib/firebase'
@@ -284,7 +284,8 @@ export default function App() {
   useEffect(() => {
     if (ready && cloudReady && data.profile.onboardingComplete && !data.settings.rutina2611) commit(d => d.settings.rutina2611 ? d : ajustarRutina2611(d))
     if (ready && cloudReady && data.settings.rondas2611) commit(d => d.settings.rondas2611 ? deshacerRondas2611(d) : d)
-  }, [ready, cloudReady, data.profile.onboardingComplete, data.settings.rutina2611, data.settings.rondas2611]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (ready && cloudReady && data.profile.onboardingComplete && !data.settings.toques2611) commit(d => d.settings.toques2611 ? d : toquesA7(d))
+  }, [ready, cloudReady, data.profile.onboardingComplete, data.settings.rutina2611, data.settings.rondas2611, data.settings.toques2611]) // eslint-disable-line react-hooks/exhaustive-deps
   const nuevosAmigos = useAmigosNuevos(data, cloudConfigured && cloudReady ? userId : undefined, section)
   useEffect(() => {
     if (!cloudConfigured || !userId || !ready) return

@@ -104,6 +104,7 @@ export type Settings = {
   rutina2611?: boolean
   rondas2611?: boolean
   toques2611?: boolean
+  hspu2611?: boolean
 }
 /** `north` es en quién te quieres convertir, con tus palabras. La reflexión de la noche te lo pregunta. */
 export type Profile = { name: string; onboardingComplete: boolean; north?: string }
@@ -471,6 +472,7 @@ export function cleanSettings(value: unknown): Settings {
     rutina2611: v.rutina2611 === true ? true : undefined,
     rondas2611: v.rondas2611 === true ? true : undefined,
     toques2611: v.toques2611 === true ? true : undefined,
+    hspu2611: v.hspu2611 === true ? true : undefined,
     tablas: cleanTablas(v.tablas),
     amigos: cleanAmigos(v.amigos),
     aprobados: cleanAmigos(v.aprobados),

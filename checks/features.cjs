@@ -1784,6 +1784,11 @@ ok('cámara: medidor de profundidad, media repetición vale cero, ritmo y cuerpo
   assert.equal(toques.settings.toques2611, true)
   assert.equal(R.label(toques.settings.train.week[0].items[0]), '7 reps')
   assert.ok(nueva.filter(i => i.name === 'Handstand toque de hombros').every(i => i.target === 7) && nueva.some(i => i.name === 'Handstand toque de hombros'), 'la rutina nueva ya trae 7')
+  const conHspu = normalizeData({ ...EMPTY_DATA, profile: { name: 'K', onboardingComplete: true }, settings: { ...EMPTY_DATA.settings, train: { week: [null, null, null, { title: 'Empuje B', rounds: 3, items: [{ id: 'h', name: 'Handstand push up con pared', kind: 'reps', target: 5 }, { id: 'p', name: 'Pike push ups', kind: 'reps', target: 5 }] }, null, null, null] } } })
+  const hspu = normalizeData(R.hspuA3(conHspu))
+  assert.deepEqual(hspu.settings.train.week[3].items.map(i => [i.name, i.target]), [['Handstand push up con pared', 3], ['Pike push ups', 5]], 'handstand push up pasa de 5 a 3 y lo demás no cambia')
+  assert.equal(hspu.settings.hspu2611, true)
+  assert.ok(nueva.filter(i => /^Handstand push up/.test(i.name)).every(i => i.target === 3) && nueva.some(i => /^Handstand push up/.test(i.name)), 'la rutina nueva ya trae 3')
 }
 ok('rutina de Kiki: dominadas y chin ups normales a 7, curl de toalla inferior a 20, una sola vez')
 

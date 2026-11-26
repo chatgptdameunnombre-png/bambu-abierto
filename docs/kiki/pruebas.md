@@ -6,7 +6,7 @@
 node checks/features.cjs
 ```
 
-72 grupos. Entre ellos: conteo de la cámara (profundidad, media repetición, ritmo, cuerpo recto, variantes, planche, lever, bandera, modo general y aguantes quietos), minutos de redes solo en Redes, duelos (estados y reloj 3-2-1 + 60 s), Cindy, resumen semanal, widget y avisos, y una prueba de punta a punta contra la nube de prueba: 1,201 registros, token vencido, cuentas separadas, cuenta privada, pase del candado, widget y avisos que nadie más puede cambiar, duelo que solo el retado contesta una vez y borrado completo de la cuenta.
+73 grupos. Entre ellos: modo solo competir, conteo de la cámara (profundidad, media repetición, ritmo, cuerpo recto, variantes, planche, lever, bandera, modo general y aguantes quietos), minutos de redes solo en Redes, duelos (estados y reloj 3-2-1 + 60 s), Cindy, resumen semanal, widget y avisos, y una prueba de punta a punta contra la nube de prueba: 1,201 registros, token vencido, cuentas separadas, cuenta privada, pase del candado, widget y avisos que nadie más puede cambiar, duelo que solo el retado contesta una vez y borrado completo de la cuenta.
 
 ## Nube de prueba
 

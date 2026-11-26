@@ -97,6 +97,7 @@ export type Settings = {
   candado?: { llave: string }
   widget?: { llave: string }
   avisos?: { hora: string }
+  modo?: 'competir'
   walkDaily?: boolean
   cardioSetup?: boolean
   rutina2611?: boolean
@@ -473,6 +474,7 @@ export function cleanSettings(value: unknown): Settings {
     candado: cleanCandado(v.candado),
     widget: cleanCandado(v.widget),
     avisos: cleanAvisos(v.avisos),
+    modo: v.modo === 'competir' ? 'competir' as const : undefined,
   }) as Settings
 }
 export function cleanHabitDays(value: unknown): Record<string, string[]> {

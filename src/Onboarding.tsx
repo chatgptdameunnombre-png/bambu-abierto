@@ -7,7 +7,7 @@ import { Chips, celebrate } from './ui'
 import { reward } from './juice'
 import type { Mood } from './lib/brote'
 
-export type OnboardingResult = { name: string; modules: Modules; habits: HabitDef[]; firstVotes: string[] }
+export type OnboardingResult = { name: string; modules: Modules; habits: HabitDef[]; firstVotes: string[]; competir: boolean }
 type Props = { initialName: string; onComplete: (result: OnboardingResult) => void }
 
 /** Hábitos de ejemplo para elegir. Ninguno es obligatorio: cada quien arma los suyos. */
@@ -24,7 +24,11 @@ const MODULES: { key: keyof Modules; label: string; text: string }[] = [
   { key: 'reading', label: 'Lectura', text: '¿Leíste? Tu libro, tus tiempos y cronómetro.' },
   { key: 'food', label: 'Comida', text: 'Registra lo que comes en segundos.' },
 ]
-type Step = 'wake' | 'name' | 'modules' | 'habits' | 'plant' | 'first' | 'grow'
+type Step = 'wake' | 'name' | 'modo' | 'modules' | 'habits' | 'plant' | 'first' | 'grow'
+const MODOS: { competir: boolean; label: string; text: string }[] = [
+  { competir: false, label: 'Hábitos y racha', text: 'Camino del día, objetivos diarios y racha. Para construir constancia.' },
+  { competir: true, label: 'Solo competir con mis amigos', text: 'Sin racha obligatoria ni camino del día. Entrenas, retas a tus amigos y subes en la liga.' },
+]
 
 /**
  * La bienvenida: una pregunta por pantalla, Brote reacciona y al final se planta el bambú
@@ -39,9 +43,10 @@ export function Onboarding({ initialName, onComplete }: Props) {
   const [custom, setCustom] = useState('')
   const [ticks, setTicks] = useState(0)
   const [first, setFirst] = useState<string[]>([])
+  const [competir, setCompetir] = useState(false)
   // El id del hábito propio se fija una vez: si cambiara en cada pantalla, el primer voto apuntaría a otro.
   const [customId] = useState(() => `h-${makeId().slice(0, 8)}`)
-  const flow: Step[] = ['name', 'modules', 'habits', 'plant', ...(picked.length || custom.trim() ? ['first' as Step] : [])]
+  const flow: Step[] = competir ? ['name', 'modo', 'modules'] : ['name', 'modo', 'modules', 'habits', 'plant', ...(picked.length || custom.trim() ? ['first' as Step] : [])]
   const index = flow.indexOf(step)
   const toggle = (k: keyof Modules) => setModules(m => ({ ...m, [k]: !m[k] }))
   const go = (next: Step) => { haptic(10); setStep(next) }
@@ -58,7 +63,13 @@ export function Onboarding({ initialName, onComplete }: Props) {
     ...CATALOG.filter(h => picked.includes(h.id)).map(h => ({ id: h.id, label: h.label, mark: h.mark })),
     ...(custom.trim() ? [{ id: customId, label: custom.trim().slice(0, 60), mark: custom.trim().charAt(0).toUpperCase() }] : []),
   ]
-  const checklist = [
+  const zonas = [modules.training, modules.focus, modules.reading, modules.food].filter(Boolean).length
+  const checklist = competir ? [
+    'Modo competir: sin racha obligatoria',
+    `${zonas} ${zonas === 1 ? 'zona lista' : 'zonas listas'}`,
+    modules.training ? 'Tu rutina de la semana cargada' : 'Sin entreno por ahora',
+    'Tu perfil para la liga: créalo en Amigos',
+  ] : [
     `${Object.values(modules).filter(Boolean).length} ${Object.values(modules).filter(Boolean).length === 1 ? 'módulo listo' : 'módulos listos'}`,
     `${habits().length} ${habits().length === 1 ? 'objetivo diario' : 'objetivos diarios'}`,
     modules.training ? 'Tu rutina de la semana cargada' : 'Sin entreno por ahora',
@@ -69,8 +80,9 @@ export function Onboarding({ initialName, onComplete }: Props) {
     if (step !== 'grow') return
     if (ticks >= checklist.length) {
       const t = window.setTimeout(() => {
-        celebrate({ kind: 'rank', title: `Ya echaste raíz${name.trim() ? `, ${name.trim()}` : ''}.`, text: first.length ? `${first.length === 1 ? 'Tu primer hecho ya cuenta' : `${first.length} hechos ya cuentan`}. Lo que repites echa raíces.` : 'Tu bambú ya está plantado. Lo que repites echa raíces.', image: 'img/rango-02-brote.webp' })
-        onComplete({ name: name.trim(), modules, habits: habits(), firstVotes: first })
+        if (competir) celebrate({ kind: 'rank', title: `¡A competir${name.trim() ? `, ${name.trim()}` : ''}!`, text: 'Agrega a tus amigos en Amigos y reta a quien quieras.', image: 'img/rango-02-brote.webp' })
+        else celebrate({ kind: 'rank', title: `Ya echaste raíz${name.trim() ? `, ${name.trim()}` : ''}.`, text: first.length ? `${first.length === 1 ? 'Tu primer hecho ya cuenta' : `${first.length} hechos ya cuentan`}. Lo que repites echa raíces.` : 'Tu bambú ya está plantado. Lo que repites echa raíces.', image: 'img/rango-02-brote.webp' })
+        onComplete({ name: name.trim(), modules, habits: competir ? [] : habits(), firstVotes: competir ? [] : first, competir })
       }, 700)
       return () => window.clearTimeout(t)
     }
@@ -100,8 +112,14 @@ export function Onboarding({ initialName, onComplete }: Props) {
         <h1 className="ob-q">¿Cómo te llamas?</h1>
         <input className="text-input ob-input" autoFocus value={name} onChange={e => setName(e.target.value)} maxLength={40} placeholder="Tu nombre" onKeyDown={e => { if (e.key === 'Enter' && name.trim()) forward() }} />
       </>}
+      {step === 'modo' && <>
+        <h1 className="ob-q">¿Cómo quieres usar Bambú?</h1>
+        <p className="ob-copy">Lo cambias cuando quieras en Ajustes.</p>
+        <div className="ob-options">{MODOS.map(m => <button key={m.label} type="button" className={`ob-option big ${competir === m.competir ? 'on' : ''}`} aria-pressed={competir === m.competir} onClick={() => { haptic(10); setCompetir(m.competir); if (m.competir) setModules(x => ({ ...x, training: true })) }}>
+          <strong>{m.label}</strong><small>{m.text}</small></button>)}</div>
+      </>}
       {step === 'modules' && <>
-        <h1 className="ob-q">¿Qué quieres medir?</h1>
+        <h1 className="ob-q">{competir ? '¿Qué zonas quieres?' : '¿Qué quieres medir?'}</h1>
         <p className="ob-copy">Enciende solo lo que vas a usar. Lo demás no aparece. Lo cambias cuando quieras.</p>
         <div className="ob-options">{MODULES.map(m => <button key={m.key} type="button" className={`ob-option big ${modules[m.key] ? 'on' : ''}`} aria-pressed={modules[m.key]} onClick={() => toggle(m.key)}>
           <strong>{m.label}</strong><small>{m.text}</small></button>)}</div>
@@ -126,7 +144,7 @@ export function Onboarding({ initialName, onComplete }: Props) {
       </>}
       {step === 'grow' && <div className="ob-grow">
         <img className="ob-seed grown" src="img/rango-02-brote.webp" alt="" width="200" height="200" />
-        <h1 className="ob-q">Plantando tu bambú</h1>
+        <h1 className="ob-q">{competir ? 'Preparando tu zona' : 'Plantando tu bambú'}</h1>
         <ul className="ob-checklist">{checklist.map((c, i) => <li key={c} className={i < ticks ? 'done' : ''}><i aria-hidden="true">{i < ticks ? '✓' : ''}</i>{c}</li>)}</ul>
       </div>}
     </section>

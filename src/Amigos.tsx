@@ -6,6 +6,7 @@ import { Avatar, FollowButton, Join, PerfilView, RankList, type Commit } from '.
 import { alternar, cargarSocial, relDe, responder, useSocial, type Social } from './useSocial'
 import { Sheet } from './Sheet'
 import { DuoIcon } from './DuoIcons'
+import { esCompetir } from './lib/modo'
 
 export const AMIGO_KEY = 'bambu.amigo.pendiente'
 const SEEN_KEY = (uid: string) => `bambu.amigos.vistos.${uid}`
@@ -130,7 +131,7 @@ export function AmigosPage({ data, commit, onMessage }: { data: AppData; commit:
       <div className="d-am-me-info">
         <b>{me.apodo}</b>
         <span>{me.rango} · nivel {me.nivel}</span>
-        <small><DuoIcon name="fuego" size={18} /> {me.racha} {me.racha === 1 ? 'día' : 'días'} de racha</small>
+        {!esCompetir(data.settings) && <small><DuoIcon name="fuego" size={18} /> {me.racha} {me.racha === 1 ? 'día' : 'días'} de racha</small>}
         <small><DuoIcon name="rayo" size={18} /> {me.xpSemana.toLocaleString('es-MX')} XP esta semana</small>
       </div>
       <div className="d-am-code"><small>Tu código</small><b>{code}</b></div>

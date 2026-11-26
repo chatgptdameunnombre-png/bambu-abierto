@@ -4,6 +4,7 @@ import { DAILY_GOAL, levelOf, totalXp, xpOn } from './xp'
 import { routineFor, routineProgress } from './rutina'
 import { saldo } from './minutos'
 import type { EstadoAvisos, EstadoWidget } from './firebase'
+import { esCompetir } from './modo'
 
 export function estadoWidget(data: AppData, today: string): EstadoWidget {
   const rt = routineFor(data, today)
@@ -21,7 +22,7 @@ export function estadoWidget(data: AppData, today: string): EstadoWidget {
 
 export function estadoParaAvisos(data: AppData, today: string): EstadoAvisos {
   const activo = data.sets.some(s => s.day === today) || xpOn(data, today) > 0
-  return { ultimo: activo ? today : '', hecho: xpOn(data, today) >= DAILY_GOAL, racha: gardenStats(data, today).current }
+  return { ultimo: activo ? today : '', hecho: xpOn(data, today) >= DAILY_GOAL, racha: esCompetir(data.settings) ? 0 : gardenStats(data, today).current }
 }
 
 export function scriptWidget(url: string): string {

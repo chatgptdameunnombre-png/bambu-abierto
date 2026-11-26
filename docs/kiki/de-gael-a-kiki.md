@@ -6,10 +6,10 @@ Todo lo que cambió desde la app original de Gael (`GaelProspectlab21/bambu-abie
 
 | | |
 |---|---|
-| Archivos tocados | 98 (62 nuevos, 36 modificados) |
-| Líneas | +18,889 / −1,035 |
+| Archivos tocados | 100 (64 nuevos, 36 modificados) |
+| Líneas | más de +19,000 / −1,000 |
 | Publicaciones en vivo | 24, del 24 al 25 de noviembre de 2026 |
-| Pruebas automáticas | 72 grupos (`node checks/features.cjs`) |
+| Pruebas automáticas | 73 grupos (`node checks/features.cjs`) |
 
 ## Punto de partida: la v7 de Gael
 
@@ -40,6 +40,7 @@ App personal de lectura (cronómetro, Biblia por capítulos, Crónica), entrenam
 | 25-nov 19:04 | Duelos de 60 s; pestañas Redes y Duelos; cámara para cualquier ejercicio; resumen semanal; widget y avisos. |
 | 25-nov 19:24 | Ajedrez (bot y en línea) y Cindy. |
 | 25-nov 19:34 | Se quita el ajedrez: queda pendiente para después. |
+| 25-nov noche | Opción "Solo competir con mis amigos" al crear cuenta (en el código; todavía no en la web). |
 
 ## Cambios por área
 
@@ -47,6 +48,10 @@ App personal de lectura (cronómetro, Biblia por capítulos, Crónica), entrenam
 - De claro y verde a **oscuro estilo Duolingo**: botones grandes con sombra, íconos propios con un solo sistema de color (`--ia`, `--ib`, `--ic`) y todos los colores como tokens en `src/tokens.css`.
 - Barra de abajo: Hoy, Entrenar, Tareas, Comida, Jardín y Amigos; módulos que se prenden y apagan en Ajustes.
 - Se probaron tres estilos alternativos y uno combinado; ninguno convenció y se quedó el actual.
+
+### Dos formas de usarla
+- Pregunta nueva al crear cuenta: **Hábitos y racha** o **Solo competir con mis amigos**.
+- En modo competir no hay racha obligatoria, ni camino del día, ni objetivos, ni Jardín; solo las zonas elegidas y Amigos, sin candado de entreno ni avisos de racha. Se cambia en Ajustes (`src/lib/modo.ts`).
 
 ### Publicada en una subcarpeta
 - `base: './'` en Vite, manifest con rutas relativas (`start_url` y `scope` en `./`), `noindex`.

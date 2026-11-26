@@ -116,6 +116,12 @@ export function AjustesSimple({ data, commit, onMessage, cloud, onExport, onImpo
     <div className="d-card">
       <h2>Perfil</h2>
       <label className="d-field">Tu nombre<input className="d-input" value={name} maxLength={40} onChange={e => setName(e.target.value)} onBlur={saveName} onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur() }} /></label>
+      <label className="d-field">Cómo usas Bambú</label>
+      <div className="d-seg">
+        <button type="button" className={data.settings.modo !== 'competir' ? 'on' : ''} aria-pressed={data.settings.modo !== 'competir'} onClick={() => set({ modo: undefined })}>Hábitos y racha</button>
+        <button type="button" className={data.settings.modo === 'competir' ? 'on' : ''} aria-pressed={data.settings.modo === 'competir'} onClick={() => set({ modo: 'competir' })}>Solo competir</button>
+      </div>
+      <p className="d-hint left">{data.settings.modo === 'competir' ? 'Sin racha obligatoria ni camino del día: solo tus zonas y Amigos.' : 'Camino del día, objetivos y racha.'}</p>
       <label className="d-field">Qué usas</label>
       <div className="d-mods">{MODS.map(([k, l, icon]) => <button key={k} type="button" className={`d-mod ${mods[k] ? 'on' : ''}`} aria-pressed={mods[k]} onClick={() => set({ modules: { ...mods, [k]: !mods[k], ...(k === 'reading' && mods.reading ? { bible: false } : {}) } })}><DuoIcon name={icon} size={36} off={!mods[k]} /><span>{l}</span></button>)}</div>
       {mods.food && <label className="d-field">Tu edad, solo para Comida<input className="d-input num" type="number" inputMode="numeric" min={8} max={99} value={data.settings.age} onChange={e => { const n = Number(e.target.value); if (n >= 8 && n <= 99) set({ age: n }) }} /></label>}

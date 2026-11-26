@@ -14,7 +14,8 @@ React 19 + Vite 8 + TypeScript, sin backend propio: Firebase Auth y Firestore po
 
 | Archivo | Qué es |
 |---|---|
-| `App.tsx` | Navegación, módulos, enlaces `?ir=`, sincronización, publicación del perfil y del estado (widget y avisos). |
+| `App.tsx` | Navegación, módulos, modo (hábitos o competir), enlaces `?ir=`, sincronización, publicación del perfil y del estado (widget y avisos). |
+| `Onboarding.tsx` | Preguntas al crear cuenta: nombre, modo, zonas, objetivos y plantar el bambú. |
 | `HoyLista.tsx` | Pantalla Hoy. |
 | `MiRutina.tsx` | Entrenar: barra de 5 pestañas y la rutina del día. |
 | `Libre.tsx` | Libre: romper récord, reto semanal, buscador y registro de series. |
@@ -41,6 +42,7 @@ React 19 + Vite 8 + TypeScript, sin backend propio: Firebase Auth y Firestore po
 | `semana.ts` | Resumen semanal. |
 | `widget.ts` | Datos del widget, estado para avisos y el script de Scriptable. |
 | `avisos.ts` | Permiso, service worker `avisos-sw.js` y suscripción push. |
+| `modo.ts` | Modo hábitos o solo competir: qué pestañas se esconden y dónde se entra. |
 | `firebase.ts` | Cuenta (correo y Google), sincronización y todas las colecciones. |
 | `nubeFormato.ts` | Conversión de datos de Firestore y mensajes de error en español. |
 | `perfil.ts`, `xp.ts`, `jardin.ts`, `rutina.ts`, `model.ts` | Perfil social, XP y niveles, jardín, rutina y modelo de datos. |
@@ -52,7 +54,7 @@ React 19 + Vite 8 + TypeScript, sin backend propio: Firebase Auth y Firestore po
 | `public/pose/` | Modelo y wasm de MediaPipe (1.2.3) servidos desde el sitio. |
 | `public/avisos-sw.js` | Service worker mínimo: solo avisos y abrir la app al tocarlos. |
 | `vite.config.ts` | CSP solo en el build. |
-| `checks/features.cjs` | Pruebas (72 grupos). |
+| `checks/features.cjs` | Pruebas (73 grupos). |
 | `checks/nube-prueba.cjs` | Firestore y Auth de mentira para pruebas. |
 
 ## Dependencias nuevas de esta versión

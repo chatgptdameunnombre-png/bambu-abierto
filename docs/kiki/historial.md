@@ -15,6 +15,7 @@ Commits del sitio donde se publicó cada cambio.
 | `5905adc` | Duelos de 60 s; Redes y Duelos como pestañas de Entrenar; minutos solo en Redes; cámara para cualquier ejercicio con variantes; resumen semanal; widget; avisos. |
 | `abb4090` | Ajedrez como módulo (bot y en línea) y Cindy. |
 | (25-nov, noche) | Se quita el ajedrez por completo a pedido de Kiki; queda como pendiente. |
+| (25-nov, noche) | Opción "Solo competir con mis amigos" al crear cuenta. En el código del fork; todavía no publicada en la web. |
 
 ## Decisiones de Kiki
 
@@ -24,3 +25,4 @@ Commits del sitio donde se publicó cada cambio.
 - Desafíos, récords, tablas y monstruos: sí o sí con cámara.
 - Los minutos de redes solo se ganan en la pestaña Redes (romper un récord no da minutos).
 - Ajedrez: quitarlo y hacerlo más adelante.
+- Quien solo quiere competir con sus amigos no debe cargar con racha, caminito ni objetivos: modo "Solo competir".

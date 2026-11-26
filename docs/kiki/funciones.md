@@ -2,9 +2,20 @@
 
 Todo lo que hace la versión de Kiki. Las funciones originales de Gael (lectura, Biblia, enfoque, NFC, comida) siguen en el código; aquí se describe lo que se ve y se usa hoy.
 
+## Dos formas de usar Bambú
+
+Al crear la cuenta, después del nombre, la app pregunta **"¿Cómo quieres usar Bambú?"**:
+
+| Modo | Qué ves |
+|---|---|
+| **Hábitos y racha** (el de siempre) | Hoy con el camino del día, objetivos diarios, Jardín y fuego de racha. |
+| **Solo competir con mis amigos** | Sin racha obligatoria ni camino del día. No pide objetivos ni plantar el bambú (3 pasos en vez de 5). Solo aparecen las zonas que eliges (Entreno, Tareas, Lectura, Comida) y Amigos; entra directo a Entrenar. Arriba solo XP y nivel. El candado de entreno viene apagado y no llegan avisos de "racha en riesgo". |
+
+Se cambia cuando quieras en **Ajustes → Cómo usas Bambú**. Las cuentas que ya existían siguen en "Hábitos y racha".
+
 ## Barra de abajo
 
-Hoy · Entrenar · Tareas · Comida · Jardín · Amigos. Ajustes va en el engrane de arriba.
+Hoy · Entrenar · Tareas · Comida · Jardín · Amigos. Ajustes va en el engrane de arriba. En modo competir: Entrenar · Tareas · Lectura · Comida · Amigos (según las zonas elegidas).
 
 Los módulos se prenden y apagan en **Ajustes → Qué usas**: Entreno, Tareas, Lectura y Comida. Si un módulo está apagado, su pestaña no aparece.
 

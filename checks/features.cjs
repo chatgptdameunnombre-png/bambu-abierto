@@ -1786,6 +1786,26 @@ ok('widget y avisos: racha, XP de hoy, minutos y rutina; el aviso sabe si ya ent
   assert.ok(moduleOf('rutina').CATALOG.some(x => x[0] === 'Cindy' && x[3] === 'WOD'))
 }
 
+{
+  const Mo = moduleOf('modo')
+  const W = moduleOf('widget')
+  const M = moduleOf('minutos')
+  const base = normalizeData({ ...EMPTY_DATA, profile: { name: 'K', onboardingComplete: true } })
+  assert.equal(base.settings.modo, undefined)
+  assert.equal(Mo.modoDe(base.settings), 'habitos')
+  assert.equal(normalizeData({ ...base, settings: { ...base.settings, modo: 'raro' } }).settings.modo, undefined)
+  const comp = normalizeData({ ...base, settings: { ...base.settings, modo: 'competir' } })
+  assert.equal(comp.settings.modo, 'competir'); assert.ok(Mo.esCompetir(comp.settings))
+  assert.deepEqual([...Mo.OCULTAS_EN_COMPETIR], ['Hoy', 'Historial'])
+  assert.equal(Mo.inicioDe(base.settings, ['Entrenar', 'Amigos']), 'Hoy')
+  assert.equal(Mo.inicioDe(comp.settings, ['Tareas', 'Entrenar', 'Amigos']), 'Entrenar')
+  assert.equal(Mo.inicioDe(comp.settings, ['Tareas', 'Amigos']), 'Amigos')
+  let d = M.conCamara(comp, '2026-11-25', 'Lagartijas', 'reps', 20, Date.parse('2026-11-25T10:00:00'))
+  assert.equal(W.estadoParaAvisos(d, '2026-11-25').racha, 0, 'en modo competir no hay avisos de racha')
+  assert.equal(W.estadoParaAvisos(d, '2026-11-25').ultimo, '2026-11-25')
+}
+ok('modo competir: se guarda, esconde Hoy y Jardín, empieza en Entrenar o Amigos y no manda avisos de racha')
+
 ok('Cindy: 20 min de 5 dominadas, 10 lagartijas y 15 sentadillas; cambia sola de ejercicio y el puntaje sale en rondas + repeticiones')
 
 

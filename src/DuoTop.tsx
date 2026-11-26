@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { esCompetir } from './lib/modo'
 import { dateKey, type AppData } from './lib/model'
 import { dayScore, gardenStats, GOOD, shiftDay } from './lib/jardin'
 import { DAILY_GOAL, levelOf, totalXp, xpOn, XP } from './lib/xp'
@@ -36,9 +37,9 @@ export function StatsBar({ data, go }: { data: AppData; go: (s: Section) => void
   const days = Array.from({ length: 7 }, (_, i) => shiftDay(today, i - 6))
   return <>
     <div className="d-stats">
-      <button type="button" className={`d-stat fire ${lit ? '' : 'off'}`} onClick={() => setSheet('fire')} aria-label={`Racha de ${stats.current} días`}>
+      {!esCompetir(data.settings) && <button type="button" className={`d-stat fire ${lit ? '' : 'off'}`} onClick={() => setSheet('fire')} aria-label={`Racha de ${stats.current} días`}>
         <DuoIcon name="fuego" size={30} off={!lit} /><b>{stats.current}</b>
-      </button>
+      </button>}
       <button type="button" className="d-stat xp" onClick={() => setSheet('xp')} aria-label={`${xp} XP`}>
         <DuoIcon name="rayo" size={30} /><b>{xp}</b>
       </button>

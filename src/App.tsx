@@ -21,6 +21,7 @@ import { cuenta, cuentaActiva as cloudConfigured, remoto, type Sesion } from './
 import { logAuth, setAuthLogOwner } from './lib/authLog'
 import { usePublicarPerfil } from './Tablas'
 import { usePublicarEstado } from './Widget'
+import { OCULTAS_EN_COMPETIR, esCompetir, inicioDe } from './lib/modo'
 import { AMIGO_KEY, AmigosPage, useAmigosNuevos } from './Amigos'
 import { clearAccountStorage, getLocalOwnerId, setStorageScope, loadAppData, parseBackup, readScope, requestPersistence, saveAppData, setLocalOwnerId, syncStore, wipeDevice } from './lib/storage'
 import { clearOwnPhotos, setPhotoOwner } from './lib/photos'
@@ -39,7 +40,7 @@ import { realReading, streak } from './lib/progress'
 import { votesOn } from './lib/identity'
 
 const NAV: { id: Section; icon: DuoIconName; label: string }[] = [
-  { id: 'Hoy', icon: 'casa', label: 'Hoy' }, { id: 'Entrenar', icon: 'pesa', label: 'Entrenar' }, { id: 'Tareas', icon: 'lista', label: 'Tareas' },
+  { id: 'Hoy', icon: 'casa', label: 'Hoy' }, { id: 'Entrenar', icon: 'pesa', label: 'Entrenar' }, { id: 'Tareas', icon: 'lista', label: 'Tareas' }, { id: 'Lectura', icon: 'libro', label: 'Lectura' },
   { id: 'Comida', icon: 'plato', label: 'Comida' },
   { id: 'Historial', icon: 'planta', label: 'Jardín' }, { id: 'Amigos', icon: 'amigos', label: 'Amigos' }, { id: 'Ajustes', icon: 'engrane', label: 'Ajustes' },
 ]
@@ -526,7 +527,7 @@ export default function App() {
   if (cloudConfigured && !cloudReady && cloudError) return <ProblemScreen tone="offline" title="No llegamos a la nube." text="Revisa tu señal. Lo de este teléfono sigue intacto y se sube solo cuando vuelva la conexión."><button className="primary-button" onClick={() => setAttempt(a => a + 1)}>Reintentar</button><button className="quiet-button" onClick={signOut}>Cerrar sesión</button></ProblemScreen>
   if (cloudConfigured && !cloudReady) return <LoadingScreen text="Sincronizando tu espacio privado." />
   if (!data.profile.onboardingComplete) return <Onboarding initialName={data.profile.name} onComplete={r => commit(d => ({ ...d, profile: { name: r.name || 'Tú', onboardingComplete: true },
-    settings: { ...d.settings, modules: r.modules, habits: r.habits, train: d.settings.train ?? seedWeek(), walkDaily: true, cardioSetup: true },
+    settings: { ...d.settings, modules: r.modules, habits: r.habits, train: r.competir ? { ...(d.settings.train ?? seedWeek()), lock: false } : d.settings.train ?? seedWeek(), walkDaily: true, cardioSetup: true, modo: r.competir ? 'competir' : undefined },
     habits: r.firstVotes.length ? { ...d.habits, [dateKey()]: [...new Set([...(d.habits[dateKey()] ?? []), ...r.firstVotes])] } : d.habits }))} />
   if (candado) return <CandadoPage data={data} commit={commit} app={candado} onSalir={to => { try { sessionStorage.removeItem(CANDADO_KEY) } catch { void 0 } setCandado(null); if (to) go(to) }} />
 
@@ -537,10 +538,11 @@ export default function App() {
     ? <button type="button" className={`sync-pill sync-offline ${extra}`} onClick={retrySync} aria-label={`${syncText}. Toca para reintentar.`}>{syncText} · Reintentar</button>
     : <div className={`sync-pill sync-${status?.phase ?? 'local'} ${extra}`} role="status">{syncText}</div>
   const mods = modulesOf(data.settings)
-  const allowed = (id: Section) => id === 'Lectura' ? mods.reading : id === 'Entrenar' ? mods.training : id === 'Tareas' ? mods.focus : id === 'Comida' ? mods.food : id !== 'Noche' && id !== 'Hábitos' && id !== 'Enfoque'
-  const nav = NAV.filter(n => allowed(n.id))
+  const competir = esCompetir(data.settings)
+  const allowed = (id: Section) => competir && (OCULTAS_EN_COMPETIR as readonly string[]).includes(id) ? false : id === 'Lectura' ? mods.reading : id === 'Entrenar' ? mods.training : id === 'Tareas' ? mods.focus : id === 'Comida' ? mods.food : id !== 'Noche' && id !== 'Hábitos' && id !== 'Enfoque'
+  const nav = NAV.filter(n => allowed(n.id) && (n.id !== 'Lectura' || competir))
   const tabs = nav.filter(n => n.id !== 'Ajustes')
-  const page: Section = allowed(section) ? section : 'Hoy'
+  const page: Section = allowed(section) ? section : inicioDe(data.settings, tabs.map(t => t.id))
   const labelOf = (id: Section) => NAV.find(n => n.id === id)?.label ?? id
   const live = { Lectura: !!data.activeReading, Entrenar: !!(data.activeWorkout && !data.activeWorkout.endedAt), Amigos: nuevosAmigos > 0 } as Partial<Record<Section, boolean>>
   return <div className="shell d-shell">

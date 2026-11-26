@@ -42,6 +42,7 @@ React 19 + Vite 8 + TypeScript, sin backend propio: Firebase Auth y Firestore po
 | `retos.ts` | Tipos de reto, estados, lugares con empates y marcador. |
 | `duelos.ts` | Reloj 3-2-1 + tiempo del reto. |
 | `legal.ts` | Textos legales y datos del responsable (por completar). |
+| `version.ts` | Recarga sola si faltan archivos de una versión vieja (una vez, no sin señal) y limpia la marca `?v=`. |
 | `wod.ts` | Cindy: partes, rondas y puntaje. |
 | `semana.ts` | Resumen semanal. |
 | `felicitar.ts` | Qué retos ganaste sin empate y el texto de la felicitación. |
@@ -59,7 +60,7 @@ React 19 + Vite 8 + TypeScript, sin backend propio: Firebase Auth y Firestore po
 | `public/pose/` | Modelo y wasm de MediaPipe (1.2.3) servidos desde el sitio. |
 | `public/avisos-sw.js` | Service worker mínimo: solo avisos y abrir la app al tocarlos. |
 | `vite.config.ts` | CSP solo en el build. |
-| `checks/features.cjs` | Pruebas (76 grupos). |
+| `checks/features.cjs` | Pruebas (77 grupos). |
 | `vista-avisos.html` | Vista previa local de los avisos (solo desarrollo; no se publica). |
 | `checks/nube-prueba.cjs` | Firestore y Auth de mentira para pruebas. |
 

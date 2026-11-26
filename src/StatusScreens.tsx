@@ -67,22 +67,24 @@ export function Recovering() {
 }
 
 /** Una pantalla que se cayó dos veces: el resto de la app sigue vivo y nada se borró. */
-export function ScreenCrash({ error, where, onRetry, onExport, onHome }: { error: Error; where: string; onRetry: () => void; onExport: () => void; onHome: () => void }) {
-  const [copied, setCopied] = useState(false)
-  const detail = `Bambú · ${where} · ${new Date().toLocaleString('es-MX')}\n${error.message || String(error)}\n${(error.stack ?? '').split('\n').slice(1, 4).join('\n')}`
-  async function copy() {
-    try { await navigator.clipboard.writeText(detail); setCopied(true) } catch { setCopied(false) }
+type Envio = 'listo' | 'enviando' | 'enviado' | 'error'
+const TEXTO_ENVIO: Record<Envio, string> = { listo: 'Reportar', enviando: 'Enviando…', enviado: 'Reporte enviado', error: 'Reportar otra vez' }
+
+export function ScreenCrash({ where, onRetry, onReport }: { where: string; onRetry: () => void; onReport: () => Promise<Envio> }) {
+  const [envio, setEnvio] = useState<Envio>('listo')
+  async function reportar() {
+    setEnvio('enviando')
+    setEnvio(await onReport().catch((): Envio => 'error'))
   }
   return <section className="card status-card tone-error">
     <BroteArt mood="susto" size={120} />
     <span className="eyebrow">ALGO FALLÓ EN {where.toUpperCase()}</span>
     <h2>Esta pantalla se cayó.</h2>
-    <p>Tus datos están a salvo: lo que registraste ya se guardó. El resto de Bambú funciona normal.</p>
-    <div className="row-actions"><button className="primary-button" onClick={onRetry}>Reintentar</button>{where !== 'Hoy' && <button className="secondary-button" onClick={onHome}>Ir a Hoy</button>}</div>
-    <div className="crash-tools">
-      <button type="button" className="quiet-button" onClick={() => void copy()}>{copied ? 'Copiado. Pégaselo a Claudio.' : 'Copiar el detalle para Claudio'}</button>
-      <button type="button" className="quiet-button" onClick={onExport}>Descargar respaldo</button>
+    <p>Tus datos están a salvo: lo que registraste ya se guardó.</p>
+    <div className="row-actions">
+      <button className="primary-button" onClick={onRetry}>Reintentar</button>
+      <button className="secondary-button" disabled={envio === 'enviando' || envio === 'enviado'} onClick={() => void reportar()}>{TEXTO_ENVIO[envio]}</button>
     </div>
-    <details><summary>Detalle técnico</summary><code className="crash-detail">{detail}</code></details>
   </section>
 }
+export type { Envio }

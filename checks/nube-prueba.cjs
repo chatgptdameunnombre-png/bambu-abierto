@@ -25,7 +25,7 @@ function session(uid) {
 }
 function auth(req) { return tokens.get(String(req.headers.authorization || '').replace(/^Bearer /, '')) }
 function allowed(uid, name, isDelete, w) {
-  if (!uid) return false
+  if (!uid && !/\/bambu_fallos\/local__/.test(name)) return false
   if (/documents\/bambu_pases\/[A-Za-z0-9]{16,40}$/.test(name)) {
     const prev = docs.get(name)
     if (prev && val(prev.fields.uid) !== uid) return false
@@ -70,6 +70,14 @@ function allowed(uid, name, isDelete, w) {
       return JSON.stringify(ps) === JSON.stringify(lista(prev.fields.participantes).filter(x => x !== uid)) && !(uid in despues) && Object.keys(antes).filter(k => k !== uid).every(k => despues[k] === antes[k]) && Object.keys(despues).length === Object.keys(antes).filter(k => k !== uid).length
     }
     return false
+  }
+  const fa = /documents\/bambu_fallos\/([^/]+)$/.exec(name)
+  if (fa) {
+    if (isDelete) return !!uid && docs.has(name) && val(docs.get(name).fields.de) === uid
+    const quien = uid || 'local'
+    if (docs.has(name) || !new RegExp('^' + quien + (uid ? '__[a-z0-9]{4,20}$' : '__[a-z0-9]{8,20}$')).test(fa[1])) return false
+    const f = w.update.fields, tope = { donde: 40, error: 400, pila: 800, version: 60, navegador: 200 }
+    return val(f.de) === quien && Object.keys(f).every(k => k === 'de' || (k in tope && typeof val(f[k]) === 'string' && val(f[k]).length <= tope[k]))
   }
   const sol = /documents\/bambu_solicitudes\/([^/_]+)__([^/]+)$/.exec(name)
   if (sol) return isDelete ? sol[1] === uid || sol[2] === uid : sol[1] === uid
@@ -137,8 +145,8 @@ const server = http.createServer((req, res) => {
     }
     const uid = auth(req)
     if (url.pathname.endsWith(':commit')) {
-      if (!uid) return fail(res, 401, 'UNAUTHENTICATED')
       const writes = body.writes || []
+      if (!uid && !(writes.length === 1 && /\/bambu_fallos\/local__[a-z0-9]{8,20}$/.test(writes[0].update?.name || '') && val(writes[0].update.fields.de) === 'local')) return fail(res, 401, 'UNAUTHENTICATED')
       if (writes.length > 500) return fail(res, 400, 'TOO_MANY_WRITES')
       for (const w of writes) if (!allowed(uid, w.update?.name || w.delete, !!w.delete, w)) return fail(res, 403, 'Missing or insufficient permissions.')
       const s = now()
@@ -166,6 +174,7 @@ const server = http.createServer((req, res) => {
       if (f && f.op === 'ARRAY_CONTAINS') list = list.filter(d => (d.fields[f.field.fieldPath]?.arrayValue?.values || []).some(v => v.stringValue === val(f.value)))
       if (coll === 'bambu_solicitudes' && !(f && f.op === 'EQUAL' && ['de', 'para'].includes(f.field.fieldPath) && val(f.value) === uid)) return fail(res, 403, 'Missing or insufficient permissions.')
       if (coll === 'bambu_widget' && !(f && f.op === 'EQUAL' && f.field.fieldPath === 'uid' && val(f.value) === uid)) return fail(res, 403, 'Missing or insufficient permissions.')
+      if (coll === 'bambu_fallos' && !(f && f.op === 'EQUAL' && f.field.fieldPath === 'de' && val(f.value) === uid)) return fail(res, 403, 'Missing or insufficient permissions.')
       if (coll === 'bambu_retos' && !(f && f.op === 'ARRAY_CONTAINS' && f.field.fieldPath === 'participantes' && val(f.value) === uid)) return fail(res, 403, 'Missing or insufficient permissions.')
       if (coll === 'bambu_pases' && !(f && f.op === 'EQUAL' && f.field.fieldPath === 'uid' && val(f.value) === uid)) return fail(res, 403, 'Missing or insufficient permissions.')
       if (coll === 'bambu_perfiles' && list.some(d => !canRead(uid, d))) return fail(res, 403, 'Missing or insufficient permissions.')

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { siFaltaArchivo } from './lib/version'
 import { AVISOS, AVISOS_AGUANTE, calibrar, comoDe, esAguante, esSkill, nuevoConteo, paso, valorDe, type Aviso, type Conteo, type Cuadro, type Tipo } from './lib/conteo'
 import { minutosDe, tasaTexto } from './lib/minutos'
 import { useWakeLock } from './ui'
@@ -18,7 +19,7 @@ let cierre: ReturnType<typeof setTimeout> | undefined
 function obtenerMotor(): Promise<Landmarker> {
   clearTimeout(cierre)
   if (!motor) motor = (async () => {
-    const vision = await import('@mediapipe/tasks-vision')
+    const vision = await import('@mediapipe/tasks-vision').catch(e => siFaltaArchivo<typeof import('@mediapipe/tasks-vision')>(e))
     const archivos = await vision.FilesetResolver.forVisionTasks(new URL('pose', document.baseURI).href)
     return await vision.PoseLandmarker.createFromOptions(archivos, {
       baseOptions: { modelAssetPath: new URL('pose/pose_landmarker_lite.task', document.baseURI).href, delegate: 'CPU' },

@@ -9,7 +9,7 @@ Todo lo que cambió desde la app original de Gael (`GaelProspectlab21/bambu-abie
 | Archivos tocados | 100 (64 nuevos, 36 modificados) |
 | Líneas | más de +19,000 / −1,000 |
 | Publicaciones en vivo | 24, del 24 al 25 de noviembre de 2026 |
-| Pruebas automáticas | 76 grupos (`node checks/features.cjs`) |
+| Pruebas automáticas | 77 grupos (`node checks/features.cjs`) |
 
 ## Punto de partida: la v7 de Gael
 
@@ -114,6 +114,7 @@ App personal de lectura (cronómetro, Biblia por capítulos, Crónica), entrenam
 - **Firestore por REST** basta para una PWA: con `hasOnly`, tipos y topes en las reglas, cada cuenta solo toca lo suyo; cosas como "cada quien marca su reto una sola vez" se logran solo con reglas.
 - **Aguantes de skills**: comparar los pies contra el piso medido al empezar evita que una rodilla doblada parezca "pies arriba"; los brazos rectos no bastan para saber que sigues arriba.
 - **Cargar pantallas por partes** con `lazy` bajó el archivo principal a la mitad sin cambiar nada visible.
+- **Al cargar por partes, publicar no debe borrar los archivos viejos**: un teléfono con la versión anterior abierta pide archivos con el nombre viejo y, si ya no existen, todas las pantallas fallan. Ahora se conservan y, si aun así falta uno, la app se recarga sola una vez.
 - **La CSP va solo en el build**: el servidor de desarrollo de Vite usa scripts en línea.
 - **Decisiones de producto que cambiaron el diseño**: los minutos solo se ganan en Redes; las competencias son solo con cámara; el ajedrez se quitó para hacerlo después con otro enfoque.
 

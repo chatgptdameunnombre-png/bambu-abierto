@@ -18,12 +18,15 @@ Commits del sitio donde se publicó cada cambio.
 | (25-nov, noche) | Opción "Solo competir con mis amigos" al crear cuenta. |
 | (25-nov, noche) | Retos de 2 a 10 personas (repeticiones, aguantar más, Cindy); avisos con la voz de Brote y "te pasaron en la liga"; tuck planche con 5 s para acomodarse y pies despegados; plancha en codos y con brazos estirados por separado; legales listos; carga más rápida. |
 | `4d0944a` | Plancha bien medida (cadera en el piso, rodillas apoyadas o sentado de frente ya no cuentan); agregar de regreso al aceptar; "Tu red" con a quién sigues y quién te sigue; buscador de ejercicios al retar; felicitación al ganar un reto; avisos de solicitud de amistad y de ganar; la racha de los avisos ya no se queda vieja; avisos revisados cada minuto. |
+| `3a11b05` | Se regresan los archivos de la versión anterior: los teléfonos que la tenían abierta veían "Algo falló" en todas las pantallas. |
+| `fc6494a`, `a9e0aa5` | La app se recarga sola si cambió la versión; publicar ya no borra los archivos viejos; la pantalla de error solo tiene Reintentar y Reportar, y el reporte se manda con o sin cuenta. |
 
 ## Decisiones de Kiki
 
 - El diseño se queda como está (estilo Duolingo oscuro). Se probaron 3 estilos y uno combinado; ninguno le gustó.
 - Minutos estrictos: 2 lagartijas = 1 min, 4 sentadillas = 1 min, 1 dominada = 2 min, 20 s de plancha = 1 min.
 - Bloqueo de redes con Atajos del iPhone (no app nativa por ahora).
+- Pantalla de error sin textos técnicos ni "copiar para Claudio": solo Reintentar y Reportar, con o sin cuenta.
 - Desafíos, récords, tablas y monstruos: sí o sí con cámara.
 - Los minutos de redes solo se ganan en la pestaña Redes (romper un récord no da minutos).
 - Ajedrez: quitarlo y hacerlo más adelante.

@@ -8,8 +8,9 @@ import { pauseActivity, pauseApp, PAUSE_APPS } from './lib/pause'
 import { DuoIcon } from './DuoIcons'
 import { Sheet } from './Sheet'
 import { haptic } from './lib/haptic'
+import { siFaltaArchivo } from './lib/version'
 
-const CamaraReps = lazy(() => import('./CamaraReps'))
+const CamaraReps = lazy(() => import('./CamaraReps').catch(e => siFaltaArchivo<typeof import('./CamaraReps')>(e)))
 type Commit = (update: (d: AppData) => AppData) => void
 const APPS = PAUSE_APPS.filter(a => a.scheme)
 const hora = (ms: number) => new Date(ms).toLocaleTimeString('es-MX', { hour: 'numeric', minute: '2-digit' })

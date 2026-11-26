@@ -121,6 +121,7 @@ export const cuenta = {
     await borrarPerfil(s.uid)
     await borrarPases(s.uid)
     await borrarRetos(s.uid)
+    await borrarFallos(s.uid)
     await borrarWidgets(s.uid)
     await borrarAvisos(s.uid)
     const sol = await solicitudes(s.uid)
@@ -317,6 +318,21 @@ export async function marcarReto(r: Reto, uid: string, marca: number): Promise<v
 export async function salirReto(r: Reto, uid: string): Promise<void> {
   const marcas = Object.fromEntries(Object.entries(r.marcas).filter(([k]) => k !== uid))
   await conToken(`${DOCS}:commit`, { writes: [{ update: { name: `${ROOT}/bambu_retos/${r.id}`, fields: toFields({ participantes: r.participantes.filter(x => x !== uid), marcas }) }, updateMask: { fieldPaths: ['participantes', 'marcas'] }, currentDocument: { exists: true }, updateTransforms: movido }] })
+}
+export type Fallo = { donde: string; error: string; pila: string; version: string; navegador: string }
+export async function reportarFallo(f: Fallo): Promise<void> {
+  const s = cuentaActiva ? actual : null
+  const de = s?.uid ?? 'local'
+  const id = `${de}__${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`
+  const corto = (x: string, n: number) => String(x ?? '').slice(0, n)
+  const fields = toFields({ de, donde: corto(f.donde, 40), error: corto(f.error, 400), pila: corto(f.pila, 800), version: corto(f.version, 60), navegador: corto(f.navegador, 200) })
+  const cuerpo = { writes: [{ update: { name: `${ROOT}/bambu_fallos/${id}`, fields }, currentDocument: { exists: false }, updateTransforms: [{ fieldPath: 's', setToServerValue: 'REQUEST_TIME' }] }] }
+  if (s) await conToken(`${DOCS}:commit`, cuerpo)
+  else await post(`${DOCS}:commit?key=${API_KEY}`, cuerpo)
+}
+export async function borrarFallos(uid: string): Promise<void> {
+  const docs = await query('', { from: [{ collectionId: 'bambu_fallos' }], where: { fieldFilter: { field: { fieldPath: 'de' }, op: 'EQUAL', value: { stringValue: uid } } }, limit: 300 })
+  for (const d of docs) await conToken(`${DOCS}:commit`, { writes: [{ delete: d.name }] })
 }
 export async function borrarReto(id: string): Promise<void> {
   await conToken(`${DOCS}:commit`, { writes: [{ delete: `${ROOT}/bambu_retos/${id}` }] })

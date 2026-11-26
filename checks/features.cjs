@@ -1642,6 +1642,8 @@ ok('datos de antes: se suben sin duplicar ni pisar lo de la cuenta, y conservan 
 }
 ok('aguantes: plancha en codos y con brazos estirados por separado, acostado, con la cadera o las rodillas en el piso o sentado de frente no cuenta, tuck planche mide el piso y solo cuenta con los pies despegados')
 
+
+
 ok('cámara para todo: variantes (diamante, arqueras, abiertas, inclinadas…), planche, lever y bandera con postura, cualquier otro ejercicio aprende su recorrido y los aguantes cuentan solo quieto')
 
 ok('cámara: medidor de profundidad, media repetición vale cero, ritmo y cuerpo recto; lagartijas de frente por caída de hombros; plancha de frente y con tolerancia; 17 familias con variantes; dominadas con la barbilla arriba')
@@ -1895,6 +1897,39 @@ ok('felicitación al ganar: solo retos terminados que ganaste sin empate, una ve
 
 ok('retos de 2 a 10: te toca, esperando, vence a las 48 h, lugares con empates, aguantar más y Cindy, cuenta 3-2-1 y corta a los 60 s exactos')
 
+async function versionChecks() {
+  const V = moduleOf('version')
+  assert.ok(V.faltaArchivo(new TypeError('Failed to fetch dynamically imported module: https://x/assets/MiRutina-a.js')))
+  assert.ok(V.faltaArchivo(new TypeError('Importing a module script failed.')))
+  assert.ok(V.faltaArchivo('error loading dynamically imported module'))
+  assert.equal(V.faltaArchivo(new TypeError("Cannot read properties of undefined (reading 'x')")), false)
+  const ss = new Map(), idas = []
+  const antes = { window: global.window, sessionStorage: global.sessionStorage, navigator: Object.getOwnPropertyDescriptor(global, 'navigator') }
+  global.sessionStorage = { getItem: k => ss.has(k) ? ss.get(k) : null, setItem: (k, v) => ss.set(k, String(v)) }
+  global.window = { location: { href: 'https://tuagentedeia.com/bambu/?ir=retos', replace: u => idas.push(u) }, history: { state: null, replaceState: (_s, _t, u) => idas.push('limpia ' + u) } }
+  Object.defineProperty(global, 'navigator', { value: { onLine: true }, configurable: true })
+  assert.equal(V.recargarPorVersion(1_000_000), true)
+  assert.match(idas[0], /\?ir=retos&v=/)
+  assert.equal(V.recargarPorVersion(1_030_000), false, 'no se recarga dos veces seguidas')
+  assert.equal(V.recargarPorVersion(1_030_000, true), true, 'el botón Reintentar sí recarga')
+  assert.equal(V.recargarPorVersion(2_000_000), true)
+  navigator.onLine = false
+  assert.equal(V.recargarPorVersion(9_000_000), false, 'sin señal no recarga')
+  navigator.onLine = true
+  ss.clear()
+  let colgada = false
+  V.siFaltaArchivo(new TypeError('Importing a module script failed.')).then(() => { colgada = true }, () => { colgada = true })
+  await assert.rejects(V.siFaltaArchivo(new Error('otra cosa')), /otra cosa/)
+  await new Promise(r => setTimeout(r, 20))
+  assert.equal(colgada, false, 'mientras recarga no enseña la pantalla de error')
+  window.location.href = 'https://tuagentedeia.com/bambu/?v=abc'
+  V.quitarMarcaVersion()
+  assert.equal(idas.at(-1), 'limpia /bambu/')
+  global.window = antes.window; global.sessionStorage = antes.sessionStorage
+  if (antes.navigator) Object.defineProperty(global, 'navigator', antes.navigator); else delete global.navigator
+  ok('versión nueva: si faltan los archivos de una versión vieja recarga sola una vez (no sin señal ni en bucle), Reintentar recarga y la marca ?v= se limpia')
+}
+
 async function nubeChecks() {
   process.env.PORT = String(NUBE_PORT)
   const store = new Map()
@@ -1978,6 +2013,13 @@ async function nubeChecks() {
   assert.deepEqual([R.estadoReto(fin, ana.uid), fin.marcas[ana.uid], fin.marcas[beto.uid]], ['terminado', 25, 23])
   assert.deepEqual(R.lugarDe(fin, ana.uid), { lugar: 1, de: 2, empate: false })
   await fb.salirReto(plancha, ana.uid)
+  await fb.reportarFallo({ donde: 'Entrenar', error: 'TypeError: ' + 'x'.repeat(900), pila: 'a\nb', version: 'index-prueba.js', navegador: 'Prueba' })
+  const conFallo = await (await fetch(`http://localhost:${NUBE_PORT}/_log`)).json()
+  assert.equal(conFallo.docs.filter(n => n.includes('/bambu_fallos/' + ana.uid + '__')).length, 1, 'el reporte se guarda con el uid de quien lo manda')
+  const sinCuenta = await fetch(`http://localhost:${NUBE_PORT}/firestore/v1/projects/x/databases/(default)/documents:commit`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ writes: [{ update: { name: 'projects/x/databases/(default)/documents/bambu_fallos/local__abc12345', fields: { de: { stringValue: 'local' }, donde: { stringValue: 'Hoy' }, error: { stringValue: 'x' }, pila: { stringValue: '' }, version: { stringValue: 'v' }, navegador: { stringValue: 'n' } } } }] }) })
+  assert.equal(sinCuenta.status, 200, 'sin cuenta también se puede reportar')
+  const ajeno = await fetch(`http://localhost:${NUBE_PORT}/firestore/v1/projects/x/databases/(default)/documents:commit`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ writes: [{ update: { name: 'projects/x/databases/(default)/documents/bambu_fallos/' + ana.uid + '__abc12345', fields: { de: { stringValue: ana.uid } } } }] }) })
+  assert.notEqual(ajeno.status, 200, 'sin cuenta no se puede reportar a nombre de alguien')
   assert.deepEqual((await fb.misRetos(ana.uid)).map(r => r.tipo), ['reps'])
   await assert.rejects(fb.borrarReto(reps.id), /./, 'solo quien lo creó lo borra')
   assert.equal(await fb.perfilDe(beto.uid), null)
@@ -1998,12 +2040,12 @@ async function nubeChecks() {
   assert.deepEqual((await fb.directorio()).map(d => d.apodo), ['Ana'])
   await fb.cuenta.borrar('contrasena1')
   const left = await (await fetch(`http://localhost:${NUBE_PORT}/_log`)).json()
-  assert.equal(left.docs.length, 0)
+  assert.deepEqual(left.docs.filter(n => !n.includes('/bambu_fallos/local__')), [], 'al borrar la cuenta no queda nada suyo, ni sus reportes')
   assert.equal(left.users.length, 0)
-  ok('nube de punta a punta: 1,201 registros, token vencido, cuentas separadas, cuenta privada con solicitud y aceptación, pase del candado, widget y avisos que nadie más puede cambiar, retos donde cada quien marca una sola vez y puede salirse, y borrado completo')
+  ok('nube de punta a punta: 1,201 registros, token vencido, cuentas separadas, cuenta privada con solicitud y aceptación, pase del candado, widget y avisos que nadie más puede cambiar, retos donde cada quien marca una sola vez y puede salirse, reporte de fallas y borrado completo (con los reportes)')
   srv.closeAllConnections(); srv.close()
 }
-require('./share-auth.cjs')().then(() => audioChecks()).then(() => syncChecks()).then(() => nubeChecks()).then(() => console.log(`PASS ${passed.length} grupos:\n - ${passed.join('\n - ')}`)).catch(error => { console.error(error); process.exit(1) })
+require('./share-auth.cjs')().then(() => audioChecks()).then(() => syncChecks()).then(() => nubeChecks()).then(() => versionChecks()).then(() => console.log(`PASS ${passed.length} grupos:\n - ${passed.join('\n - ')}`)).catch(error => { console.error(error); process.exit(1) })
 
 // NFC preserves elapsed time immediately, and a repeated finish cannot duplicate it.
 {

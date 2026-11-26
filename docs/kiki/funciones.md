@@ -92,7 +92,13 @@ Aviso de privacidad integral (ley de 2025, autoridad: Secretaría Anticorrupció
 
 ## Cuenta
 
-Correo y contraseña o Google. Los datos viven en el teléfono y se sincronizan con Firestore. "Tus datos de antes" sube lo que había en el teléfono antes de crear la cuenta. Borrar la cuenta borra todo (perfil, pases, retos, widget, avisos y registros).
+Correo y contraseña o Google. Los datos viven en el teléfono y se sincronizan con Firestore. "Tus datos de antes" sube lo que había en el teléfono antes de crear la cuenta. Borrar la cuenta borra todo (perfil, pases, retos, widget, avisos, reportes de fallas y registros).
+
+## Si algo falla
+
+- Si una pantalla se cae, se intenta arreglar sola una vez. Si vuelve a fallar enseña "Algo falló" con solo dos botones: **Reintentar** y **Reportar**.
+- **Reportar** manda dónde falló, el error, la versión y el navegador (con o sin cuenta; sin cuenta va como `local`). Al borrar la cuenta se borran sus reportes.
+- Si la app que tienes abierta es de una versión anterior y le falta un archivo, se recarga sola una vez con la versión nueva (no lo hace sin señal ni dos veces seguidas).
 
 ## Lo que viene
 

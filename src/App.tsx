@@ -12,7 +12,7 @@ import { bedAction, nfcServerAction, trainingAction } from './lib/nfcActions'
 import { ajustarRutina2611, clockOf, deshacerRondas2611, seedWeek } from './lib/rutina'
 import { applyRecords, diffRecords, toRecords, type RecordRow } from './lib/records'
 import { SyncEngine, type SyncStatus } from './lib/sync'
-import { cuenta, cuentaActiva as cloudConfigured, remoto, type Sesion } from './lib/firebase'
+import { cuenta, cuentaActiva as cloudConfigured, remoto, reportarFallo, type Sesion } from './lib/firebase'
 import { logAuth, setAuthLogOwner } from './lib/authLog'
 import { usePublicarPerfil } from './Tablas'
 import { usePublicarEstado } from './Widget'
@@ -28,21 +28,23 @@ import { game, rankOf } from './lib/gamification'
 import { keptToday } from './lib/vara'
 import { CelebrationLayer, celebrate, rewardSound, useWakeLock } from './ui'
 import { XP } from './lib/xp'
-import { LoadingScreen, NotFound, ProblemScreen, Recovering, ScreenCrash } from './StatusScreens'
+import { LoadingScreen, NotFound, ProblemScreen, Recovering, ScreenCrash, type Envio } from './StatusScreens'
 import { OfflineBanner, useOnline } from './Offline'
 import { StretchHost } from './Stretch'
 import { stretchSlot, type StretchWhen } from './lib/stretch'
 import { realReading, streak } from './lib/progress'
+import { faltaArchivo, recargarPorVersion, siFaltaArchivo } from './lib/version'
 
-const ReadingPage = lazy(() => import('./ReadingPage').then(m => ({ default: m.ReadingPage })))
-const FoodPage = lazy(() => import('./FoodPage').then(m => ({ default: m.FoodPage })))
-const MiRutina = lazy(() => import('./MiRutina').then(m => ({ default: m.MiRutina })))
-const TareasSimple = lazy(() => import('./TareasSimple').then(m => ({ default: m.TareasSimple })))
-const JardinPage = lazy(() => import('./Jardin').then(m => ({ default: m.JardinPage })))
-const AjustesSimple = lazy(() => import('./AjustesSimple').then(m => ({ default: m.AjustesSimple })))
-const AmigosPage = lazy(() => import('./Amigos').then(m => ({ default: m.AmigosPage })))
-const CandadoPage = lazy(() => import('./Candado').then(m => ({ default: m.CandadoPage })))
+const ReadingPage = lazy(() => import('./ReadingPage').then(m => ({ default: m.ReadingPage })).catch(e => siFaltaArchivo(e)))
+const FoodPage = lazy(() => import('./FoodPage').then(m => ({ default: m.FoodPage })).catch(e => siFaltaArchivo(e)))
+const MiRutina = lazy(() => import('./MiRutina').then(m => ({ default: m.MiRutina })).catch(e => siFaltaArchivo(e)))
+const TareasSimple = lazy(() => import('./TareasSimple').then(m => ({ default: m.TareasSimple })).catch(e => siFaltaArchivo(e)))
+const JardinPage = lazy(() => import('./Jardin').then(m => ({ default: m.JardinPage })).catch(e => siFaltaArchivo(e)))
+const AjustesSimple = lazy(() => import('./AjustesSimple').then(m => ({ default: m.AjustesSimple })).catch(e => siFaltaArchivo(e)))
+const AmigosPage = lazy(() => import('./Amigos').then(m => ({ default: m.AmigosPage })).catch(e => siFaltaArchivo(e)))
+const CandadoPage = lazy(() => import('./Candado').then(m => ({ default: m.CandadoPage })).catch(e => siFaltaArchivo(e)))
 const Cargando = () => <p className="d-hint">Cargando…</p>
+const VERSION = (() => { try { return new URL(import.meta.url).pathname.split('/').pop() ?? '' } catch { return '' } })()
 import { votesOn } from './lib/identity'
 
 const NAV: { id: Section; icon: DuoIconName; label: string }[] = [
@@ -114,7 +116,7 @@ function CrashProbe() {
  * Si una pantalla truena, el primer intento se repara solo en un segundo (muchos fallos son de
  * un instante, como datos a medio llegar). Si vuelve a tronar, enseña la tarjeta completa.
  */
-class Guard extends Component<{ children: ReactNode; onExport: () => void; onHome: () => void; where: string }, { error: Error | null; retried: boolean }> {
+class Guard extends Component<{ children: ReactNode; onReport: (error: Error, where: string) => Promise<Envio>; where: string }, { error: Error | null; retried: boolean }> {
   state = { error: null as Error | null, retried: false }
   timer: number | null = null
   static getDerivedStateFromError(error: Error) { return { error } }
@@ -131,7 +133,8 @@ class Guard extends Component<{ children: ReactNode; onExport: () => void; onHom
   render() {
     if (!this.state.error) return this.props.children
     if (!this.state.retried) return <Recovering />
-    return <ScreenCrash error={this.state.error} where={this.props.where} onRetry={() => this.setState({ error: null })} onExport={this.props.onExport} onHome={this.props.onHome} />
+    const error = this.state.error
+    return <ScreenCrash where={this.props.where} onRetry={() => { if (!faltaArchivo(error) || !recargarPorVersion(Date.now(), true)) this.setState({ error: null }) }} onReport={() => this.props.onReport(error, this.props.where)} />
   }
 }
 
@@ -395,6 +398,12 @@ export default function App() {
 
   const go = useCallback((target: Section) => { const next: Section = target === 'Enfoque' ? 'Tareas' : target; setSection(next); setLost(false); window.scrollTo({ top: 0 }) }, [])
   const goHome = useCallback(() => { window.history.replaceState({}, '', window.location.pathname); go('Hoy') }, [go])
+  const reportar = useCallback(async (error: Error, donde: string): Promise<Envio> => {
+    try {
+      await reportarFallo({ donde, error: `${error.name}: ${error.message}`, pila: (error.stack ?? '').split('\n').slice(0, 6).join('\n'), version: VERSION, navegador: navigator.userAgent })
+      return 'enviado'
+    } catch { return 'error' }
+  }, [])
 
   useEffect(() => {
     if (!ready) return
@@ -564,7 +573,7 @@ export default function App() {
       <div className="page">
         {!online && <OfflineBanner pending={status?.pending ?? 0} cloud={cloudConfigured} />}
         {update && <button type="button" className="update-banner" onClick={() => window.location.reload()}><span><strong>Versión nueva lista.</strong> Toca para estrenarla.</span><i aria-hidden="true">↻</i></button>}
-        {lost ? <NotFound onHome={goHome} onGo={s => go(s)} /> : <Guard onExport={exportBackup} onHome={goHome} where={page} key={page}><div className="section-in">
+        {lost ? <NotFound onHome={goHome} onGo={s => go(s)} /> : <Guard onReport={reportar} where={page} key={page}><div className="section-in">
           <CrashProbe />
           <Suspense fallback={<Cargando />}>
           {page === 'Hoy' && <HoyLista data={data} commit={commit} go={go} onMessage={message} />}

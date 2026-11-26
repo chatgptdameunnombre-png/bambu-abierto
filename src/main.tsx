@@ -16,7 +16,9 @@ import './tokens.css'
 import '@fontsource-variable/nunito/index.css'
 import './duo.css'
 import { applyTheme, watchSystemTheme } from './lib/theme'
+import { quitarMarcaVersion } from './lib/version'
 
+quitarMarcaVersion()
 applyTheme()
 watchSystemTheme()
 

@@ -1557,7 +1557,7 @@ ok('datos de antes: se suben sin duplicar ni pisar lo de la cuenta, y conservan 
   assert.equal(patronDe('Subidas de talones en wall sit', 'reps'), 'generico')
   assert.equal(tipoDe('Tuck planche'), 'seconds'); assert.equal(tipoDe('Lagartijas diamante'), 'reps')
   assert.ok(esGeneral('Crunches') && !esGeneral('Lagartijas'))
-  assert.deepEqual(opcionesDe('Lagartijas inclinadas'), { inclinado: true, rodillas: false, doblado: false, estirados: false })
+  assert.deepEqual(opcionesDe('Lagartijas inclinadas'), { inclinado: true, rodillas: false, doblado: false, estirados: false, tuck: false })
   assert.equal(opcionesDe('Cuervo').doblado, true)
   assert.ok(CAMARA.length >= 50 && CAMARA_GRUPOS.length === 7)
   assert.ok(CAMARA.every(e => tipoDe(e.name) === e.kind), 'cada ejercicio de la lista se mide como reps o segundos según su tipo')
@@ -1641,6 +1641,65 @@ ok('datos de antes: se suben sin duplicar ni pisar lo de la cuenta, y conservan 
   assert.ok(C.esSkill('planche') && C.esSkill('lever') && !C.esSkill('plancha'))
 }
 ok('aguantes: plancha en codos y con brazos estirados por separado, acostado, con la cadera o las rodillas en el piso o sentado de frente no cuenta, tuck planche mide el piso y solo cuenta con los pies despegados')
+
+{
+  const C = moduleOf('conteo')
+  const P = (x, y, v = 1) => ({ x, y, z: 0, v })
+  const arma = (o) => { const pts = Array.from({ length: 33 }, () => P(0.5, 0.95, 0)); for (const [i, p] of Object.entries(o)) pts[i] = p; return { img: pts, mundo: pts, aspecto: 1 } }
+  const ambos = (i, p) => ({ [i]: p, [i + 1]: p })
+  const Y = (m) => 0.8 - m * 0.35
+  const lado = (cadera, rodilla, tobillo = 0.09) => arma({ 0: P(0.24, Y(0.32)), ...ambos(11, P(0.3, Y(0.3))), ...ambos(13, P(0.3, Y(0.04))), ...ambos(15, P(0.18, Y(0.03))), ...ambos(23, P(0.475, Y(cadera))), ...ambos(25, P(0.65, Y(rodilla))), ...ambos(27, P(0.8075, Y(tobillo))), ...ambos(29, P(0.82, Y(tobillo))), ...ambos(31, P(0.84, Y(0.02))) })
+  const gira = (c, g) => { const r = g * Math.PI / 180, f = (p) => ({ ...p, x: 0.5 + (p.x - 0.5) * Math.cos(r) - (p.y - 0.75) * Math.sin(r), y: 0.75 + (p.x - 0.5) * Math.sin(r) + (p.y - 0.75) * Math.cos(r) }); return { ...c, img: c.img.map(f), mundo: c.mundo.map(f) } }
+  const vale = (m) => m.visto && m.postura && m.recto
+  const op = C.opcionesDe('Plancha')
+  const recta = lado(0.228, 0.155), baja = lado(0.17, 0.13), esfinge = lado(0.11, 0.05, 0.06), hincado = lado(0.175, 0.05, 0.06)
+  for (const g of [0, -15, 15]) {
+    assert.ok(vale(C.medir('plancha', gira(recta, g), op)), `plancha recta de lado cuenta con el teléfono a ${g} grados`)
+    assert.ok(vale(C.medir('plancha', gira(baja, g), op)), `cadera un poco baja pero recta cuenta a ${g} grados`)
+    assert.equal(C.medir('plancha', gira(esfinge, g), op).falla, 'cadera', `esfinge no cuenta y pide subir la cadera a ${g} grados`)
+    assert.equal(C.medir('plancha', gira(hincado, g), op).falla, 'rodillas', `rodillas en el piso no cuenta y pide despegarlas a ${g} grados`)
+  }
+  assert.equal(C.medir('plancha', lado(0.45, 0.25), op).falla, 'alta', 'cadera muy alta pide bajarla')
+  const corre = (ej, cuadros) => cuadros.reduce((c, f, i) => C.paso(c, f, i * 200), C.nuevoConteo(ej, 'seconds'))
+  const orilla = lado(0.1326, 0.155)
+  assert.equal(vale(C.medir('plancha', orilla, op)), false, 'cadera en la orilla no arranca el tiempo')
+  assert.ok(vale(C.medir('plancha', orilla, op, undefined, true)), 'pero si ya estabas en plancha no la pausa')
+  const sigue = corre('Plancha', [...Array(10).fill(recta), ...Array(25).fill(orilla)])
+  assert.ok(sigue.segundos >= 6 && sigue.aviso === null, `ya adentro, temblar en la orilla no pausa (${sigue.segundos} s)`)
+  assert.equal(corre('Plancha', Array(25).fill(orilla)).segundos, 0)
+  const cae = corre('Plancha', [...Array(10).fill(recta), ...Array(10).fill(esfinge)])
+  assert.equal(cae.aviso, 'cadera', 'si bajas la cadera al piso se pausa y lo dice')
+  assert.match(C.AVISOS_AGUANTE.cadera, /Sube la cadera/); assert.match(C.AVISOS_AGUANTE.rodillas, /rodillas/); assert.match(C.AVISOS_AGUANTE.pies, /pies/); assert.match(C.AVISOS_AGUANTE.extiende, /brazos/)
+  const cara = { 0: P(0.5, 0.45), 11: P(0.35, 0.4), 12: P(0.65, 0.4), 13: P(0.36, 0.6), 14: P(0.64, 0.6), 15: P(0.42, 0.63), 16: P(0.58, 0.63) }
+  const piernas = (rod, tob) => ({ 23: P(0.42, 0.53), 24: P(0.58, 0.53), 25: P(0.45, rod), 26: P(0.55, rod), 27: P(0.47, tob), 28: P(0.53, tob) })
+  const deFrente = arma({ ...cara, ...piernas(0.57, 0.61) })
+  assert.ok(vale(C.medir('plancha', deFrente, op)), 'de frente con cadera y piernas a la vista cuenta (antes la medía como si fuera de lado)')
+  assert.equal(C.medir('plancha', arma({ ...cara, ...piernas(0.62, 0.61) }), op).falla, 'rodillas', 'de frente con las rodillas abajo de los tobillos no cuenta')
+  assert.equal(C.medir('plancha', arma({ 0: P(0.5, 0.6), 11: P(0.35, 0.58), 12: P(0.65, 0.58), 13: P(0.36, 0.62), 14: P(0.64, 0.62), 15: P(0.42, 0.63), 16: P(0.58, 0.63) }), op).falla, 'cadera', 'de frente acostado en el piso no cuenta')
+  const parejo = arma({ ...cara, ...piernas(0.61, 0.61) })
+  assert.equal(vale(C.medir('plancha', parejo, op)), false)
+  const frenteSigue = corre('Plancha', [...Array(10).fill(deFrente), ...Array(15).fill(parejo)])
+  assert.ok(frenteSigue.segundos >= 4 && frenteSigue.aviso === null, 'de frente, ya adentro, una rodilla mal vista no pausa')
+
+  const tuck = (o = {}) => arma({ 0: P(0.34, 0.53), ...ambos(11, P(0.4, 0.55)), ...ambos(13, P(0.4, 0.65)), ...ambos(15, P(0.4, 0.75)), ...ambos(23, P(0.6, 0.4)), ...ambos(25, P(0.55, 0.42)), ...ambos(27, P(0.62, 0.55)), ...ambos(29, P(0.64, 0.55)), ...ambos(31, P(0.66, 0.6)), ...o })
+  const opT = C.opcionesDe('Tuck planche')
+  assert.equal(opT.tuck, true); assert.equal(C.opcionesDe('Planche').tuck, false)
+  assert.ok(vale(C.medir('planche', tuck(), opT)), 'tuck planche con la cadera más alta que los hombros cuenta')
+  assert.equal(C.medir('planche', tuck(), C.opcionesDe('Planche')).postura, false, 'en planche completa sí se pide el cuerpo horizontal')
+  assert.ok(vale(C.medir('planche', tuck({ 14: P(0.48, 0.65, 0.6), 12: P(0.4, 0.55, 0.6), 16: P(0.4, 0.75, 0.6) }), opT)), 'el brazo de atrás mal visto no la tumba')
+  assert.equal(C.medir('planche', tuck({ ...ambos(13, P(0.47, 0.65)) }), opT).falla, 'extiende', 'brazos doblados pide estirarlos')
+  const plano = arma({ 0: P(0.34, 0.53), ...ambos(11, P(0.4, 0.55)), ...ambos(13, P(0.4, 0.65)), ...ambos(15, P(0.4, 0.75)), ...ambos(23, P(0.6, 0.5)), ...ambos(25, P(0.55, 0.45)), ...ambos(27, P(0.62, 0.75)), ...ambos(29, P(0.64, 0.75)), ...ambos(31, P(0.66, 0.76)) })
+  const baseT = C.calibrar(C.nuevoConteo('Tuck planche'), plano).base
+  assert.ok(Math.abs(baseT.pie - 0.75) < 1e-9, 'el piso se mide con tobillos y talones, no con la punta')
+  const puntas = tuck({ ...ambos(27, P(0.62, 0.62)), ...ambos(29, P(0.64, 0.62)), ...ambos(31, P(0.66, 0.74)) })
+  assert.ok(vale(C.medir('planche', puntas, opT, baseT)), 'con las puntas colgando hacia el piso cuenta')
+  assert.equal(C.medir('planche', plano, opT, baseT).falla, 'pies', 'con los pies en el piso pide despegarlos')
+  const oculto = (f) => ({ ...f, img: f.img.map((p, i) => [27, 28, 29, 30, 31, 32].includes(i) ? { ...p, v: 0.1 } : p) })
+  assert.equal(C.medir('planche', oculto(tuck()), opT).postura, false, 'sin ver los pies no arranca')
+  const tSigue = [...Array(10).fill(tuck()), ...Array(10).fill(oculto(tuck()))].reduce((c, f, i) => C.paso(c, f, i * 200), C.calibrar(C.nuevoConteo('Tuck planche'), plano))
+  assert.ok(tSigue.segundos >= 3 && tSigue.aviso === null, 'si ya estabas arriba y se tapan los pies, sigue contando')
+}
+ok('plancha y tuck planche: de frente con las piernas a la vista ya no se mide como de lado, de lado se mide contra el piso aunque el teléfono esté chueco, ya adentro tolera la orilla, avisos que dicen qué falla (cadera, rodillas, pies, brazos), tuck con la cadera alta, brazo de atrás mal visto y puntas colgando')
 
 
 

@@ -60,7 +60,7 @@ React 19 + Vite 8 + TypeScript, sin backend propio: Firebase Auth y Firestore po
 | `public/pose/` | Modelo y wasm de MediaPipe (1.2.3) servidos desde el sitio. |
 | `public/avisos-sw.js` | Service worker mínimo: solo avisos y abrir la app al tocarlos. |
 | `vite.config.ts` | CSP solo en el build. |
-| `checks/features.cjs` | Pruebas (77 grupos). |
+| `checks/features.cjs` | Pruebas (78 grupos). |
 | `vista-avisos.html` | Vista previa local de los avisos (solo desarrollo; no se publica). |
 | `checks/nube-prueba.cjs` | Firestore y Auth de mentira para pruebas. |
 

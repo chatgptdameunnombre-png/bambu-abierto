@@ -15,7 +15,8 @@ Commits del sitio donde se publicó cada cambio.
 | `5905adc` | Duelos de 60 s; Redes y Duelos como pestañas de Entrenar; minutos solo en Redes; cámara para cualquier ejercicio con variantes; resumen semanal; widget; avisos. |
 | `abb4090` | Ajedrez como módulo (bot y en línea) y Cindy. |
 | (25-nov, noche) | Se quita el ajedrez por completo a pedido de Kiki; queda como pendiente. |
-| (25-nov, noche) | Opción "Solo competir con mis amigos" al crear cuenta. En el código del fork; todavía no publicada en la web. |
+| (25-nov, noche) | Opción "Solo competir con mis amigos" al crear cuenta. |
+| (25-nov, noche) | Retos de 2 a 10 personas (repeticiones, aguantar más, Cindy); avisos con la voz de Brote y "te pasaron en la liga"; tuck planche con 5 s para acomodarse y pies despegados; plancha en codos y con brazos estirados por separado; legales listos; carga más rápida. |
 
 ## Decisiones de Kiki
 

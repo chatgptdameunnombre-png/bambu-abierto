@@ -6,7 +6,7 @@
 node checks/features.cjs
 ```
 
-73 grupos. Entre ellos: modo solo competir, conteo de la cámara (profundidad, media repetición, ritmo, cuerpo recto, variantes, planche, lever, bandera, modo general y aguantes quietos), minutos de redes solo en Redes, duelos (estados y reloj 3-2-1 + 60 s), Cindy, resumen semanal, widget y avisos, y una prueba de punta a punta contra la nube de prueba: 1,201 registros, token vencido, cuentas separadas, cuenta privada, pase del candado, widget y avisos que nadie más puede cambiar, duelo que solo el retado contesta una vez y borrado completo de la cuenta.
+75 grupos. Entre ellos: retos de grupo, legales, planchas y tuck planche, modo solo competir, conteo de la cámara (profundidad, media repetición, ritmo, cuerpo recto, variantes, planche, lever, bandera, modo general y aguantes quietos), minutos de redes solo en Redes, retos (estados, lugares y reloj 3-2-1 + 60 s), Cindy, resumen semanal, widget y avisos, y una prueba de punta a punta contra la nube de prueba: 1,201 registros, token vencido, cuentas separadas, cuenta privada, pase del candado, widget y avisos que nadie más puede cambiar, retos donde cada quien marca una sola vez y puede salirse y borrado completo de la cuenta.
 
 ## Nube de prueba
 
@@ -25,11 +25,11 @@ Scripts de Playwright (viven en el repo privado de Kiki). Usan Playwright con c�
 
 | Script | Qué revisa | Necesita |
 |---|---|---|
-| `pantallas.cjs` | Redes, elegir ejercicio, meta, Libre, romper récord, Duelos, Jardín y la imagen de la semana. | `bambu` (5640) |
-| `duelo.cjs` | Duelo entre dos cuentas: Beto reta, Ana ve "te toca", abre la cámara en modo duelo. | `bambu-nube` (5642) |
+| `pantallas.cjs` | Redes, elegir ejercicio, meta, Libre, romper récord, Retos, Jardín y la imagen de la semana. | `bambu` (5640) |
+| `duelo.cjs` | Retos entre cuentas: te retan, ves "a vencer", abres la cámara en modo reto. | `bambu-nube` (5642) |
 | `ajustes.cjs` | Tarjetas de avisos y widget; que el widget se guarde en la nube y el código se copie. | `bambu-nube` (5642) |
 | `cindy.cjs` | Cindy en Libre y su pantalla de cámara. | `bambu` (5640) |
-| `produccion-camara.cjs` | El build de producción bajo la CSP: Redes, cámara, Duelos, semana y registro del service worker. | `dist` servido en `http://127.0.0.1:5677/bambu/` |
+| `produccion-camara.cjs` | El build de producción bajo la CSP: Redes, cámara, Retos, semana y registro del service worker. | `dist` servido en `http://127.0.0.1:5677/bambu/` |
 | `en-vivo.cjs` | Lo mismo contra `https://tuagentedeia.com/bambu/`. | Internet |
 
 ## Lo que no se puede probar sin el iPhone

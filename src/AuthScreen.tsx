@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { cuenta, errorDeCuenta, google, setLocalOnly } from './lib/firebase'
+import { LegalLinks } from './Legal'
 import { DuoIcon } from './DuoIcons'
 
 type View = 'entrar' | 'crear' | 'recuperar'
@@ -76,6 +77,7 @@ export function AuthScreen() {
         </label>}
         {error && <p className="d-auth-msg error" role="alert">{error}</p>}
         {notice && <p className="d-auth-msg ok" role="status">{notice}</p>}
+        {view === 'crear' && <LegalLinks />}
         <button className="d-btn green wide" type="submit" disabled={busy}>{busy ? 'Un momento' : view === 'crear' ? 'Crear mi cuenta' : view === 'recuperar' ? 'Mandar enlace' : 'Entrar'}</button>
       </form>
       {view === 'recuperar'

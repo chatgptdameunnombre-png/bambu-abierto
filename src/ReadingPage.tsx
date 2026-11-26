@@ -6,6 +6,7 @@ import { CANON, ETAPAS, TOTAL_CHAPTERS, addChapterMarks, book, bibleProgress, de
 import { backfillDays, streak, realReading } from './lib/progress'
 import { BinauralAudio } from './BinauralAudio'
 import { Card, Chips, Empty, Heading, Stepper, Tabs, fmtDay, mmss, useNow, useWakeLock } from './ui'
+import { freshReading } from './lib/sesionLectura'
 import { plural } from './lib/text'
 
 type Commit = (update: (d: AppData) => AppData) => void
@@ -33,9 +34,6 @@ export function ReadingPage(props: Props) {
   </>
 }
 
-export function freshReading(): ActiveReading {
-  return { id: `reading:${makeId()}`, day: dateKey(), startedAt: Date.now(), title: '', location: '' }
-}
 
 function Session({ data, commit, onMessage }: Props) {
   const bibleOn = modulesOf(data.settings).bible

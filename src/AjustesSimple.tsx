@@ -9,6 +9,7 @@ import { planOf } from './lib/rutina'
 import { PauseSetup } from './PauseSetup'
 import { CandadoSetup } from './Candado'
 import { AvisosSetup, WidgetSetup } from './Widget'
+import { LegalCard } from './Legal'
 import { RemindersCard } from './RemindersCard'
 import { DuoIcon, type DuoIconName } from './DuoIcons'
 
@@ -169,6 +170,7 @@ export function AjustesSimple({ data, commit, onMessage, cloud, onExport, onImpo
     {mods.training && <CandadoSetup data={data} commit={commit} onMessage={onMessage} cloud={cloud} />}
     <AvisosSetup data={data} commit={commit} onMessage={onMessage} cloud={cloud} />
     <WidgetSetup data={data} commit={commit} onMessage={onMessage} cloud={cloud} />
+    <LegalCard data={data} />
     {server && <PauseSetup keyValue={key} onCopy={url => { navigator.clipboard?.writeText(url).then(() => onMessage('Enlace copiado.')).catch(() => onMessage(url)) }} />}
     {server && <RemindersCard data={data} commit={commit} onMessage={onMessage} />}
 

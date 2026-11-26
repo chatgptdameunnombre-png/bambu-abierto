@@ -41,7 +41,7 @@ export const CATALOG: [string, RoutineKind, number, string, boolean?][] = [
   ['Pistol squat asistida', 'reps', 5, 'Piernas', true], ['Sentadillas', 'reps', 15, 'Piernas'], ['Desplantes', 'reps', 15, 'Piernas'], ['Wall sit', 'seconds', 60, 'Piernas'],
   ['Subidas de talones en wall sit', 'reps', 15, 'Piernas'], ['Elevaciones de talones', 'reps', 15, 'Piernas'], ['Elevaciones de talón a una pierna', 'reps', 15, 'Piernas', true],
   ['Puente de glúteo a una pierna', 'reps', 12, 'Piernas', true], ['Hollow hold', 'seconds', 45, 'Abdomen'], ['Abs con piernas arriba', 'reps', 25, 'Abdomen'],
-  ['Abs crackers', 'reps', 15, 'Abdomen'], ['Russian twist', 'reps', 55, 'Abdomen'], ['Plancha', 'seconds', 60, 'Abdomen'], ['L sit', 'seconds', 10, 'Abdomen'],
+  ['Abs crackers', 'reps', 15, 'Abdomen'], ['Russian twist', 'reps', 55, 'Abdomen'], ['Plancha', 'seconds', 60, 'Abdomen'], ['Plancha con brazos estirados', 'seconds', 45, 'Abdomen'], ['L sit', 'seconds', 10, 'Abdomen'],
   ['Crunches', 'reps', 25, 'Abdomen'], ['Plancha lateral', 'seconds', 30, 'Abdomen', true], ['Aguante isométrico de abs', 'seconds', 30, 'Abdomen'],
   ['Dominadas lentas', 'reps', 5, 'Espalda'], ['Curl de toalla superior', 'reps', 15, 'Espalda'], ['Curl de toalla inferior', 'reps', 20, 'Espalda'],
   ['Remo con toalla en barra', 'reps', 10, 'Espalda'], ['Muscle up', 'reps', 2, 'Espalda'], ['Chin ups lentas', 'reps', 5, 'Bíceps'], ['Colgarse de la barra', 'seconds', 30, 'Antebrazo'],

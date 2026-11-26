@@ -247,7 +247,7 @@ function Editor({ plan, day, onSave, onCancel }: { plan: TrainPlan; day: number;
 
 type Modo = 'rutina' | 'libre' | 'redes' | 'duelos' | 'aventura'
 const MODOS: Modo[] = ['rutina', 'libre', 'redes', 'duelos', 'aventura']
-const MODO_NOMBRE: Record<Modo, string> = { rutina: 'Rutina', libre: 'Libre', redes: 'Redes', duelos: 'Duelos', aventura: 'Aventura' }
+const MODO_NOMBRE: Record<Modo, string> = { rutina: 'Rutina', libre: 'Libre', redes: 'Redes', duelos: 'Retos', aventura: 'Aventura' }
 
 export function MiRutina({ data, commit, onMessage, onIr }: { data: AppData; commit: Commit; onMessage: Msg; onIr?: (a: 'Amigos' | 'Ajustes') => void }) {
   const today = dateKey()
@@ -269,7 +269,7 @@ export function MiRutina({ data, commit, onMessage, onIr }: { data: AppData; com
   const savePlan = (p: TrainPlan) => commit(d => ({ ...d, settings: { ...d.settings, train: p } }))
 
   const modeBar = <div className="d-mode five" role="tablist" aria-label="Tipo de entreno">
-    {MODOS.map(m => <button key={m} type="button" role="tab" aria-selected={mode === m} className={mode === m ? 'on' : ''} onClick={() => setMode(m)}>{MODO_NOMBRE[m]}{m === 'duelos' && toca > 0 && <i className="d-mode-badge" aria-label={`${toca} duelos te esperan`}>{toca}</i>}</button>)}
+    {MODOS.map(m => <button key={m} type="button" role="tab" aria-selected={mode === m} className={mode === m ? 'on' : ''} onClick={() => setMode(m)}>{MODO_NOMBRE[m]}{m === 'duelos' && toca > 0 && <i className="d-mode-badge" aria-label={`${toca} retos te esperan`}>{toca}</i>}</button>)}
   </div>
   if (mode === 'libre') return <div className="d-page">{modeBar}<LibrePage data={data} commit={commit} onAmigos={onIr ? () => onIr('Amigos') : undefined} /></div>
   if (mode === 'duelos') return <div className="d-page">{modeBar}<DuelosPage data={data} commit={commit} onMessage={onMessage} onAmigos={onIr ? () => onIr('Amigos') : undefined} /></div>

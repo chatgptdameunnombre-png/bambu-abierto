@@ -747,7 +747,13 @@ function cleanSettings(value) {
 		aprobados: cleanAmigos(v.aprobados),
 		candado: cleanCandado(v.candado),
 		widget: cleanCandado(v.widget),
-		avisos: cleanAvisos(v.avisos)
+		avisos: cleanAvisos(v.avisos),
+		modo: v.modo === "competir" ? "competir" : void 0,
+		legal: isRecord(v.legal) && typeof v.legal.version === "string" && /^\d{4}-\d\d-\d\d$/.test(v.legal.version) && typeof v.legal.fecha === "string" && v.legal.fecha.length <= 40 ? {
+			version: v.legal.version,
+			fecha: v.legal.fecha,
+			salud: v.legal.salud === true
+		} : void 0
 	});
 }
 function dateKey(date = /* @__PURE__ */ new Date()) {

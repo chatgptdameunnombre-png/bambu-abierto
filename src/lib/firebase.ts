@@ -1,6 +1,7 @@
 import type { RecordRow } from './records'
 import { authError, docId, encode, fieldsOf, microsToTs, recordFields, rowOf, sessionGone, type FsDoc, type FsValue } from './nubeFormato'
 import { dirFrom, dirOf, perfilOf, type Dir, type Perfil } from './perfil'
+import { MAX_PERSONAS, tipoDeReto, type Reto, type TipoReto } from './retos'
 
 const API_KEY = 'AIzaSyDZZK2IeuHYrvFSn-R-9v6xfY33s1X7vjo'
 const PROJECT = 'tuagentedeia-4f2a1'
@@ -119,7 +120,7 @@ export const cuenta = {
     }
     await borrarPerfil(s.uid)
     await borrarPases(s.uid)
-    await borrarDuelos(s.uid)
+    await borrarRetos(s.uid)
     await borrarWidgets(s.uid)
     await borrarAvisos(s.uid)
     const sol = await solicitudes(s.uid)
@@ -288,36 +289,50 @@ export async function borrarPases(uid: string): Promise<void> {
   if (docs.length) await conToken(`${DOCS}:commit`, { writes: docs.map(d => ({ delete: d.name })) })
 }
 export const urlPase = (llave: string) => `https://firestore.googleapis.com/v1/${ROOT}/bambu_pases/${llave}?key=${API_KEY}`
-export type Duelo = { id: string; de: string; para: string; ejercicio: string; deReps: number; paraReps: number | null; estado: 'abierto' | 'listo'; creado: number; respondido: number }
 const msDe = (v: unknown) => typeof v === 'string' ? Date.parse(v) || 0 : 0
-function dueloDe(d: FsDoc): Duelo | null {
+function retoDe(d: FsDoc & { updateTime?: string }): Reto | null {
   const f = fieldsOf(d.fields)
-  if (typeof f.de !== 'string' || typeof f.para !== 'string' || typeof f.ejercicio !== 'string' || typeof f.deReps !== 'number') return null
-  return { id: idOf(d), de: f.de, para: f.para, ejercicio: f.ejercicio, deReps: f.deReps, paraReps: typeof f.paraReps === 'number' ? f.paraReps : null, estado: f.estado === 'listo' ? 'listo' : 'abierto', creado: msDe(f.s), respondido: msDe(f.t) }
+  if (typeof f.de !== 'string' || !Array.isArray(f.participantes) || typeof f.ejercicio !== 'string') return null
+  const marcas: Record<string, number> = {}
+  if (f.marcas && typeof f.marcas === 'object') for (const [k, v] of Object.entries(f.marcas as Record<string, unknown>)) if (typeof v === 'number') marcas[k] = v
+  return { id: idOf(d), de: f.de, participantes: f.participantes.filter((x): x is string => typeof x === 'string'), tipo: tipoDeReto(String(f.tipo)), ejercicio: f.ejercicio, marcas, creado: msDe(f.s), movido: msDe(f.t), version: d.updateTime ?? '' }
 }
-export async function duelos(uid: string): Promise<Duelo[]> {
-  const [a, b] = await Promise.all([
-    query('', { from: [{ collectionId: 'bambu_duelos' }], where: eq('de', { stringValue: uid }), limit: 50 }),
-    query('', { from: [{ collectionId: 'bambu_duelos' }], where: eq('para', { stringValue: uid }), limit: 50 }),
-  ])
-  return [...a, ...b].map(dueloDe).filter((x): x is Duelo => !!x).sort((x, y) => Math.max(y.creado, y.respondido) - Math.max(x.creado, x.respondido))
+const ambos = [{ fieldPath: 's', setToServerValue: 'REQUEST_TIME' }, { fieldPath: 't', setToServerValue: 'REQUEST_TIME' }]
+const movido = [{ fieldPath: 't', setToServerValue: 'REQUEST_TIME' }]
+export async function misRetos(uid: string): Promise<Reto[]> {
+  const docs = await query('', { from: [{ collectionId: 'bambu_retos' }], where: { fieldFilter: { field: { fieldPath: 'participantes' }, op: 'ARRAY_CONTAINS', value: { stringValue: uid } } }, limit: 60 })
+  return docs.map(retoDe).filter((x): x is Reto => !!x).sort((x, y) => Math.max(y.creado, y.movido) - Math.max(x.creado, x.movido))
 }
-export async function crearDuelo(para: string, ejercicio: string, reps: number): Promise<string> {
+export async function crearReto(rivales: string[], tipo: TipoReto, ejercicio: string, marca: number): Promise<string> {
   const s = actual
   if (!s) throw new NubeError('SIN_SESION')
-  const id = `${s.uid}__${para}__${Date.now().toString(36)}`
-  await conToken(`${DOCS}:commit`, { writes: [{ update: { name: `${ROOT}/bambu_duelos/${id}`, fields: toFields({ de: s.uid, para, ejercicio, deReps: Math.round(reps), estado: 'abierto' }) }, currentDocument: { exists: false }, updateTransforms: stamp }] })
+  const id = `${s.uid}__${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`
+  const participantes = [s.uid, ...rivales.filter(x => x !== s.uid)].slice(0, MAX_PERSONAS)
+  await conToken(`${DOCS}:commit`, { writes: [{ update: { name: `${ROOT}/bambu_retos/${id}`, fields: toFields({ de: s.uid, participantes, tipo, ejercicio, marcas: { [s.uid]: Math.round(marca) } }) }, currentDocument: { exists: false }, updateTransforms: ambos }] })
   return id
 }
-export async function responderDuelo(id: string, reps: number): Promise<void> {
-  await conToken(`${DOCS}:commit`, { writes: [{ update: { name: `${ROOT}/bambu_duelos/${id}`, fields: toFields({ paraReps: Math.round(reps), estado: 'listo' }) }, updateMask: { fieldPaths: ['paraReps', 'estado'] }, currentDocument: { exists: true }, updateTransforms: [{ fieldPath: 't', setToServerValue: 'REQUEST_TIME' }] }] })
+export async function marcarReto(r: Reto, uid: string, marca: number): Promise<void> {
+  await conToken(`${DOCS}:commit`, { writes: [{ update: { name: `${ROOT}/bambu_retos/${r.id}`, fields: toFields({ marcas: { ...r.marcas, [uid]: Math.round(marca) } }) }, updateMask: { fieldPaths: ['marcas'] }, currentDocument: r.version ? { updateTime: r.version } : { exists: true }, updateTransforms: movido }] })
 }
-export async function borrarDuelo(id: string): Promise<void> {
-  await conToken(`${DOCS}:commit`, { writes: [{ delete: `${ROOT}/bambu_duelos/${id}` }] })
+export async function salirReto(r: Reto, uid: string): Promise<void> {
+  const marcas = Object.fromEntries(Object.entries(r.marcas).filter(([k]) => k !== uid))
+  await conToken(`${DOCS}:commit`, { writes: [{ update: { name: `${ROOT}/bambu_retos/${r.id}`, fields: toFields({ participantes: r.participantes.filter(x => x !== uid), marcas }) }, updateMask: { fieldPaths: ['participantes', 'marcas'] }, currentDocument: { exists: true }, updateTransforms: movido }] })
 }
-export async function borrarDuelos(uid: string): Promise<void> {
-  const todos = await duelos(uid)
-  if (todos.length) await conToken(`${DOCS}:commit`, { writes: todos.map(d => ({ delete: `${ROOT}/bambu_duelos/${d.id}` })) })
+export async function borrarReto(id: string): Promise<void> {
+  await conToken(`${DOCS}:commit`, { writes: [{ delete: `${ROOT}/bambu_retos/${id}` }] })
+}
+export async function borrarRetos(uid: string): Promise<void> {
+  for (const r of await misRetos(uid)) {
+    if (r.de === uid) await borrarReto(r.id)
+    else await salirReto(r, uid)
+  }
+}
+export async function leerReto(id: string): Promise<Reto | null> {
+  const pedir = async (tk: string) => fetch(`${DOCS}/bambu_retos/${id}`, { headers: { Authorization: `Bearer ${tk}` }, signal: AbortSignal.timeout(15000) })
+  let res = await pedir(await token())
+  if (res.status === 401) res = await pedir(await token(true))
+  if (!res.ok) return null
+  return retoDe(await res.json() as FsDoc & { updateTime?: string })
 }
 export type EstadoWidget = { dia: string; racha: number; nivel: number; xpHoy: number; meta: number; minutos: number; rutina: string }
 export async function guardarWidget(llave: string, e: EstadoWidget): Promise<void> {

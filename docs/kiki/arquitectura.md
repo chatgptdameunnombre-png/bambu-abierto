@@ -6,7 +6,7 @@ React 19 + Vite 8 + TypeScript, sin backend propio: Firebase Auth y Firestore po
 
 1. Todo se guarda primero en el teléfono (IndexedDB `bambu-local`, con espejo en `localStorage`).
 2. Con cuenta, cada cambio es un registro en `bambu/{uid}/registros` y se sincroniza por cursor (sube lo pendiente, baja lo nuevo).
-3. Lo social (perfil, directorio, solicitudes, duelos) y lo que leen otros (pase del candado, widget, avisos) va en colecciones aparte. Ver [nube-y-reglas.md](nube-y-reglas.md).
+3. Lo social (perfil, directorio, solicitudes, retos) y lo que leen otros (pase del candado, widget, avisos) va en colecciones aparte. Ver [nube-y-reglas.md](nube-y-reglas.md).
 
 ## Archivos de la versión de Kiki (`src/`)
 
@@ -20,8 +20,9 @@ React 19 + Vite 8 + TypeScript, sin backend propio: Firebase Auth y Firestore po
 | `MiRutina.tsx` | Entrenar: barra de 5 pestañas y la rutina del día. |
 | `Libre.tsx` | Libre: romper récord, reto semanal, buscador y registro de series. |
 | `Candado.tsx` | Redes (`RedesPage`), botón y envoltura de la cámara, pantalla del candado y su configuración. |
-| `CamaraReps.tsx` | Pantalla de la cámara: MediaPipe, voz, medidor, modo duelo (60 s), meta y circuito (Cindy). |
-| `Duelos.tsx` | Tarjeta y pestaña de duelos. |
+| `CamaraReps.tsx` | Pantalla de la cámara: MediaPipe, voz, medidor, 5 s para acomodarse en aguantes, reto de 60 s, aguantar hasta fallar, meta y circuito (Cindy). |
+| `Duelos.tsx` | Pestaña Retos: crear, aceptar, lugares y revancha. |
+| `Legal.tsx` | Aviso de privacidad, términos, consentimiento y tarjeta en Ajustes. |
 | `Aventura.tsx`, `Jefe.tsx` | Monstruos, temporada, mazmorra y jefes. |
 | `Jardin.tsx` | Jardín, estadísticas y **Tu semana**. |
 | `Amigos.tsx`, `Tablas.tsx`, `useSocial.ts` | Amigos, perfiles, liga y solicitudes. |
@@ -37,7 +38,9 @@ React 19 + Vite 8 + TypeScript, sin backend propio: Firebase Auth y Firestore po
 | `conteo.ts` | Familias de ejercicios, medición de posturas, conteo de repeticiones y aguantes, modo general. |
 | `minutos.ts` | Tasas de minutos, saldo, pases, llave del candado, `conCamara` (nota `camara` o `redes`). |
 | `libre.ts` | Récords, reto semanal, notas de cámara. |
-| `duelos.ts` | Estados del duelo y reloj 3-2-1 + 60 s. |
+| `retos.ts` | Tipos de reto, estados, lugares con empates y marcador. |
+| `duelos.ts` | Reloj 3-2-1 + tiempo del reto. |
+| `legal.ts` | Textos legales y datos del responsable (por completar). |
 | `wod.ts` | Cindy: partes, rondas y puntaje. |
 | `semana.ts` | Resumen semanal. |
 | `widget.ts` | Datos del widget, estado para avisos y el script de Scriptable. |
@@ -54,8 +57,13 @@ React 19 + Vite 8 + TypeScript, sin backend propio: Firebase Auth y Firestore po
 | `public/pose/` | Modelo y wasm de MediaPipe (1.2.3) servidos desde el sitio. |
 | `public/avisos-sw.js` | Service worker mínimo: solo avisos y abrir la app al tocarlos. |
 | `vite.config.ts` | CSP solo en el build. |
-| `checks/features.cjs` | Pruebas (73 grupos). |
+| `checks/features.cjs` | Pruebas (75 grupos). |
+| `vista-avisos.html` | Vista previa local de los avisos (solo desarrollo; no se publica). |
 | `checks/nube-prueba.cjs` | Firestore y Auth de mentira para pruebas. |
+
+## Carga por partes
+
+Entrenar, Jardín, Amigos, Ajustes, Comida, Tareas, Lectura y el candado se cargan solo al abrirlos (`lazy` en `App.tsx`): el archivo principal bajó de 708 KB a 363 KB.
 
 ## Dependencias nuevas de esta versión
 

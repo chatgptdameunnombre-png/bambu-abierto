@@ -5,7 +5,8 @@ export type Patron = 'empuje' | 'fondo' | 'sentadilla' | 'dominada' | 'pike' | '
 export type Aviso = 'acomodate' | 'posicion' | 'baja' | 'recto' | 'rapido' | 'sube' | 'extiende'
 type Repeticion = 'empuje' | 'fondo' | 'sentadilla' | 'dominada' | 'pike' | 'hspu' | 'remo' | 'elevacion' | 'saltos' | 'burpee'
 export type Tipo = 'reps' | 'seconds' | 'free'
-export type Opciones = { inclinado?: boolean; rodillas?: boolean; doblado?: boolean }
+export type Opciones = { inclinado?: boolean; rodillas?: boolean; doblado?: boolean; estirados?: boolean }
+export type Base = { pie: number; mano: number; largo: number }
 
 const CARDIO = /^(correr|caminar|trotar|nadar|bici|cardio|f[uú]tbol)/i
 const AGUANTE_RE = /aguante|isom[eé]tric|\bhold\b|sost[eé]n|est[aá]tic/i
@@ -46,7 +47,7 @@ export const esCamara = (name: string, kind?: Tipo) => patronDe(name, kind) !== 
 export const tipoDe = (name: string, kind?: Tipo): 'reps' | 'seconds' => esAguante(patronDe(name, kind) ?? 'generico') ? 'seconds' : 'reps'
 export const esGeneral = (name: string, kind?: Tipo) => { const p = patronDe(name, kind); return p === 'generico' || p === 'quieto' }
 export function opcionesDe(name: string): Opciones {
-  return { inclinado: /inclinad|declinad|en (la )?pared|elevad/i.test(name), rodillas: /rodillas|de rodilla/i.test(name), doblado: /cuervo|\bcrow\b|frog|\brana\b/i.test(name) }
+  return { inclinado: /inclinad|declinad|en (la )?pared|elevad/i.test(name), rodillas: /rodillas|de rodilla/i.test(name), doblado: /cuervo|\bcrow\b|frog|\brana\b/i.test(name), estirados: /brazos (estirados|rectos)|plancha alta|high plank/i.test(name) }
 }
 
 const FRENTE = 'Recarga el teléfono en la pared o en una botella, frente a ti, a unos 2 metros.'
@@ -62,7 +63,7 @@ export const COMO: Record<Patron, string> = {
   elevacion: 'Teléfono abajo mirando hacia la barra, a unos 2 metros. Cuenta cuando subes las piernas y vuelves abajo.',
   saltos: `${FRENTE} De frente, con brazos y piernas a cuadro.`,
   burpee: `${DE_LADO} O en diagonal, que se te vea de la cabeza a los pies.`,
-  plancha: 'De lado a unos 2 metros, o en el piso frente a tu cabeza a 1 metro. El tiempo solo corre con el cuerpo recto.',
+  plancha: 'De lado a unos 2 metros, o en el piso frente a tu cabeza a 1 metro. Apoyado en los codos, con el cuerpo recto y las rodillas despegadas.',
   lateral: `${FRENTE} Solo cuenta mientras tu cuerpo esté recto, de la cabeza a los pies.`,
   wallsit: `${DE_LADO} Solo cuenta con los muslos paralelos al piso y la espalda en la pared.`,
   colgado: 'Teléfono abajo mirando hacia la barra. Cuenta mientras estés colgado con los brazos estirados.',
@@ -85,10 +86,14 @@ export const CAMARA_GRUPOS: { grupo: string; ejercicios: Ej[] }[] = [
   { grupo: 'Piernas', ejercicios: R('Sentadillas', 'Sentadilla sumo', 'Sentadilla con salto', 'Sentadilla búlgara', 'Desplantes', 'Pistol squat', 'Shrimp squat', 'Puente de glúteo', 'Elevaciones de talones') },
   { grupo: 'Abdomen', ejercicios: R('Crunches', 'Abs con piernas arriba', 'V-ups', 'Elevaciones de piernas colgado', 'Toes to bar', 'Mountain climbers', 'Russian twist') },
   { grupo: 'Cuerpo completo', ejercicios: R('Burpees', 'Jumping jacks') },
-  { grupo: 'Aguantes', ejercicios: S('Plancha', 'Plancha lateral', 'Wall sit', 'Hollow hold', 'L sit', 'Colgarse de la barra') },
+  { grupo: 'Aguantes', ejercicios: S('Plancha', 'Plancha con brazos estirados', 'Plancha lateral', 'Wall sit', 'Hollow hold', 'L sit', 'Colgarse de la barra') },
   { grupo: 'Skills', ejercicios: S('Tuck planche', 'Planche', 'Cuervo', 'Front lever tuck', 'Front lever', 'Back lever tuck', 'Back lever', 'Handstand contra pared', 'Handstand libre', 'Bandera humana') },
 ]
 export const CAMARA: Ej[] = CAMARA_GRUPOS.flatMap(g => g.ejercicios)
+export function comoDe(ej: string, p: Patron): string {
+  if (p === 'plancha' && opcionesDe(ej).estirados) return 'De lado a unos 2 metros, o en el piso frente a tu cabeza a 1 metro. Brazos estirados con las manos abajo de los hombros, cuerpo recto y rodillas despegadas.'
+  return COMO[p]
+}
 export const CAMARA_BASICOS: Ej[] = CAMARA.filter(e => ['Lagartijas', 'Sentadillas', 'Fondos', 'Dominadas', 'Burpees', 'Jumping jacks', 'Plancha', 'Plancha lateral', 'Wall sit'].includes(e.name))
 
 export const AVISOS: Record<Aviso, string> = {
@@ -147,7 +152,7 @@ export type Medida = { visto: boolean; postura: boolean; recto: boolean; ang: nu
 const NADA: Medida = { visto: false, postura: false, recto: false, ang: 180 }
 const TOLERANTE: Patron[] = ['empuje', 'fondo', 'pike', 'hspu', 'remo', 'plancha', 'lateral', 'hollow', 'burpee']
 
-export function medir(p: Patron, f: Cuadro, op: Opciones = {}): Medida {
+export function medir(p: Patron, f: Cuadro, op: Opciones = {}, base?: Base): Medida {
   const { img, mundo } = f
   if (img.length < 29 || mundo.length < 29) return NADA
   const asp = f.aspecto && f.aspecto > 0 ? f.aspecto : 1
@@ -194,9 +199,9 @@ export function medir(p: Patron, f: Cuadro, op: Opciones = {}): Medida {
     const codo = flexion(N.hombro, N.codo, N.muneca)
     const brazosOk = op.doblado || codo === null || codo >= 145
     const horizontal = inclinacion(mundo[N.hombro[s]], mundo[N.cadera[s]]) < 0.6
-    const pies = [...lados(N.tobillo).map(k => img[N.tobillo[k]].y), ...lados(N.rodilla).map(k => img[N.rodilla[k]].y)]
     if (p === 'lever') return { visto: true, postura: alto(N.muneca) < img[N.hombro[s]].y && horizontal, recto: brazosOk, ang: codo ?? 180 }
-    const despegado = pies.length > 0 && Math.max(...pies) < bajo(N.muneca) - 0.03
+    const pie = piso(img, ver)
+    const despegado = pie !== null && (base ? pie < base.pie - 0.12 * base.largo : pie < bajo(N.muneca) - 0.03)
     if (p === 'planche') return { visto: true, postura: img[N.hombro[s]].y < bajo(N.muneca) && despegado && (horizontal || !!op.doblado), recto: brazosOk, ang: codo ?? 180 }
     const q = ver(N.tobillo[s]) ? N.tobillo : null
     return { visto: true, postura: despegado && (q ? inclinacion(mundo[N.hombro[s]], mundo[q[s]]) < 0.5 : horizontal), recto: q ? ang(N.hombro, N.cadera, q, s) >= 150 : true, ang: 180 }
@@ -283,19 +288,54 @@ export function medir(p: Patron, f: Cuadro, op: Opciones = {}): Medida {
   }
   const s = mejor(N.hombro, N.cadera)
   const l = linea(s), t = torso(s)
-  if (l !== null && t !== null) return { visto: true, postura: p === 'plancha' ? t < 0.7 : t < 0.85, recto: l >= 150, ang: l }
-  if (p === 'plancha' && frente && ver(N.nariz) && lados(N.codo).length) {
-    const hombros = medio(N.hombro)
-    return { visto: true, postura: bajo(N.codo) > hombros && img[N.nariz].y >= hombros - 0.3 * ancho, recto: true, ang: 180 }
+  if (p === 'plancha') {
+    const b = mejor(N.hombro, N.codo)
+    const apoyo = (k: 0 | 1) => {
+      const sh = img[N.hombro[k]], el = img[N.codo[k]], wr = img[N.muneca[k]], verMano = ver(N.muneca[k])
+      const vertical = (a: Punto, c: Punto) => (c.y - a.y) / Math.max(1e-6, d2(a, c))
+      if (op.estirados) return verMano && ang(N.hombro, N.codo, N.muneca, k) >= 150 && vertical(sh, wr) >= 0.7
+      const codo = verMano ? ang(N.hombro, N.codo, N.muneca, k) : 90
+      return vertical(sh, el) >= 0.6 && codo >= 50 && codo <= 135
+    }
+    if (l !== null && t !== null && s !== -1) {
+      const rod = ver(N.rodilla[s]) && ver(N.tobillo[s]) ? ang(N.cadera, N.rodilla, N.tobillo, s) : 180
+      return { visto: true, postura: t < 0.7 && b !== -1 && apoyo(b), recto: l >= 150 && rod >= 150, ang: l }
+    }
+    if (frente && ver(N.nariz) && lados(N.codo).length) {
+      const hombros = medio(N.hombro)
+      const brazos = op.estirados ? lados(N.muneca).length > 0 && (flexion(N.hombro, N.codo, N.muneca) ?? 0) >= 150 && medio(N.muneca) > hombros + 0.5 * ancho : bajo(N.codo) > hombros
+      return { visto: true, postura: brazos && img[N.nariz].y >= hombros - 0.3 * ancho, recto: true, ang: 180 }
+    }
+    return NADA
   }
+  if (l !== null && t !== null) return { visto: true, postura: t < 0.85, recto: l >= 150, ang: l }
   return NADA
 }
+
+const PIES = [27, 28, 29, 30, 31, 32]
+function piso(img: Punto[], ver: (i: number) => boolean): number | null {
+  const ys = PIES.filter(i => ver(i)).map(i => img[i].y)
+  return ys.length ? Math.max(...ys) : null
+}
+export function calibrar(c: Conteo, f: Cuadro): Conteo {
+  const v = (i: number) => (f.img[i]?.v ?? 0) >= NORMAL
+  const pie = piso(f.img, v)
+  const asp = f.aspecto && f.aspecto > 0 ? f.aspecto : 1
+  const lado = [0, 1].find(k => v(N.hombro[k]) && v(N.cadera[k]))
+  if (pie === null || lado === undefined) return c
+  const sh = f.img[N.hombro[lado]], hp = f.img[N.cadera[lado]]
+  const largo = Math.hypot((sh.x - hp.x) * asp, sh.y - hp.y)
+  const manos = [15, 16].filter(v).map(i => f.img[i].y)
+  return largo > 0.02 ? { ...c, base: { pie, mano: manos.length ? Math.max(...manos) : pie, largo } } : c
+}
+export const SKILLS: Patron[] = ['planche', 'lever', 'bandera', 'parado']
+export const esSkill = (p: Patron) => SKILLS.includes(p)
 
 export type Conteo = {
   ej: string; patron: Patron; reps: number; segundos: number; fase: 'nada' | 'arriba' | 'abajo'
   suave: number | null; prof: number; profMax: number; ultimaProf: number; bajando: boolean; rTop: number; malDesde: number; hist: [number, number][]; escS: number
   inicio: number; ok: boolean; acumulado: number; ultimo: number | null; aviso: Aviso | null; visto: boolean; min: number; abajo: number
-  op: Opciones; canal: number; polo: 1 | -1; sc: number[]; hc: [number, number[]][]; ref: number[]; refT: number; mov: number
+  op: Opciones; canal: number; polo: 1 | -1; sc: number[]; hc: [number, number[]][]; ref: number[]; refT: number; mov: number; base?: Base
 }
 
 export function nuevoConteo(ej: string, kind?: Tipo): Conteo {
@@ -425,7 +465,7 @@ export function pasoMedida(c: Conteo, m: Medida | null, t: number): Conteo {
 }
 
 export function paso(c: Conteo, f: Cuadro | null, t: number): Conteo {
-  return pasoMedida(c, f ? medir(c.patron, f, c.op) : null, t)
+  return pasoMedida(c, f ? medir(c.patron, f, c.op, c.base) : null, t)
 }
 
 export const valorDe = (c: Conteo) => esAguante(c.patron) ? c.segundos : c.reps

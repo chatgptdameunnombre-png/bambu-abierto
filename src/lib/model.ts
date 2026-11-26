@@ -98,6 +98,7 @@ export type Settings = {
   widget?: { llave: string }
   avisos?: { hora: string }
   modo?: 'competir'
+  legal?: { version: string; fecha: string; salud: boolean }
   walkDaily?: boolean
   cardioSetup?: boolean
   rutina2611?: boolean
@@ -475,6 +476,7 @@ export function cleanSettings(value: unknown): Settings {
     widget: cleanCandado(v.widget),
     avisos: cleanAvisos(v.avisos),
     modo: v.modo === 'competir' ? 'competir' as const : undefined,
+    legal: isRecord(v.legal) && typeof v.legal.version === 'string' && /^\d{4}-\d\d-\d\d$/.test(v.legal.version) && typeof v.legal.fecha === 'string' && v.legal.fecha.length <= 40 ? { version: v.legal.version, fecha: v.legal.fecha, salud: v.legal.salud === true } : undefined,
   }) as Settings
 }
 export function cleanHabitDays(value: unknown): Record<string, string[]> {

@@ -12,4 +12,4 @@ Bambú adaptado por Kiki a partir de la app de Gael. En vivo en **https://tuagen
 | [Historial](historial.md) | Qué se hizo y cuándo. |
 | [Pendientes](pendientes.md) | Lo que falta, incluido el ajedrez que se va a incluir después. |
 
-Lo nuevo frente a la versión original: diseño oscuro tipo Duolingo, cámara que cuenta repeticiones (cualquier ejercicio y variantes), minutos de redes ganados con ejercicio y bloqueo con Atajos del iPhone, duelos de 60 s, Cindy, liga de amigos, aventura con monstruos, resumen semanal, widget y avisos. Las cuentas y los datos usan Firebase en lugar de Supabase.
+Lo nuevo frente a la versión original: diseño oscuro tipo Duolingo, cámara que cuenta repeticiones (cualquier ejercicio y variantes), minutos de redes ganados con ejercicio y bloqueo con Atajos del iPhone, retos de grupo con la cámara, Cindy, liga de amigos, aventura con monstruos, resumen semanal, widget, avisos con Brote y legales listos. Las cuentas y los datos usan Firebase en lugar de Supabase.

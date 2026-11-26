@@ -9,8 +9,8 @@ import { BodyCard } from './Musculos'
 import { resumenSemana, tiempoTexto } from './lib/semana'
 import { semanaCard, shareBlob } from './ShareCard'
 import { mondayOf } from './lib/libre'
-import { marcador } from './lib/duelos'
-import { cargarDuelos } from './Duelos'
+import { marcador } from './lib/retos'
+import { cargarRetos } from './Duelos'
 import { cuenta, cuentaActiva } from './lib/firebase'
 
 function SemanaCard({ data, today }: { data: AppData; today: string }) {
@@ -20,7 +20,7 @@ function SemanaCard({ data, today }: { data: AppData; today: string }) {
     setEstado('Dibujando…')
     try {
       const uid = cuentaActiva ? cuenta.guardada()?.uid : undefined
-      const ds = uid ? await Promise.race([cargarDuelos(uid).catch(() => null), new Promise<null>(r => setTimeout(() => r(null), 4000))]) : null
+      const ds = uid ? await Promise.race([cargarRetos(uid).catch(() => null), new Promise<null>(r => setTimeout(() => r(null), 4000))]) : null
       const m = ds && uid ? marcador(ds, uid, Date.parse(`${mondayOf(today)}T00:00:00`)) : null
       const apodo = data.settings.tablas?.apodo || data.profile.name
       const blob = await semanaCard(s, apodo, m && m.ganados + m.perdidos + m.empates > 0 ? m : undefined)

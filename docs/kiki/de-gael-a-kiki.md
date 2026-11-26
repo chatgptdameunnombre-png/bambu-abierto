@@ -9,7 +9,7 @@ Todo lo que cambió desde la app original de Gael (`GaelProspectlab21/bambu-abie
 | Archivos tocados | 100 (64 nuevos, 36 modificados) |
 | Líneas | más de +19,000 / −1,000 |
 | Publicaciones en vivo | 24, del 24 al 25 de noviembre de 2026 |
-| Pruebas automáticas | 73 grupos (`node checks/features.cjs`) |
+| Pruebas automáticas | 75 grupos (`node checks/features.cjs`) |
 
 ## Punto de partida: la v7 de Gael
 
@@ -40,7 +40,8 @@ App personal de lectura (cronómetro, Biblia por capítulos, Crónica), entrenam
 | 25-nov 19:04 | Duelos de 60 s; pestañas Redes y Duelos; cámara para cualquier ejercicio; resumen semanal; widget y avisos. |
 | 25-nov 19:24 | Ajedrez (bot y en línea) y Cindy. |
 | 25-nov 19:34 | Se quita el ajedrez: queda pendiente para después. |
-| 25-nov noche | Opción "Solo competir con mis amigos" al crear cuenta (en el código; todavía no en la web). |
+| 25-nov noche | Opción "Solo competir con mis amigos" al crear cuenta. |
+| 25-nov noche | Retos de grupo, avisos con Brote, tuck planche y planchas corregidos, legales y carga más rápida. |
 
 ## Cambios por área
 
@@ -75,26 +76,29 @@ App personal de lectura (cronómetro, Biblia por capítulos, Crónica), entrenam
 - Cuenta con **ángulos en 3D** suavizados y un **medidor de profundidad**: media repetición vale cero y te dice "Llegaste al 70%". Voz en español para cada número y cada aviso.
 - Familias con postura propia (lagartijas, fondos, sentadillas, dominadas, pike, handstand push up, remo, elevaciones, saltos, burpees, plancha, lateral, wall sit, colgarse, L sit, handstand, hollow, planche, cuervo, front y back lever, bandera) y variantes por nombre (diamante, arqueras, abiertas, inclinadas, en rodillas…).
 - **Cualquier otro ejercicio**: un modo general aprende tu recorrido en la primera repetición; los aguantes sin postura propia cuentan solo mientras estés quieto.
-- Récords, retos, tablas, peleas y duelos **solo cuentan con cámara**.
+- Récords, retos, tablas y peleas **solo cuentan con cámara**.
 
 ### Minutos de redes y bloqueo
 - Se ganan con ejercicio **solo en la pestaña Redes** (2 lagartijas = 1 min, 4 sentadillas = 1 min, 1 dominada = 2 min, 20 s de plancha = 1 min; variantes difíciles valen el doble).
 - Bloqueo real con **Atajos del iPhone**: el atajo lee un "pase" en la nube con una llave secreta; si no hay tiempo, abre Bambú para gastar minutos o ganarlos.
 
-### Duelos, Cindy y resumen
-- **Duelos de 60 s** con la cámara: cuenta 3, 2, 1 al verte; el amigo tiene 48 horas para superarte.
+### Retos, Cindy y resumen
+- **Retos de 2 a 10 personas** con la cámara: más repeticiones en 60 s, aguantar más (hasta perder la postura) o Cindy; 48 horas para superarte, tabla de lugares y revancha.
 - **Cindy**: 20 minutos de 5 dominadas, 10 lagartijas y 15 sentadillas; la cámara cambia sola de ejercicio y guarda rondas + repeticiones.
 - **Tu semana** en el Jardín con imagen vertical para compartir.
 
 ### Widget y avisos
 - **Widget** con la app gratis Scriptable, que lee un documento público por llave.
-- **Avisos push** sin Supabase: recordatorio a tu hora, racha en riesgo, duelo recibido y resultado. Los manda un servidor propio cada 5 minutos.
+- **Avisos push** sin Supabase, con la voz de Brote: recordatorio a tu hora, racha en riesgo, te retaron, resultado y "te pasaron en la liga". Los manda un servidor propio cada 5 minutos.
+
+### Legales
+- Aviso de privacidad integral, términos y consentimiento con casillas, listos para el lanzamiento real (falta llenar los datos del responsable).
 
 ## Cómo se hizo
 
 1. **Entender → plan → OK de Kiki → ejecutar sin interrumpir.** Cada tanda empezó con un plan corto; lo visual se enseñó primero en local.
-2. **Pruebas automáticas** de la lógica: conteo de la cámara con secuencias de ángulos, minutos, duelos, Cindy, semana y una prueba de punta a punta contra una **nube de prueba** (`checks/nube-prueba.cjs`) que imita Auth y Firestore con las mismas reglas.
-3. **Pruebas de pantalla** con Playwright en un teléfono simulado, con **cámara falsa**, y con dos cuentas a la vez para duelos.
+2. **Pruebas automáticas** de la lógica: conteo de la cámara con secuencias de ángulos, minutos, retos, Cindy, semana y una prueba de punta a punta contra una **nube de prueba** (`checks/nube-prueba.cjs`) que imita Auth y Firestore con las mismas reglas.
+3. **Pruebas de pantalla** con Playwright en un teléfono simulado, con **cámara falsa**, y con varias cuentas a la vez para retos.
 4. **Build de producción bajo su CSP** antes de publicar y la misma revisión **en vivo** después: 0 bloqueos, cámara, worker y service worker.
 5. **Prueba de Kiki en su iPhone** y ajustes con lo que reportó (lagartijas que pedían alejarse, plancha que no contaba, minutos que no debían salir de un récord).
 6. **Revisión de seguridad** con arreglos publicados el mismo día.
@@ -107,7 +111,9 @@ App personal de lectura (cronómetro, Biblia por capítulos, Crónica), entrenam
 - **Modo general**: elegir la articulación que más se mueve, aprender su rango y contar cada regreso al inicio con margen (20% y 80%) para no contar temblores.
 - **React en desarrollo monta dos veces**: la cámara se quedaba en "Preparando" hasta que la bandera de vida se reinició en el efecto.
 - **Push web sin librerías**: el cifrado del estándar (RFC 8291) se implementó en Python y se valida contra el ejemplo oficial cada vez que corre. En iPhone solo funciona con la app instalada en la pantalla de inicio.
-- **Firestore por REST** basta para una PWA: con `hasOnly`, tipos y topes en las reglas, cada cuenta solo toca lo suyo; cosas como "contestar un duelo una sola vez" se logran solo con reglas.
+- **Firestore por REST** basta para una PWA: con `hasOnly`, tipos y topes en las reglas, cada cuenta solo toca lo suyo; cosas como "cada quien marca su reto una sola vez" se logran solo con reglas.
+- **Aguantes de skills**: comparar los pies contra el piso medido al empezar evita que una rodilla doblada parezca "pies arriba"; los brazos rectos no bastan para saber que sigues arriba.
+- **Cargar pantallas por partes** con `lazy` bajó el archivo principal a la mitad sin cambiar nada visible.
 - **La CSP va solo en el build**: el servidor de desarrollo de Vite usa scripts en línea.
 - **Decisiones de producto que cambiaron el diseño**: los minutos solo se ganan en Redes; las competencias son solo con cámara; el ajedrez se quitó para hacerlo después con otro enfoque.
 

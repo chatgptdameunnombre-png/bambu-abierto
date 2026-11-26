@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
-import { AVISOS, AVISOS_AGUANTE, COMO, esAguante, nuevoConteo, paso, valorDe, type Aviso, type Conteo, type Cuadro, type Tipo } from './lib/conteo'
+import { AVISOS, AVISOS_AGUANTE, calibrar, comoDe, esAguante, esSkill, nuevoConteo, paso, valorDe, type Aviso, type Conteo, type Cuadro, type Tipo } from './lib/conteo'
 import { minutosDe, tasaTexto } from './lib/minutos'
 import { useWakeLock } from './ui'
 import { pasoReloj, type Reloj } from './lib/duelos'
 import { mmss, siguiente, totalWod, wodDe } from './lib/wod'
+import { SE_ACABA } from './lib/retos'
 import { haptic } from './lib/haptic'
 
 type Fase = 'intro' | 'cargando' | 'corriendo' | 'pausa' | 'error'
 type Landmarker = { detectForVideo: (v: HTMLVideoElement, t: number) => { landmarks: { x: number; y: number; z: number; visibility?: number }[][]; worldLandmarks: { x: number; y: number; z: number; visibility?: number }[][] }; close: () => void }
 
+const PREP = 5
 const HUESOS: [number, number][] = [[11, 12], [11, 13], [13, 15], [12, 14], [14, 16], [11, 23], [12, 24], [23, 24], [23, 25], [25, 27], [24, 26], [26, 28]]
 
 let motor: Promise<Landmarker> | null = null
@@ -49,7 +51,7 @@ function errorTexto(e: unknown): string {
   return 'No pude arrancar la cámara. Cierra otras apps que la usen y vuelve a intentar.'
 }
 
-export default function CamaraReps({ ej, kind, onGuardar, onCerrar, limite: limiteProp, meta, redes = false }: { ej: string; kind?: Tipo; onGuardar: (valor: number) => void; onCerrar: () => void; limite?: number; meta?: number; redes?: boolean }) {
+export default function CamaraReps({ ej, kind, onGuardar, onCerrar, limite: limiteProp, meta, redes = false, hastaFallar = false }: { ej: string; kind?: Tipo; onGuardar: (valor: number) => void; onCerrar: () => void; limite?: number; meta?: number; redes?: boolean; hastaFallar?: boolean }) {
   const wod = wodDe(ej)
   const limite = limiteProp ?? wod?.seg
   const circ = useRef({ i: 0, rondas: 0 })
@@ -58,6 +60,10 @@ export default function CamaraReps({ ej, kind, onGuardar, onCerrar, limite: limi
   const tipo = wod ? 'reps' as const : kind
   const patron = nuevoConteo(ej, kind).patron
   const aguante = esAguante(patron)
+  const skill = esSkill(patron)
+  const conPrep = aguante && !limiteProp && !wod
+  const prep = useRef<{ fase: 'espera' | 'cuenta' | 'listo'; t: number }>({ fase: 'espera', t: 0 })
+  const [prepN, setPrepN] = useState<number | null>(null)
   const [fase, setFase] = useState<Fase>('intro')
   const [error, setError] = useState('')
   const [frente, setFrente] = useState(true)
@@ -74,13 +80,13 @@ export default function CamaraReps({ ej, kind, onGuardar, onCerrar, limite: limi
   const duelo = useRef<Reloj>({ fase: 'espera', t: 0 })
   const [reloj, setReloj] = useState<number | null>(null)
   const guardado = useRef(false)
-  const fin = useRef(() => undefined as void)
-  fin.current = () => {
+  const fin = useRef((_mensaje?: string) => undefined as void)
+  fin.current = (mensaje?: string) => {
     if (guardado.current) return
     guardado.current = true
     duelo.current = { fase: 'fin', t: performance.now() }
     parar.current()
-    decir('¡Tiempo!')
+    decir(mensaje ?? '¡Tiempo!')
     onGuardar(wod ? totalWod(wod, circ.current.rondas, circ.current.i, valorDe(conteo.current)) : valorDe(conteo.current))
   }
   useWakeLock(fase === 'corriendo' || fase === 'cargando')
@@ -134,17 +140,19 @@ export default function CamaraReps({ ej, kind, onGuardar, onCerrar, limite: limi
       setFase('error')
       return
     }
-    conteo.current = { ...nuevoConteo(ejDe(), tipo), reps: conteo.current.reps, segundos: conteo.current.segundos, acumulado: conteo.current.acumulado }
+    conteo.current = { ...nuevoConteo(ejDe(), tipo), reps: conteo.current.reps, segundos: conteo.current.segundos, acumulado: conteo.current.acumulado, base: conteo.current.base }
+    if (conPrep) { prep.current = conteo.current.acumulado > 0 ? { fase: 'listo', t: 0 } : { fase: 'espera', t: 0 }; setPrepN(null) }
     if (limite && duelo.current.fase !== 'duelo') { duelo.current = { fase: 'espera', t: 0 }; circ.current = { i: 0, rondas: 0 }; setVuelta(circ.current); conteo.current = nuevoConteo(ejDe(), tipo); setReloj(null) }
     setFase('corriendo')
     const color = getComputedStyle(document.documentElement).getPropertyValue('--d-green').trim() || 'lime'
-    let tVideo = -1, dicho = 0, avisoDicho = 0, ultimoAviso: Aviso | null = null, intervalo = 80, ultimoVisto = performance.now(), mostrado: number | null = null
+    let tVideo = -1, dicho = 0, avisoDicho = 0, ultimoAviso: Aviso | null = null, intervalo = 80, ultimoVisto = performance.now(), mostrado: number | null = null, prepMostrado: number | null = null
     const ciclo = () => {
       reloj = setTimeout(ciclo, intervalo)
       if (limite) {
         if (guardado.current) return
         const p = pasoReloj(duelo.current, performance.now(), conteo.current.visto, limite)
         if (p.evento === 'acaba') { fin.current(); return }
+        if (hastaFallar && p.r.fase === 'duelo' && conteo.current.segundos >= 1 && conteo.current.malDesde && Date.now() - conteo.current.malDesde >= SE_ACABA) { fin.current(); return }
         duelo.current = p.r
         if (p.evento === 'empieza') {
           circ.current = { i: 0, rondas: 0 }
@@ -171,10 +179,31 @@ export default function CamaraReps({ ej, kind, onGuardar, onCerrar, limite: limi
       const img = r.landmarks[0], mundo = r.worldLandmarks[0]
       const cuadro: Cuadro | null = img && mundo ? { img: img.map(p => ({ x: p.x, y: p.y, z: p.z, v: p.visibility ?? 0 })), mundo: mundo.map(p => ({ x: p.x, y: p.y, z: p.z, v: p.visibility ?? 0 })), aspecto: v.videoWidth / (v.videoHeight || 1) } : null
       const antes = conteo.current
-      const nuevo = paso(antes, cuadro, Date.now())
+      let nuevo = paso(antes, cuadro, Date.now())
       conteo.current = nuevo
       if (img) ultimoVisto = ahora
-      const contando = !limite || duelo.current.fase === 'duelo'
+      if (conPrep && prep.current.fase !== 'listo') {
+        const t0 = performance.now()
+        if (prep.current.fase === 'espera' && nuevo.visto) { prep.current = { fase: 'cuenta', t: t0 }; decir(skill ? 'Acomódate con las manos y los pies en el piso' : 'Acomódate') }
+        if (prep.current.fase === 'cuenta') {
+          const n = PREP - Math.floor((t0 - prep.current.t) / 1000)
+          if (n <= 0) {
+            prep.current = { fase: 'listo', t: t0 }
+            const limpio = nuevoConteo(ej, kind)
+            conteo.current = skill && cuadro ? calibrar(limpio, cuadro) : limpio
+            setPrepN(null)
+            setVista(x => ({ ...x, valor: 0, aviso: null, prof: 0 }))
+            haptic(30)
+            decir(skill ? '¡Arriba!' : '¡Ya!')
+            return
+          }
+          if (n !== prepMostrado) { prepMostrado = n; setPrepN(n); if (n <= 3) decir(String(n)) }
+        }
+        conteo.current = { ...nuevo, acumulado: 0, segundos: 0 }
+        nuevo = conteo.current
+      }
+      if (conPrep && skill && prep.current.fase === 'listo' && nuevo.segundos >= 1 && nuevo.malDesde && Date.now() - nuevo.malDesde >= 1500) { fin.current(`Bajaste. ${nuevo.segundos} segundos.`); return }
+      const contando = (!limite || duelo.current.fase === 'duelo') && (!conPrep || prep.current.fase === 'listo')
       const ocioso = ahora - ultimoVisto
       intervalo = Math.max(ocioso > 3000 ? 300 : 80, costo * 2.5)
       if (ocioso > 45000) {
@@ -213,7 +242,7 @@ export default function CamaraReps({ ej, kind, onGuardar, onCerrar, limite: limi
         else if (!aguante) decir(String(valor))
         else if (valor % 10 === 0 && valor !== dicho) { dicho = valor; decir(`${valor} segundos`) }
       }
-      if (duelo.current.fase !== 'cuenta' && nuevo.aviso && nuevo.aviso !== ultimoAviso && ahora - avisoDicho > 2500) { avisoDicho = ahora; decir(texto(nuevo.aviso, nuevo.ultimaProf)) }
+      if (duelo.current.fase !== 'cuenta' && (!conPrep || prep.current.fase === 'listo') && nuevo.aviso && nuevo.aviso !== ultimoAviso && ahora - avisoDicho > 2500) { avisoDicho = ahora; decir(texto(nuevo.aviso, nuevo.ultimaProf)) }
       ultimoAviso = nuevo.aviso
       const prof = Math.round(nuevo.prof * 20) / 20
       if (valor !== prev || nuevo.aviso !== antes.aviso || nuevo.visto !== antes.visto || prof !== Math.round(antes.prof * 20) / 20) setVista({ valor, aviso: nuevo.aviso, visto: nuevo.visto, prof, ultima: nuevo.ultimaProf })
@@ -253,19 +282,23 @@ export default function CamaraReps({ ej, kind, onGuardar, onCerrar, limite: limi
     <canvas ref={lienzo} className={frente ? 'espejo' : ''} />
     <header className="d-cam-top">
       <button type="button" className="d-x" onClick={cerrar} aria-label="Cerrar">×</button>
-      <span className="d-libre-tag">{wod ? enDuelo ? `${wod.nombre} · ${mmss(reloj ?? 0)}` : `${wod.nombre} · ${Math.round((limite ?? 0) / 60)} min` : limite ? enDuelo ? `Duelo · ${reloj} s` : `Duelo de ${limite} s` : 'Con cámara'}</span>
+      <span className="d-libre-tag">{wod ? enDuelo ? `${wod.nombre} · ${mmss(reloj ?? 0)}` : `${wod.nombre} · ${Math.round((limite ?? 0) / 60)} min` : hastaFallar ? 'Reto · aguantar más' : limite ? enDuelo ? `Reto · ${reloj} s` : `Reto de ${limite} s` : 'Con cámara'}</span>
       {fase === 'corriendo' && (!limite || reloj === null) ? <button type="button" className="d-link" onClick={cambiar}>Voltear</button> : <span />}
     </header>
     {fase === 'intro' && <div className="d-cam-intro">
-      <h2>{wod ? wod.nombre : limite ? `${ej} · ${limite} segundos` : ej}</h2>
-      <p>{wod ? wod.como : COMO[patron]}</p>
+      <h2>{wod ? wod.nombre : hastaFallar ? `${ej} · aguantar más` : limite ? `${ej} · ${limite} segundos` : ej}</h2>
+      <p>{wod ? wod.como : comoDe(ej, patron)}</p>
       {redes && <p className="d-cam-tasa">{tasaTexto(ej)} de redes</p>}
-      {wod ? <ul>{wod.reglas.map(r => <li key={r}>{r}</li>)}</ul> : limite ? <ul>
+      {wod ? <ul>{wod.reglas.map(r => <li key={r}>{r}</li>)}</ul> : hastaFallar ? <ul>
+        <li>Cuando te vea cuento 3, 2, 1 y empieza a correr el tiempo.</li>
+        <li>Solo cuenta con la postura correcta. Si la pierdes 3 segundos, se acaba.</li>
+        <li>Gana quien aguante más.</li>
+      </ul> : limite ? <ul>
         <li>Cuando te vea cuento 3, 2, 1 y corren los {limite} segundos.</li>
         <li>Media repetición vale cero. Gana quien haga más.</li>
-        <li>Si sales de Bambú o cierras, el duelo termina con lo que llevas.</li>
+        <li>Si sales de Bambú o cierras, el reto termina con lo que llevas.</li>
       </ul> : <ul>
-        <li>{patron === 'generico' ? 'Haz la primera repetición completa: con ella aprendo tu recorrido.' : patron === 'quieto' ? 'Aquí reviso que estés completo en cámara y sin moverte.' : aguante ? 'El tiempo solo corre con la postura correcta.' : 'Mide qué tan abajo llegas: media repetición vale cero.'}</li>
+        <li>{patron === 'generico' ? 'Haz la primera repetición completa: con ella aprendo tu recorrido.' : skill ? 'Te doy 5 segundos para acomodarte con las manos y los pies en el piso. Al oír "¡Arriba!" sube: el tiempo corre solo con los pies despegados y, si bajas, se guarda.' : patron === 'quieto' ? 'Te doy 5 segundos para acomodarte. Luego reviso que estés completo en cámara y sin moverte.' : aguante ? 'Te doy 5 segundos para acomodarte. El tiempo solo corre con la postura correcta.' : 'Mide qué tan abajo llegas: media repetición vale cero.'}</li>
         <li>Te digo cada número en voz alta. No toques el teléfono.</li>
         <li>El video no sale de tu teléfono.</li>
       </ul>}
@@ -283,9 +316,10 @@ export default function CamaraReps({ ej, kind, onGuardar, onCerrar, limite: limi
     {fase === 'corriendo' && <>
       <div className={`d-cam-gauge ${vista.prof >= 1 ? 'full' : ''}`} aria-hidden="true"><i style={{ height: `${Math.round(vista.prof * 100)}%` }} /><b>{aguante ? (vista.prof >= 1 ? 'Bien' : 'Pausa') : `${Math.round(vista.prof * 100)}%`}</b></div>
       {limite && reloj !== null && reloj < 0 && <div className="d-cam-cuenta" aria-live="assertive">{-reloj}</div>}
-      <div className="d-cam-count" aria-live="polite"><strong>{wod && enDuelo ? `${valor}/${wod.partes[vuelta.i].reps}` : `${valor}${unidad}`}</strong><small>{wod && enDuelo ? `Ronda ${vuelta.rondas + 1} · ${wod.partes[vuelta.i].ej} · ${mmss(reloj ?? 0)}` : enDuelo ? `Quedan ${reloj} s` : limite ? 'Ponte en posición' : meta ? valor >= meta ? `¡Meta cumplida! +${min} min` : `Meta ${meta}${unidad} · faltan ${meta - valor}${unidad}` : redes ? min > 0 ? `+${min} min de redes` : tasaTexto(ej) : aguante ? 'segundos' : 'repeticiones'}</small></div>
+      {prepN !== null && <div className="d-cam-cuenta" aria-live="assertive">{prepN}</div>}
+      <div className="d-cam-count" aria-live="polite"><strong>{wod && enDuelo ? `${valor}/${wod.partes[vuelta.i].reps}` : `${valor}${unidad}`}</strong><small>{wod && enDuelo ? `Ronda ${vuelta.rondas + 1} · ${wod.partes[vuelta.i].ej} · ${mmss(reloj ?? 0)}` : hastaFallar && enDuelo ? 'Aguanta. Se acaba si pierdes la postura.' : enDuelo ? `Quedan ${reloj} s` : limite ? 'Ponte en posición' : meta ? valor >= meta ? `¡Meta cumplida! +${min} min` : `Meta ${meta}${unidad} · faltan ${meta - valor}${unidad}` : redes ? min > 0 ? `+${min} min de redes` : tasaTexto(ej) : aguante ? 'segundos' : 'repeticiones'}</small></div>
       <div className="d-cam-foot">
-        <p className={`d-cam-aviso ${vista.aviso ? 'on' : ''}`}>{vista.aviso && (!limite || reloj === null || reloj > 0) ? texto(vista.aviso, vista.ultima) : limite && reloj !== null && reloj < 0 ? '¡Prepárate!' : vista.visto ? '¡Así! Sigue.' : 'Buscándote…'}</p>
+        <p className={`d-cam-aviso ${vista.aviso && prepN === null ? 'on' : ''}`}>{prepN !== null ? (skill ? 'Acomódate. Al terminar la cuenta, ¡arriba!' : 'Acomódate en posición.') : vista.aviso && (!limite || reloj === null || reloj > 0) ? texto(vista.aviso, vista.ultima) : limite && reloj !== null && reloj < 0 ? '¡Prepárate!' : vista.visto ? '¡Así! Sigue.' : 'Buscándote…'}</p>
         <button type="button" className="d-btn green wide" onClick={terminar}>{limite ? enDuelo ? 'Terminar ya' : 'Salir' : vista.valor > 0 ? `Guardar ${vista.valor}${unidad}` : 'Salir'}</button>
       </div>
     </>}

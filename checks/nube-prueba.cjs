@@ -47,17 +47,29 @@ function allowed(uid, name, isDelete, w) {
     const keys = w.updateMask ? w.updateMask.fieldPaths : Object.keys(w.update.fields)
     return keys.every(k => ['sub', 'hora', 'zona', 'ultimo', 'hecho', 'racha'].includes(k)) && (!w.updateMask || docs.has(name))
   }
-  if (/documents\/bambu_duelos\/[A-Za-z0-9_-]{8,200}$/.test(name)) {
+  if (/documents\/bambu_retos\/[A-Za-z0-9_-]{8,300}$/.test(name)) {
     const prev = docs.get(name)
-    if (isDelete) return !!prev && (val(prev.fields.de) === uid || val(prev.fields.para) === uid)
+    const lista = x => (x?.arrayValue?.values || []).map(v => v.stringValue)
+    const mapa = x => Object.fromEntries(Object.entries(x?.mapValue?.fields || {}).map(([k, v]) => [k, Number(v.integerValue)]))
+    const marcaOk = v => Number.isInteger(v) && v >= 0 && v <= 2000
+    if (isDelete) return !!prev && val(prev.fields.de) === uid
     const f = w.update.fields
-    const reps = x => Number.isInteger(val(x)) && val(x) >= 0 && val(x) <= 300
-    if (w.updateMask) {
-      const keys = w.updateMask.fieldPaths
-      return !!prev && val(prev.fields.para) === uid && val(prev.fields.estado) === 'abierto' && keys.every(k => ['paraReps', 'estado'].includes(k)) && val(f.estado) === 'listo' && reps(f.paraReps)
+    if (!w.updateMask) {
+      const ps = lista(f.participantes), m = mapa(f.marcas)
+      return !prev && val(f.de) === uid && ps.includes(uid) && ps.length >= 2 && ps.length <= 10 && new Set(ps).size === ps.length && ['reps', 'aguante', 'cindy'].includes(val(f.tipo)) && Object.keys(m).length === 1 && marcaOk(m[uid]) && Object.keys(f).every(k => ['de', 'participantes', 'tipo', 'ejercicio', 'marcas'].includes(k))
     }
-    const dir = [...docs.keys()].some(k => k.endsWith(`/bambu_directorio/${val(f.para)}`))
-    return !prev && val(f.de) === uid && typeof val(f.para) === 'string' && val(f.para) !== uid && dir && Object.keys(f).every(k => ['de', 'para', 'ejercicio', 'deReps', 'estado'].includes(k)) && val(f.estado) === 'abierto' && reps(f.deReps) && ['Lagartijas', 'Sentadillas', 'Fondos', 'Dominadas', 'Burpees', 'Jumping jacks'].includes(val(f.ejercicio))
+    if (!prev || !lista(prev.fields.participantes).includes(uid)) return false
+    const antes = mapa(prev.fields.marcas), despues = mapa(f.marcas), keys = w.updateMask.fieldPaths.join(',')
+    if (keys === 'marcas') {
+      if (uid in antes || prev.s / 1000 + 48 * 3600 * 1000 < Date.now()) return false
+      const nuevas = Object.keys(despues).filter(k => !(k in antes))
+      return nuevas.length === 1 && nuevas[0] === uid && marcaOk(despues[uid]) && Object.keys(antes).every(k => despues[k] === antes[k])
+    }
+    if (keys === 'participantes,marcas') {
+      const ps = lista(f.participantes)
+      return JSON.stringify(ps) === JSON.stringify(lista(prev.fields.participantes).filter(x => x !== uid)) && !(uid in despues) && Object.keys(antes).filter(k => k !== uid).every(k => despues[k] === antes[k]) && Object.keys(despues).length === Object.keys(antes).filter(k => k !== uid).length
+    }
+    return false
   }
   const sol = /documents\/bambu_solicitudes\/([^/_]+)__([^/]+)$/.exec(name)
   if (sol) return isDelete ? sol[1] === uid || sol[2] === uid : sol[1] === uid
@@ -133,6 +145,7 @@ const server = http.createServer((req, res) => {
       for (const w of writes) {
         if (w.delete) { docs.delete(w.delete); continue }
         if (w.currentDocument?.exists === true && !docs.has(w.update.name)) return fail(res, 404, 'NOT_FOUND')
+        if (w.currentDocument?.updateTime && (!docs.has(w.update.name) || ts(docs.get(w.update.name).s) !== w.currentDocument.updateTime)) return fail(res, 409, 'FAILED_PRECONDITION')
         if (w.currentDocument?.exists === false && docs.has(w.update.name)) return fail(res, 409, 'ALREADY_EXISTS')
         const fields = w.updateMask ? { ...docs.get(w.update.name).fields, ...w.update.fields } : { ...w.update.fields }
         for (const t of w.updateTransforms || []) if (t.setToServerValue === 'REQUEST_TIME') fields[t.fieldPath] = { timestampValue: ts(s) }
@@ -150,9 +163,10 @@ const server = http.createServer((req, res) => {
       const f = q.where?.fieldFilter
       if (f && f.op === 'GREATER_THAN') list = list.filter(d => d.fields[f.field.fieldPath] && micros(d.fields[f.field.fieldPath].timestampValue) > micros(f.value.timestampValue))
       if (f && f.op === 'EQUAL') list = list.filter(d => val(d.fields[f.field.fieldPath]) === val(f.value))
+      if (f && f.op === 'ARRAY_CONTAINS') list = list.filter(d => (d.fields[f.field.fieldPath]?.arrayValue?.values || []).some(v => v.stringValue === val(f.value)))
       if (coll === 'bambu_solicitudes' && !(f && f.op === 'EQUAL' && ['de', 'para'].includes(f.field.fieldPath) && val(f.value) === uid)) return fail(res, 403, 'Missing or insufficient permissions.')
       if (coll === 'bambu_widget' && !(f && f.op === 'EQUAL' && f.field.fieldPath === 'uid' && val(f.value) === uid)) return fail(res, 403, 'Missing or insufficient permissions.')
-      if (coll === 'bambu_duelos' && !(f && f.op === 'EQUAL' && ['de', 'para'].includes(f.field.fieldPath) && val(f.value) === uid)) return fail(res, 403, 'Missing or insufficient permissions.')
+      if (coll === 'bambu_retos' && !(f && f.op === 'ARRAY_CONTAINS' && f.field.fieldPath === 'participantes' && val(f.value) === uid)) return fail(res, 403, 'Missing or insufficient permissions.')
       if (coll === 'bambu_pases' && !(f && f.op === 'EQUAL' && f.field.fieldPath === 'uid' && val(f.value) === uid)) return fail(res, 403, 'Missing or insufficient permissions.')
       if (coll === 'bambu_perfiles' && list.some(d => !canRead(uid, d))) return fail(res, 403, 'Missing or insufficient permissions.')
       if (coll === 'bambu_perfiles') list.sort((a, b) => Number(b.fields.xp?.integerValue || 0) - Number(a.fields.xp?.integerValue || 0))
@@ -164,12 +178,20 @@ const server = http.createServer((req, res) => {
       list = list.slice(0, q.limit || 1000)
       const readTime = ts(now())
       if (!list.length) return send(res, 200, [{ readTime }])
-      return send(res, 200, list.map(d => ({ document: { name: d.name, fields: q.select ? {} : d.fields }, readTime })))
+      return send(res, 200, list.map(d => ({ document: { name: d.name, fields: q.select ? {} : d.fields, updateTime: ts(d.s) }, readTime })))
     }
     const pase = /^\/firestore\/v1\/(.+\/bambu_(?:pases|widget)\/[^/]+)$/.exec(decodeURIComponent(url.pathname))
     if (req.method === 'GET' && pase) {
       const d = docs.get(pase[1])
       return d ? send(res, 200, { name: d.name, fields: d.fields }) : fail(res, 404, 'NOT_FOUND')
+    }
+    const reto = /^\/firestore\/v1\/(.+\/bambu_retos\/[^/]+)$/.exec(decodeURIComponent(url.pathname))
+    if (req.method === 'GET' && reto) {
+      if (!uid) return fail(res, 401, 'UNAUTHENTICATED')
+      const d = docs.get(reto[1])
+      if (!d) return fail(res, 404, 'NOT_FOUND')
+      if (!(d.fields.participantes?.arrayValue?.values || []).some(v => v.stringValue === uid)) return fail(res, 403, 'Missing or insufficient permissions.')
+      return send(res, 200, { name: d.name, fields: d.fields, updateTime: ts(d.s) })
     }
     const one = /^\/firestore\/v1\/(.+\/bambu_perfiles\/[^/]+)$/.exec(decodeURIComponent(url.pathname))
     if (req.method === 'GET' && one) {

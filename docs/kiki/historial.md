@@ -23,6 +23,7 @@ Commits del sitio donde se publicó cada cambio.
 | `a2866ce` (26-nov) | Plancha de frente ya no se mide como si fuera de lado (se pausaba a ratos estando recto); de lado se mide contra la línea del piso aunque el teléfono esté chueco; ya empezada tolera la orilla; avisos que dicen qué falla; tuck planche con la cadera alta, brazo de atrás mal visto y puntas colgando. |
 | `727c0b6` (26-nov) | Handstand toque de hombros a 7 repeticiones (antes "las que salgan"); tu rutina guardada se ajusta sola una vez. |
 | `4c4d3a7` (26-nov) | Handstand push up a 3 repeticiones (antes 5); tu rutina guardada se ajusta sola una vez. |
+| `3e2d7ce` (26-nov) | Se quitan de la rutina el parado de cabeza y el handstand push up (Kiki todavía no los puede hacer); siguen en la lista para agregarlos después y el historial no se borra. |
 
 ## Decisiones de Kiki
 

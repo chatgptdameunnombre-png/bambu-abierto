@@ -1788,7 +1788,13 @@ ok('cámara: medidor de profundidad, media repetición vale cero, ritmo y cuerpo
   const hspu = normalizeData(R.hspuA3(conHspu))
   assert.deepEqual(hspu.settings.train.week[3].items.map(i => [i.name, i.target]), [['Handstand push up con pared', 3], ['Pike push ups', 5]], 'handstand push up pasa de 5 a 3 y lo demás no cambia')
   assert.equal(hspu.settings.hspu2611, true)
-  assert.ok(nueva.filter(i => /^Handstand push up/.test(i.name)).every(i => i.target === 3) && nueva.some(i => /^Handstand push up/.test(i.name)), 'la rutina nueva ya trae 3')
+  const empujeB = normalizeData({ ...EMPTY_DATA, profile: { name: 'K', onboardingComplete: true }, sets: [{ id: 's1', day: '2026-11-24', exercise: 'Parado de cabeza', seconds: 20, at: 1 }], settings: { ...EMPTY_DATA.settings, train: { week: [null, null, null, { title: 'Empuje B', rounds: 3, items: [{ id: 'h', name: 'Handstand push up con pared', kind: 'reps', target: 5 }, { id: 'c', name: 'Parado de cabeza', kind: 'seconds', target: 20 }, { id: 'p', name: 'Pike push ups', kind: 'reps', target: 5 }] }, null, null, null] } } })
+  const sinEllos = normalizeData(R.quitar2611(R.hspuA3(empujeB)))
+  assert.deepEqual(sinEllos.settings.train.week[3].items.map(i => [i.id, i.name]), [['p', 'Pike push ups']], 'quita parado de cabeza y handstand push up de tu rutina y deja lo demás')
+  assert.equal(sinEllos.settings.quitar2611, true)
+  assert.equal(sinEllos.sets.length, 1, 'tu historial de esos ejercicios no se borra')
+  assert.ok(!nueva.some(i => R.QUITADOS_2611.includes(i.name)), 'la rutina nueva ya no los trae')
+  assert.ok(R.CATALOG.some(c => c[0] === 'Parado de cabeza') && R.CATALOG.some(c => c[0] === 'Handstand push up con pared'), 'siguen en la lista por si los quieres agregar después')
 }
 ok('rutina de Kiki: dominadas y chin ups normales a 7, curl de toalla inferior a 20, una sola vez')
 

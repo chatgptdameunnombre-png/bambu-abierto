@@ -9,7 +9,7 @@ Todo lo que cambió desde la app original de Gael (`GaelProspectlab21/bambu-abie
 | Archivos tocados | 100 (64 nuevos, 36 modificados) |
 | Líneas | más de +19,000 / −1,000 |
 | Publicaciones en vivo | 24, del 24 al 25 de noviembre de 2026 |
-| Pruebas automáticas | 75 grupos (`node checks/features.cjs`) |
+| Pruebas automáticas | 76 grupos (`node checks/features.cjs`) |
 
 ## Punto de partida: la v7 de Gael
 
@@ -89,7 +89,7 @@ App personal de lectura (cronómetro, Biblia por capítulos, Crónica), entrenam
 
 ### Widget y avisos
 - **Widget** con la app gratis Scriptable, que lee un documento público por llave.
-- **Avisos push** sin Supabase, con la voz de Brote: recordatorio a tu hora, racha en riesgo, te retaron, resultado y "te pasaron en la liga". Los manda un servidor propio cada 5 minutos.
+- **Avisos push** sin Supabase, con la voz de Brote: recordatorio a tu hora, racha en riesgo, te retaron, resultado y "te pasaron en la liga". Los manda un servidor propio que revisa cada minuto; también avisa de solicitudes de amistad y felicita al ganar.
 
 ### Legales
 - Aviso de privacidad integral, términos y consentimiento con casillas, listos para el lanzamiento real (falta llenar los datos del responsable).

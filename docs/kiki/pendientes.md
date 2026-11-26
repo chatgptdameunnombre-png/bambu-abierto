@@ -18,7 +18,7 @@ Se hizo y se publicó el 25-nov-2026 (commit `abb4090` del sitio) y **ese mismo 
 
 | Pendiente | Quién |
 |---|---|
-| Probar en el iPhone: tuck planche, lagartijas arqueras, Cindy y los aguantes del modo general | Kiki |
+| Probar en el iPhone: plancha en codos y con brazos estirados, tuck planche, lagartijas arqueras, Cindy y los aguantes del modo general | Kiki |
 | Armar el widget con Scriptable | Kiki |
 | Primer reto con Gael (aceptar su solicitud en Amigos) | Kiki |
 | Llenar los datos del responsable para activar los legales (y que un abogado los revise) | Kiki |

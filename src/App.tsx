@@ -16,6 +16,7 @@ import { cuenta, cuentaActiva as cloudConfigured, remoto, type Sesion } from './
 import { logAuth, setAuthLogOwner } from './lib/authLog'
 import { usePublicarPerfil } from './Tablas'
 import { usePublicarEstado } from './Widget'
+import { useFelicitar } from './Felicitar'
 import { OCULTAS_EN_COMPETIR, esCompetir, inicioDe } from './lib/modo'
 import { Consentimiento, aceptar, legalAceptado, mostrarLegal } from './Legal'
 import { AMIGO_KEY, useAmigosNuevos } from './amigosNuevos'
@@ -276,6 +277,7 @@ export default function App() {
   const userId = session?.uid
   usePublicarPerfil(data, cloudConfigured && cloudReady ? userId : undefined)
   usePublicarEstado(data, cloudConfigured && cloudReady ? userId : undefined)
+  useFelicitar(cloudConfigured && cloudReady && data.settings.tablas ? userId : undefined)
   useEffect(() => {
     if (ready && cloudReady && data.profile.onboardingComplete && !data.settings.rutina2611) commit(d => d.settings.rutina2611 ? d : ajustarRutina2611(d))
     if (ready && cloudReady && data.settings.rondas2611) commit(d => d.settings.rondas2611 ? deshacerRondas2611(d) : d)

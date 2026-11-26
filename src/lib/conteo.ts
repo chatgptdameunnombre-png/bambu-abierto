@@ -299,12 +299,20 @@ export function medir(p: Patron, f: Cuadro, op: Opciones = {}, base?: Base): Med
     }
     if (l !== null && t !== null && s !== -1) {
       const rod = ver(N.rodilla[s]) && ver(N.tobillo[s]) ? ang(N.cadera, N.rodilla, N.tobillo, s) : 180
-      return { visto: true, postura: t < 0.7 && b !== -1 && apoyo(b), recto: l >= 150 && rod >= 150, ang: l }
+      const y = (i: number) => mundo[i].y
+      const piso = b !== -1 ? y(op.estirados ? N.muneca[b] : N.codo[b]) : 0
+      const h = b !== -1 ? piso - y(N.hombro[b]) : 0
+      const cadera = h > 0 && y(N.cadera[s]) <= piso - 0.45 * h
+      const rodillas = !(ver(N.rodilla[s]) && ver(N.tobillo[s])) || y(N.rodilla[s]) <= y(N.tobillo[s]) - 0.08 * h
+      return { visto: true, postura: t < 0.7 && b !== -1 && apoyo(b), recto: l >= 150 && rod >= 150 && cadera && rodillas, ang: l }
     }
     if (frente && ver(N.nariz) && lados(N.codo).length) {
       const hombros = medio(N.hombro)
-      const brazos = op.estirados ? lados(N.muneca).length > 0 && (flexion(N.hombro, N.codo, N.muneca) ?? 0) >= 150 && medio(N.muneca) > hombros + 0.5 * ancho : bajo(N.codo) > hombros
-      return { visto: true, postura: brazos && img[N.nariz].y >= hombros - 0.3 * ancho, recto: true, ang: 180 }
+      const manos = lados(N.muneca).length > 0
+      const brazos = op.estirados ? manos && (flexion(N.hombro, N.codo, N.muneca) ?? 0) >= 150 && medio(N.muneca) > hombros + 0.5 * ancho : bajo(N.codo) > hombros && (!manos || bajo(N.muneca) - medio(N.codo) <= 0.4 * ancho)
+      const cerca = (g: Par, k: number) => !lados(g).length || medio(g) <= hombros + k * ancho
+      const acostado = cerca(N.cadera, 1) && cerca(N.rodilla, 1.6) && (t === null || t < 0.85)
+      return { visto: true, postura: brazos && acostado && img[N.nariz].y >= hombros - 0.3 * ancho, recto: true, ang: 180 }
     }
     return NADA
   }

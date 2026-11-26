@@ -1611,6 +1611,22 @@ ok('datos de antes: se suben sin duplicar ni pisar lo de la cuenta, y conservan 
   const alta = forma(P(0.3, 0.5), P(0.3, 0.62), P(0.3, 0.75), P(0.6, 0.58), P(0.75, 0.64), P(0.9, 0.7))
   assert.ok(C.medir('plancha', alta, C.opcionesDe('Plancha con brazos estirados')).postura, 'plancha con brazos estirados cuenta')
   assert.equal(C.medir('plancha', codos, C.opcionesDe('Plancha con brazos estirados')).postura, false, 'en codos no vale como brazos estirados')
+  const vale = (m) => m.visto && m.postura && m.recto
+  const esfinge = forma(P(0.3, 0.6), P(0.3, 0.75), P(0.45, 0.76), P(0.6, 0.72), P(0.75, 0.74), P(0.9, 0.75))
+  assert.equal(vale(C.medir('plancha', esfinge, C.opcionesDe('Plancha'))), false, 'con la cadera en el piso no cuenta')
+  const hincado = forma(P(0.3, 0.6), P(0.3, 0.75), P(0.45, 0.75), P(0.6, 0.68), P(0.8, 0.745), P(0.97, 0.73))
+  assert.equal(vale(C.medir('plancha', hincado, C.opcionesDe('Plancha'))), false, 'apoyado en las rodillas no cuenta aunque el muslo quede casi recto')
+  const altaHincado = forma(P(0.3, 0.5), P(0.3, 0.62), P(0.3, 0.75), P(0.6, 0.62), P(0.78, 0.745), P(0.95, 0.72))
+  assert.equal(vale(C.medir('plancha', altaHincado, C.opcionesDe('Plancha con brazos estirados'))), false, 'brazos estirados con las rodillas en el piso no cuenta')
+  const caida = forma(P(0.3, 0.5), P(0.3, 0.62), P(0.3, 0.75), P(0.6, 0.71), P(0.75, 0.72), P(0.9, 0.73))
+  assert.equal(vale(C.medir('plancha', caida, C.opcionesDe('Plancha con brazos estirados'))), false, 'con la cadera caída no cuenta')
+  const frente = (o, hondo = {}) => { const pts = Array.from({ length: 33 }, () => P(0.5, 0.95, 0)); for (const [i, p] of Object.entries(o)) pts[i] = p; const mundo = pts.map((p, i) => i in hondo ? { ...p, z: hondo[i] } : p); return { img: pts, mundo, aspecto: 1 } }
+  const cara = { 0: P(0.5, 0.45), 11: P(0.35, 0.4), 12: P(0.65, 0.4), 13: P(0.36, 0.6), 14: P(0.64, 0.6) }
+  assert.ok(vale(C.medir('plancha', frente({ ...cara, 15: P(0.42, 0.63), 16: P(0.58, 0.63) }), C.opcionesDe('Plancha'))), 'de frente en codos cuenta')
+  assert.ok(vale(C.medir('plancha', frente({ ...cara, 15: P(0.42, 0.63), 16: P(0.58, 0.63), 23: P(0.4, 0.55), 24: P(0.6, 0.55) }, { 23: 0.5, 24: 0.5 }), C.opcionesDe('Plancha'))), 'de frente con la cadera atrás de los hombros cuenta')
+  assert.equal(C.medir('plancha', frente({ ...cara, 15: P(0.37, 0.8), 16: P(0.63, 0.8) }), C.opcionesDe('Plancha')).postura, false, 'de pie o sentado con los brazos colgando no cuenta')
+  assert.equal(C.medir('plancha', frente({ ...cara, 15: P(0.42, 0.63), 16: P(0.58, 0.63), 23: P(0.4, 0.8), 24: P(0.6, 0.8) }), C.opcionesDe('Plancha')).postura, false, 'sentado de frente con la cadera abajo no cuenta')
+  assert.equal(C.medir('plancha', frente({ ...cara, 13: P(0.36, 0.6), 14: P(0.64, 0.6), 15: P(0.37, 0.8), 16: P(0.63, 0.8), 23: P(0.4, 0.8), 24: P(0.6, 0.8) }), C.opcionesDe('Plancha con brazos estirados')).postura, false, 'de pie con los brazos estirados abajo no cuenta')
   assert.equal(C.opcionesDe('Plancha con brazos estirados').estirados, true)
   assert.ok(C.CAMARA.some(e => e.name === 'Plancha con brazos estirados' && e.kind === 'seconds'))
   assert.match(C.comoDe('Plancha con brazos estirados', 'plancha'), /Brazos estirados/)
@@ -1624,7 +1640,7 @@ ok('datos de antes: se suben sin duplicar ni pisar lo de la cuenta, y conservan 
   assert.equal(C.medir('planche', sinPies, C.opcionesDe('Tuck planche')).postura, false, 'si no ve los pies no cuenta')
   assert.ok(C.esSkill('planche') && C.esSkill('lever') && !C.esSkill('plancha'))
 }
-ok('aguantes: plancha en codos y con brazos estirados por separado, acostado o con rodillas en el piso no cuenta, tuck planche mide el piso y solo cuenta con los pies despegados')
+ok('aguantes: plancha en codos y con brazos estirados por separado, acostado, con la cadera o las rodillas en el piso o sentado de frente no cuenta, tuck planche mide el piso y solo cuenta con los pies despegados')
 
 ok('cámara para todo: variantes (diamante, arqueras, abiertas, inclinadas…), planche, lever y bandera con postura, cualquier otro ejercicio aprende su recorrido y los aguantes cuentan solo quieto')
 
@@ -1800,7 +1816,8 @@ ok('resumen de la semana: solo cámara, desde el lunes, récords nuevos contra l
   assert.equal(e.dia, hoy); assert.equal(e.minutos, 10); assert.equal(e.meta, 50); assert.ok(e.xpHoy > 0)
   assert.match(e.rutina, /^(Rutina \d+\/\d+|Rutina lista|Descanso)$/)
   assert.deepEqual(W.estadoParaAvisos(d, hoy), { ultimo: hoy, hecho: e.xpHoy >= 50, racha: e.racha })
-  assert.equal(W.estadoParaAvisos(d, '2026-11-26').ultimo, '')
+  assert.equal(W.estadoParaAvisos(d, '2026-11-26').ultimo, hoy, 'guarda el último día con actividad, no lo borra al día siguiente')
+  assert.equal(W.estadoParaAvisos(normalizeData({ ...EMPTY_DATA }), hoy).ultimo, '')
   const js = W.scriptWidget('https://x.test/w?key=1')
   assert.ok(js.includes('const URL = "https://x.test/w?key=1"') && js.includes('Script.setWidget(w)') && !/innerHTML|eval\(/.test(js))
   assert.equal(normalizeData({ ...d, settings: { ...d.settings, widget: { llave: 'corta' }, avisos: { hora: '25:00' } } }).settings.widget, undefined)
@@ -1864,6 +1881,17 @@ ok('legales: aviso de privacidad con autoridad nueva, ARCO y datos de salud con 
 
 ok('Cindy: 20 min de 5 dominadas, 10 lagartijas y 15 sentadillas; cambia sola de ejercicio y el puntaje sale en rondas + repeticiones')
 
+
+{
+  const F = moduleOf('felicitar')
+  const ahora = Date.parse('2026-11-25T20:00:00Z')
+  const r = (id, marcas, ps = ['ana', 'beto', 'caro']) => ({ id, de: 'ana', participantes: ps, tipo: 'aguante', ejercicio: 'Plancha', marcas, creado: ahora - 3600000, movido: ahora, version: '' })
+  const gane = r('g', { ana: 130, beto: 100, caro: 90 }), empate = r('e', { ana: 100, beto: 100, caro: 90 }), perdi = r('p', { ana: 50, beto: 100, caro: 90 }), abierto = r('a', { ana: 130 }), solo = r('s', { ana: 130 }, ['ana'])
+  assert.deepEqual(F.porFelicitar([gane, empate, perdi, abierto, solo], 'ana', [], ahora).map(x => x.id), ['g'])
+  assert.deepEqual(F.porFelicitar([gane], 'ana', ['g'], ahora), [], 'solo una vez por reto')
+  assert.equal(F.textoFelicitar(gane, 'ana'), 'Plancha: 2:10. Le ganaste a 2 personas.')
+}
+ok('felicitación al ganar: solo retos terminados que ganaste sin empate, una vez cada uno')
 
 ok('retos de 2 a 10: te toca, esperando, vence a las 48 h, lugares con empates, aguantar más y Cindy, cuenta 3-2-1 y corta a los 60 s exactos')
 

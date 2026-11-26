@@ -17,6 +17,7 @@ Commits del sitio donde se publicó cada cambio.
 | (25-nov, noche) | Se quita el ajedrez por completo a pedido de Kiki; queda como pendiente. |
 | (25-nov, noche) | Opción "Solo competir con mis amigos" al crear cuenta. |
 | (25-nov, noche) | Retos de 2 a 10 personas (repeticiones, aguantar más, Cindy); avisos con la voz de Brote y "te pasaron en la liga"; tuck planche con 5 s para acomodarse y pies despegados; plancha en codos y con brazos estirados por separado; legales listos; carga más rápida. |
+| `4d0944a` | Plancha bien medida (cadera en el piso, rodillas apoyadas o sentado de frente ya no cuentan); agregar de regreso al aceptar; "Tu red" con a quién sigues y quién te sigue; buscador de ejercicios al retar; felicitación al ganar un reto; avisos de solicitud de amistad y de ganar; la racha de los avisos ya no se queda vieja; avisos revisados cada minuto. |
 
 ## Decisiones de Kiki
 

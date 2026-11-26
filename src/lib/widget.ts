@@ -1,5 +1,5 @@
 import type { AppData } from './model'
-import { gardenStats } from './jardin'
+import { gardenStats, shiftDay } from './jardin'
 import { DAILY_GOAL, levelOf, totalXp, xpOn } from './xp'
 import { routineFor, routineProgress } from './rutina'
 import { saldo } from './minutos'
@@ -20,9 +20,16 @@ export function estadoWidget(data: AppData, today: string): EstadoWidget {
   }
 }
 
+export function ultimoActivo(data: AppData, today: string, dias = 45): string {
+  for (let i = 0; i <= dias; i++) {
+    const d = shiftDay(today, -i)
+    if (data.sets.some(s => s.day === d) || xpOn(data, d) > 0) return d
+  }
+  return ''
+}
+
 export function estadoParaAvisos(data: AppData, today: string): EstadoAvisos {
-  const activo = data.sets.some(s => s.day === today) || xpOn(data, today) > 0
-  return { ultimo: activo ? today : '', hecho: xpOn(data, today) >= DAILY_GOAL, racha: esCompetir(data.settings) ? 0 : gardenStats(data, today).current }
+  return { ultimo: ultimoActivo(data, today), hecho: xpOn(data, today) >= DAILY_GOAL, racha: esCompetir(data.settings) ? 0 : gardenStats(data, today).current }
 }
 
 export function scriptWidget(url: string): string {

@@ -41,6 +41,8 @@ export function AmigosPage({ data, commit, onMessage }: { data: AppData; commit:
   const [open, setOpen] = useState<string | null>(null)
   const [edit, setEdit] = useState(false)
   const [busy, setBusy] = useState('')
+  const [aceptadosAhora, setAceptadosAhora] = useState<string[]>([])
+  const [red, setRed] = useState<'sigues' | 'siguen'>('sigues')
   const [invite, setInvite] = useState(() => { try { return localStorage.getItem(AMIGO_KEY) ?? '' } catch { return '' } })
 
   useEffect(() => {
@@ -73,7 +75,7 @@ export function AmigosPage({ data, commit, onMessage }: { data: AppData; commit:
     try { onMessage(await fn()) } catch { onMessage('No se pudo. Revisa tu señal.') } finally { setBusy(''); reload() }
   }
   const toggle = (d: Dir) => act(d, () => alternar(commit, uid, amigos, d, social))
-  const contestar = (d: Dir, si: boolean) => act(d, () => responder(commit, uid, d, si))
+  const contestar = (d: Dir, si: boolean) => act(d, async () => { const m = await responder(commit, uid, d, si); if (si) setAceptadosAhora(x => [...new Set([...x, d.uid])]); return m })
   const code = codigoDe(uid)
   async function share() {
     const url = `${window.location.origin}${window.location.pathname}?amigo=${code}`
@@ -88,7 +90,8 @@ export function AmigosPage({ data, commit, onMessage }: { data: AppData; commit:
   const entrantes = (social?.entrantes ?? []).map(dirOf).filter((d): d is Dir => !!d)
   const friends = others.filter(d => amigos.includes(d.uid))
   const visibles = friends.filter(d => visible(d.uid))
-  const back = t?.privada ? [] : others.filter(d => d.siguiendo.includes(uid) && !amigos.includes(d.uid))
+  const teSiguen = others.filter(d => d.siguiendo.includes(uid) && (!t?.privada || (aceptados ?? []).includes(d.uid)))
+  const recien = aceptadosAhora.map(dirOf).filter((d): d is Dir => !!d && !amigos.includes(d.uid))
   const invited = invite ? others.find(d => codigoDe(d.uid).toLowerCase() === invite.toLowerCase()) : undefined
   const found = buscar(others, q, uid)
   const suggest = others.filter(d => !amigos.includes(d.uid) && !d.siguiendo.includes(uid) && !social?.entrantes.includes(d.uid)).sort((a, b) => b.nivel - a.nivel).slice(0, 5)
@@ -131,8 +134,12 @@ export function AmigosPage({ data, commit, onMessage }: { data: AppData; commit:
       </>}
     </div>}
 
-    {entrantes.length > 0 && <div className="d-card d-am-invite">
-      <h2>Solicitudes <small className="d-am-count">{entrantes.length}</small></h2>
+    {(entrantes.length > 0 || recien.length > 0) && <div className="d-card d-am-invite">
+      <h2>Solicitudes {entrantes.length > 0 && <small className="d-am-count">{entrantes.length}</small>}</h2>
+      {recien.map(d => <div className="d-am-req" key={`r-${d.uid}`}>
+        <Who d={d} sub="Aceptaste su solicitud" onOpen={() => setOpen(d.uid)} />
+        <button type="button" className="d-btn green wide small" disabled={busy === d.uid} onClick={() => void toggle(d)}>{d.privada ? 'Solicitar ser su amigo' : 'Agregar de regreso'}</button>
+      </div>)}
       {entrantes.map(d => <div className="d-am-req" key={d.uid}>
         <Who d={d} sub="Quiere ser tu amigo" onOpen={() => setOpen(d.uid)} />
         <div className="d-row2">
@@ -152,11 +159,6 @@ export function AmigosPage({ data, commit, onMessage }: { data: AppData; commit:
         : <p className="d-hint left">Todavía no tienes amigos. Invita a alguien con tu código o búscalo aquí abajo.</p>)}
     </div>
 
-    {back.length > 0 && <div className="d-card">
-      <h2>Te agregaron</h2>
-      {back.map(d => row(d, 'Te agregó · agrégalo para ser amigos'))}
-    </div>}
-
     <div className="d-card">
       <h2>Buscar personas</h2>
       <input className="d-input" value={q} onChange={e => setQ(e.target.value)} placeholder="Apodo o código" aria-label="Buscar por apodo o código" autoCapitalize="none" />
@@ -168,13 +170,19 @@ export function AmigosPage({ data, commit, onMessage }: { data: AppData; commit:
         </>}
     </div>
 
-    {friends.length > 0 && <div className="d-card">
-      <h2>Tus amigos <small className="d-am-count">{friends.length}</small></h2>
-      {friends.map(d => {
-        const rel = relDe(uid, amigos, d, social, aceptados)
-        return row(d, `${rel === 'amigos' ? 'Amigos' : rel === 'pendiente' ? 'Solicitud enviada' : rel === 'agregado' ? 'Esperando que te agregue' : 'No aceptó tu solicitud'} · ${activo(d.actualizado) || `nivel ${d.nivel}`}`)
-      })}
-    </div>}
+    <div className="d-card">
+      <div className="d-am-title"><h2>Tu red</h2><small className="d-hint">Solo tú lo ves</small></div>
+      <div className="d-mode two" role="tablist" aria-label="Tu red">
+        <button type="button" role="tab" aria-selected={red === 'sigues'} className={red === 'sigues' ? 'on' : ''} onClick={() => setRed('sigues')}>Sigues · {friends.length}</button>
+        <button type="button" role="tab" aria-selected={red === 'siguen'} className={red === 'siguen' ? 'on' : ''} onClick={() => setRed('siguen')}>Te siguen · {teSiguen.length}</button>
+      </div>
+      {red === 'sigues'
+        ? friends.length ? friends.map(d => {
+          const rel = relDe(uid, amigos, d, social, aceptados)
+          return row(d, `${rel === 'amigos' ? 'Amigos' : rel === 'pendiente' ? 'Solicitud enviada' : rel === 'agregado' ? 'Esperando que te agregue' : 'No aceptó tu solicitud'} · ${activo(d.actualizado) || `nivel ${d.nivel}`}`)
+        }) : <p className="d-hint left">Todavía no sigues a nadie. Búscalos arriba o invita con tu código.</p>
+        : teSiguen.length ? teSiguen.map(d => row(d, amigos.includes(d.uid) ? `Amigos · ${activo(d.actualizado) || `nivel ${d.nivel}`}` : d.privada ? 'Te sigue · solicita ser su amigo' : 'Te sigue · agrégalo de regreso')) : <p className="d-hint left">Todavía nadie te sigue.</p>}
+    </div>
 
     {openDir && <Sheet title={openDir.uid === uid ? 'Mi perfil' : 'Perfil'} tall onClose={() => setOpen(null)}>
       <PerfilView p={openDir.uid === uid ? me : social?.perfiles.find(p => p.uid === openDir.uid) ?? null} dir={openDir} me={me} rel={relDe(uid, amigos, openDir, social, aceptados)} back="Cerrar" onBack={() => setOpen(null)} onToggle={() => void toggle(openDir)} />

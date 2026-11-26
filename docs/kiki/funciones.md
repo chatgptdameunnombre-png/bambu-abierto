@@ -41,7 +41,7 @@ Lista vertical del día: hábitos, rutina, lectura y tareas. Racha, XP del día 
 - Cuenta con ángulos en 3D y un **medidor de profundidad**: media repetición vale cero y dice "Llegaste al 70%".
 - Avisos por voz en español: número de cada repetición, "Baja hasta abajo", "Cuerpo recto", "Más controlado".
 - Ahorra batería: 480×360 a 15 fps, baja el ritmo si no te ve, se apaga sola a los 45 s sin verte o al salir de la app.
-- **Aguantes:** 5 segundos para acomodarte antes de que corra el tiempo. **Plancha** es en codos y **Plancha con brazos estirados** va aparte; acostado o con las rodillas en el piso no cuenta. En **planche, cuervo y bandera** la cámara mide dónde están tus pies en el piso durante esos 5 segundos y solo cuenta con los pies despegados; al bajar, se detiene y se guarda.
+- **Aguantes:** 5 segundos para acomodarte antes de que corra el tiempo. **Plancha** es en codos y **Plancha con brazos estirados** va aparte; no cuenta acostado, con la cadera en el piso, apoyado en las rodillas ni sentado o parado frente a la cámara. En **planche, cuervo y bandera** la cámara mide dónde están tus pies en el piso durante esos 5 segundos y solo cuenta con los pies despegados; al bajar, se detiene y se guarda.
 - **Familias con postura propia:** lagartijas (de lado o de frente por caída de hombros), fondos, sentadillas, dominadas (barbilla arriba de las manos), pike, handstand push up, remo, elevaciones colgado, jumping jacks, burpees, plancha, plancha lateral, wall sit, colgarse, L sit, handstand, hollow, **planche / tuck planche / cuervo**, **front y back lever**, **bandera humana**.
 - **Variantes** por nombre: diamante, abiertas, arqueras, declinadas, inclinadas, en rodillas, explosivas, a una mano, pseudo planche, sumo, búlgara, pistol, shrimp, chin ups, muscle up, etc.
 - **Cualquier otro ejercicio:** modo general que aprende tu recorrido en la primera repetición completa y cuenta cada regreso al inicio. Los aguantes sin postura propia cuentan solo mientras estés completo y quieto.
@@ -59,7 +59,7 @@ Solo cuentan series hechas con la cámara (notas `camara` o `redes`): récords, 
 
 ## Retos con amigos
 
-Eliges tipo, ejercicio y a uno o varios amigos (hasta 9, con botón "Todos"). Tú vas primero con la cámara; los demás tienen 48 horas. No dan minutos de redes.
+Eliges tipo, ejercicio (con buscador) y a uno o varios amigos (hasta 9, con botón "Todos"). Tú vas primero con la cámara; los demás tienen 48 horas. No dan minutos de redes.
 
 | Tipo | Cómo se gana |
 |---|---|
@@ -67,7 +67,7 @@ Eliges tipo, ejercicio y a uno o varios amigos (hasta 9, con botón "Todos"). T�
 | **Aguantar más** | Sin límite; el tiempo corre con la postura correcta y se acaba si la pierdes 3 segundos (plancha, plancha con brazos estirados, lateral, wall sit, colgarse, hollow, L sit). |
 | **Cindy** | 20 minutos de 5 dominadas, 10 lagartijas y 15 sentadillas. |
 
-Cada quien marca una sola vez. Al terminar se ve la tabla de lugares (con empates) y hay revancha con la misma gente.
+Cada quien marca una sola vez. Al terminar se ve la tabla de lugares (con empates) y hay revancha con la misma gente. Si ganas, la app te felicita al abrirla.
 
 ## Cindy
 
@@ -79,12 +79,12 @@ Plantas por día, estadísticas (racha, XP, nivel, días al 100), comodín seman
 
 ## Amigos
 
-Perfil con apodo y avatar, cuenta pública o privada (solicitudes), código para invitar, liga de amigos (XP de la semana, reps, racha, nivel), buscador.
+Perfil con apodo y avatar, cuenta pública o privada (solicitudes), código para invitar, liga de amigos (XP de la semana, reps, racha, nivel), buscador. Al aceptar una solicitud ofrece agregar de regreso. **Tu red** (solo la ves tú): a quién sigues y quién te sigue.
 
 ## Widget y avisos (Ajustes)
 
 - **Widget** con la app gratis Scriptable: racha, XP de hoy contra la meta, minutos de redes y avance de la rutina. Se actualiza cada vez que usas Bambú.
-- **Avisos** con la voz de Brote: recordatorio a la hora que elijas si no has entrenado (la frase cambia según el día), racha en riesgo a las 9 pm ("se acaba a la medianoche"), te retaron, resultado del reto y "te pasaron en la liga". Nada de 10 pm a 7 am. En iPhone solo con la app instalada en la pantalla de inicio. Vista previa local: `vista-avisos.html`.
+- **Avisos** con la voz de Brote: recordatorio a la hora que elijas si no has entrenado (la frase cambia según el día), racha en riesgo a las 9 pm ("se acaba a la medianoche"), te retaron, resultado del reto (con felicitación si ganas), "te pasaron en la liga", alguien quiere ser tu amigo y alguien te agregó. Se revisan cada minuto. Nada de 10 pm a 7 am. En iPhone solo con la app instalada en la pantalla de inicio. Vista previa local: `vista-avisos.html`.
 
 ## Legales
 

@@ -25,7 +25,8 @@ React 19 + Vite 8 + TypeScript, sin backend propio: Firebase Auth y Firestore po
 | `Legal.tsx` | Aviso de privacidad, términos, consentimiento y tarjeta en Ajustes. |
 | `Aventura.tsx`, `Jefe.tsx` | Monstruos, temporada, mazmorra y jefes. |
 | `Jardin.tsx` | Jardín, estadísticas y **Tu semana**. |
-| `Amigos.tsx`, `Tablas.tsx`, `useSocial.ts` | Amigos, perfiles, liga y solicitudes. |
+| `Amigos.tsx`, `Tablas.tsx`, `useSocial.ts`, `amigosNuevos.ts` | Amigos, perfiles, liga, solicitudes, agregar de regreso y Tu red. |
+| `Felicitar.tsx` | Felicitación al abrir la app si ganaste un reto. |
 | `Widget.tsx` | Tarjetas de widget y avisos en Ajustes y el envío del estado. |
 | `AjustesSimple.tsx` | Ajustes (Qué usas, candado, avisos, widget, cuenta). |
 | `ShareCard.tsx` | Imágenes para compartir (semana). |
@@ -43,6 +44,7 @@ React 19 + Vite 8 + TypeScript, sin backend propio: Firebase Auth y Firestore po
 | `legal.ts` | Textos legales y datos del responsable (por completar). |
 | `wod.ts` | Cindy: partes, rondas y puntaje. |
 | `semana.ts` | Resumen semanal. |
+| `felicitar.ts` | Qué retos ganaste sin empate y el texto de la felicitación. |
 | `widget.ts` | Datos del widget, estado para avisos y el script de Scriptable. |
 | `avisos.ts` | Permiso, service worker `avisos-sw.js` y suscripción push. |
 | `modo.ts` | Modo hábitos o solo competir: qué pestañas se esconden y dónde se entra. |
@@ -57,7 +59,7 @@ React 19 + Vite 8 + TypeScript, sin backend propio: Firebase Auth y Firestore po
 | `public/pose/` | Modelo y wasm de MediaPipe (1.2.3) servidos desde el sitio. |
 | `public/avisos-sw.js` | Service worker mínimo: solo avisos y abrir la app al tocarlos. |
 | `vite.config.ts` | CSP solo en el build. |
-| `checks/features.cjs` | Pruebas (75 grupos). |
+| `checks/features.cjs` | Pruebas (76 grupos). |
 | `vista-avisos.html` | Vista previa local de los avisos (solo desarrollo; no se publica). |
 | `checks/nube-prueba.cjs` | Firestore y Auth de mentira para pruebas. |
 

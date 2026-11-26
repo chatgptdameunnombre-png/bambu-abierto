@@ -4,6 +4,8 @@ import type { Dir } from './lib/perfil'
 import { borrarReto, crearReto, cuenta, cuentaActiva, leerReto, marcarReto, misRetos } from './lib/firebase'
 import { MAX_PERSONAS, SEG_REPS, TIPOS, TOPE_AGUANTE, aVencer, estadoReto, lugarDe, lugares, nombreTipo, valorTexto, visibles, type Reto, type TipoReto } from './lib/retos'
 import { conCamara } from './lib/minutos'
+import { CAMARA } from './lib/conteo'
+import { norm } from './lib/libre'
 import { CamaraValor } from './Candado'
 import { Avatar, type Commit } from './Tablas'
 import { Sheet } from './Sheet'
@@ -49,6 +51,7 @@ export function RetosCard({ uid, amigos, dirOf, commit, onMessage }: { uid: stri
   const [tipo, setTipo] = useState<TipoReto>('reps')
   const [ej, setEj] = useState(TIPOS[0].ejercicios[0])
   const [elegidos, setElegidos] = useState<string[]>([])
+  const [busca, setBusca] = useState('')
   const [cam, setCam] = useState<Intento | null>(null)
   const [pendiente, setPendiente] = useState<(Intento & { valor: number }) | null>(null)
   const [ver, setVer] = useState<Reto | null>(null)
@@ -101,7 +104,7 @@ export function RetosCard({ uid, amigos, dirOf, commit, onMessage }: { uid: stri
     try { localStorage.setItem(OCULTOS, JSON.stringify(v)) } catch { return }
     if (r.de === uid && estadoReto(r, uid) !== 'esperando') void borrarReto(r.id).catch(() => undefined)
   }
-  function cambiarTipo(t: TipoReto) { setTipo(t); setEj(TIPOS.find(x => x.tipo === t)!.ejercicios[0]) }
+  function cambiarTipo(t: TipoReto) { setTipo(t); setBusca(''); setEj(TIPOS.find(x => x.tipo === t)!.ejercicios[0]) }
   const alternar = (id: string) => setElegidos(x => x.includes(id) ? x.filter(y => y !== id) : x.length >= MAX_PERSONAS - 1 ? x : [...x, id])
 
   const fila = (r: Reto) => {
@@ -110,7 +113,7 @@ export function RetosCard({ uid, amigos, dirOf, commit, onMessage }: { uid: stri
     const top = aVencer(r)
     const l = lugarDe(r, uid)
     const titulo = e === 'te-toca' ? `${nombre(r.de)} te retó` : e === 'esperando' ? (r.de === uid ? 'Tu reto' : `Reto de ${nombre(r.de)}`) : e === 'vencido' ? 'Se te pasó el tiempo' : l && l.lugar === 1 ? (l.empate ? 'Empate en primer lugar' : '¡Ganaste!') : l ? `Quedaste ${lugarTexto(l.lugar)} de ${l.de}` : 'Reto terminado'
-    const sub = `${nombreTipo(r.tipo)} · ${r.ejercicio} · ${e === 'te-toca' && top ? `a vencer ${valorTexto(r, top.valor)} (${nombre(top.uid)})` : `${listos} de ${r.participantes.length} listos`}`
+    const sub = `${nombreTipo(r.tipo)} · ${r.ejercicio} · ${e === 'te-toca' && top && top.valor > 0 ? `a vencer ${valorTexto(r, top.valor)} (${nombre(top.uid)})` : `${listos} de ${r.participantes.length} listos`}`
     return <div className={`d-am-row d-duelo ${e === 'terminado' && l?.lugar === 1 ? 'gane' : e}`} key={r.id}>
       <button type="button" className="d-am-who" onClick={() => setVer(r)}><Avatar n={dirOf(r.de)?.avatar ?? 0} size={46} /><span><b>{titulo}</b><small>{sub}</small></span></button>
       {e === 'te-toca' && <button type="button" className="d-btn green small" disabled={busy} onClick={() => { haptic(8); setCam({ tipo: r.tipo, ej: r.ejercicio, reto: r }) }}>Aceptar</button>}
@@ -120,6 +123,9 @@ export function RetosCard({ uid, amigos, dirOf, commit, onMessage }: { uid: stri
   }
 
   const t = TIPOS.find(x => x.tipo === tipo)!
+  const pool = [...new Set([...t.ejercicios, ...CAMARA.filter(e => tipo === 'aguante' ? e.kind === 'seconds' : e.kind === 'reps').map(e => e.name)])]
+  const q = norm(busca.trim())
+  const opciones = q ? pool.filter(x => norm(x).includes(q)).slice(0, 14) : [...new Set([...(t.ejercicios.includes(ej) ? [] : [ej]), ...t.ejercicios])]
   return <div className="d-card d-duelos">
     <div className="d-am-title"><h2>Retos</h2>{amigos.length > 0 && <button type="button" className="d-btn green small" onClick={() => abrirNuevo()}>Retar</button>}</div>
     {failed && <p className="d-hint">No se pudieron cargar los retos. Revisa tu señal.</p>}
@@ -130,9 +136,11 @@ export function RetosCard({ uid, amigos, dirOf, commit, onMessage }: { uid: stri
     {nuevo && <Sheet title="Nuevo reto" tall onClose={() => setNuevo(false)}>
       <p className="d-tb-sub">¿Qué tipo?</p>
       <div className="d-reto-tipos">{TIPOS.map(x => <button key={x.tipo} type="button" className={`d-reto-tipo ${tipo === x.tipo ? 'on' : ''}`} aria-pressed={tipo === x.tipo} onClick={() => cambiarTipo(x.tipo)}><b>{x.nombre}</b><small>{x.texto}</small></button>)}</div>
-      {t.ejercicios.length > 1 && <>
+      {tipo !== 'cindy' && <>
         <p className="d-tb-sub">¿Qué ejercicio?</p>
-        <div className="d-chips">{t.ejercicios.map(x => <button key={x} type="button" className={ej === x ? 'on' : ''} onClick={() => setEj(x)}>{x}</button>)}</div>
+        <input className="d-input" value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar ejercicio" aria-label="Buscar ejercicio" autoCapitalize="none" />
+        <div className="d-chips">{opciones.map(x => <button key={x} type="button" className={ej === x ? 'on' : ''} onClick={() => setEj(x)}>{x}</button>)}</div>
+        {busca.trim() && !opciones.length && <p className="d-hint left">No hay ninguno con ese nombre.</p>}
       </>}
       <p className="d-tb-sub">¿A quién retas? <small>{elegidos.length ? `${elegidos.length} ${elegidos.length === 1 ? 'amigo' : 'amigos'}` : 'uno o varios'}</small></p>
       <div className="d-chips">

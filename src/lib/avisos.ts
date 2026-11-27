@@ -27,18 +27,29 @@ function bytes(b64: string): Uint8Array<ArrayBuffer> {
   return out
 }
 
-export async function activar(uid: string, hora: string, e: EstadoAvisos): Promise<Estado> {
-  const antes = await estado()
-  if (antes === 'install' || antes === 'unsupported' || antes === 'denied') return antes
-  const permiso = await Notification.requestPermission()
-  if (permiso !== 'granted') return permiso === 'denied' ? 'denied' : 'off'
+export class AvisoTarde extends Error {}
+function tope<T>(p: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([p, new Promise<never>((_, no) => setTimeout(() => no(new AvisoTarde('tarde')), ms))])
+}
+async function listo(): Promise<ServiceWorkerRegistration> {
+  const r = await registro()
+  if (r?.active) return r
   await navigator.serviceWorker.register(new URL(SW, document.baseURI).href, { scope: alcance() })
-  let reg = await registro()
-  for (let i = 0; i < 20 && !reg?.active; i++) { await new Promise(r => setTimeout(r, 150)); reg = await registro() }
-  if (!reg) return 'unsupported'
-  const sub = await reg.pushManager.getSubscription() ?? await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: bytes(VAPID) })
+  return navigator.serviceWorker.ready
+}
+
+export async function activar(uid: string, hora: string, e: EstadoAvisos): Promise<Estado> {
+  if (esIOS() && !instalada()) return 'install'
+  if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) return 'unsupported'
+  if (Notification.permission === 'denied') return 'denied'
+  if (Notification.permission !== 'granted') {
+    const permiso = await tope(Notification.requestPermission(), 60000)
+    if (permiso !== 'granted') return permiso === 'denied' ? 'denied' : 'off'
+  }
+  const reg = await tope(listo(), 15000)
+  const sub = await tope(reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: bytes(VAPID) }), 20000)
   const j = sub.toJSON()
-  await guardarAvisos(uid, { endpoint: sub.endpoint, p256dh: j.keys?.p256dh ?? '', auth: j.keys?.auth ?? '' }, hora, Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Mexico_City', e)
+  await tope(guardarAvisos(uid, { endpoint: sub.endpoint, p256dh: j.keys?.p256dh ?? '', auth: j.keys?.auth ?? '' }, hora, Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Mexico_City', e), 20000)
   return 'on'
 }
 

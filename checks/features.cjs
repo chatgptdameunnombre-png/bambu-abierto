@@ -2532,3 +2532,12 @@ async function audioChecks() {
   assert.ok(cand.includes('avisarFinPase(fin)') && cand.includes('avisarFinPase(0)') && pa.includes('avisarFinPase(0)'), 'al abrir avisa la hora; al terminar o devolver la borra')
   ok('aviso al teléfono 1 minuto antes y al acabar el pase (y se cancela con Ya terminé)')
 }
+
+{
+  const av = fs.readFileSync(path.join(__dirname, '../src/lib/avisos.ts'), 'utf8')
+  const cuerpo = av.slice(av.indexOf('export async function activar'))
+  assert.ok(cuerpo.indexOf('requestPermission') < cuerpo.indexOf('listo()'), 'en iPhone el permiso se pide antes de cualquier paso lento')
+  assert.ok(!/for \(let i = 0; i < 20/.test(av), 'ya no espera en bucle al prender avisos')
+  assert.ok((cuerpo.match(/tope\(/g) || []).length >= 4, 'prender avisos nunca se queda cargando para siempre')
+  ok('prender avisos en iPhone: permiso primero y con tope de tiempo')
+}

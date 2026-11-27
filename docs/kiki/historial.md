@@ -38,6 +38,7 @@ Commits del sitio donde se publicó cada cambio.
 | `5433bd9` (27-nov) | La emergencia ahora es "Algo rápido: abrir 10 min" (contestar un mensaje o publicar), en botón normal y no en rojo. Al abrir cualquier pase sale "Ya terminé" ahí mismo, también en los rápidos. |
 | `22009c6` (27-nov) | El botón se llama "10 min para uso importante" (una línea, sin texto extra). |
 | `c9cec6a` (27-nov) | Interruptor en Ajustes → Bloqueo de redes para quitar o poner el botón "10 min para uso importante" (prendido por defecto). |
+| `4e5c45b` (27-nov) | Prender avisos en el iPhone se quedaba cargando: pedía el permiso después de volver a bajar el archivo de avisos y esperar hasta 3 s, y el iPhone ya no lo mostraba. Ahora pide el permiso primero, no repite pasos lentos y nunca se queda cargando (tope de tiempo con mensaje). |
 
 ## Decisiones de Kiki
 

@@ -3,7 +3,7 @@ import { dateKey, type AppData } from './lib/model'
 import { borrarWidget, cuenta, estadoAvisos, guardarWidget, misRetos, urlWidget } from './lib/firebase'
 import { estadoReto } from './lib/retos'
 import { ESTILOS_WIDGET, estadoParaAvisos, estadoWidget, scriptWidget, type EstiloWidget } from './lib/widget'
-import { activar, apagar, estado, type Estado } from './lib/avisos'
+import { AvisoTarde, activar, apagar, estado, type Estado } from './lib/avisos'
 import { nuevaLlave } from './lib/minutos'
 import { DuoIcon } from './DuoIcons'
 
@@ -113,7 +113,7 @@ export function AvisosSetup({ data, commit, onMessage, cloud }: { data: AppData;
       setSt(r)
       if (r === 'on') { commit(d => ({ ...d, settings: { ...d.settings, avisos: { hora: h } } })); onMessage('Avisos prendidos.') }
       else if (r !== 'off') onMessage(TEXTO[r])
-    } catch { onMessage('No se pudieron prender los avisos. Revisa tu señal.') }
+    } catch (error) { onMessage(error instanceof AvisoTarde ? 'El iPhone no contestó. Cierra bambú desde el selector de apps, ábrela otra vez desde su ícono y vuelve a intentar.' : 'No se pudieron prender los avisos. Revisa tu señal.') }
     setBusy(false)
   }
   async function apagarlos() {

@@ -94,11 +94,12 @@ export type Settings = {
   tablas?: { apodo: string; avatar: number; privada?: boolean }
   amigos?: string[]
   aprobados?: string[]
-  candado?: { llave: string }
+  candado?: { llave: string; desde?: number; hasta?: number; pase?: string }
   widget?: { llave: string }
   avisos?: { hora: string }
   modo?: 'competir'
   sinEdad?: boolean
+  minLibres?: number
   legal?: { version: string; fecha: string; salud: boolean }
   walkDaily?: boolean
   cardioSetup?: boolean
@@ -107,6 +108,7 @@ export type Settings = {
   toques2611?: boolean
   hspu2611?: boolean
   quitar2611?: boolean
+  devolver2611?: boolean
 }
 /** `north` es en quién te quieres convertir, con tus palabras. La reflexión de la noche te lo pregunta. */
 export type Profile = { name: string; onboardingComplete: boolean; north?: string }
@@ -435,7 +437,11 @@ function cleanAmigos(value: unknown): string[] | undefined {
   return ids.length ? ids : undefined
 }
 function cleanCandado(value: unknown): Settings['candado'] {
-  return isRecord(value) && typeof value.llave === 'string' && /^[A-Za-z0-9]{16,40}$/.test(value.llave) ? { llave: value.llave } : undefined
+  if (!isRecord(value) || typeof value.llave !== 'string' || !/^[A-Za-z0-9]{16,40}$/.test(value.llave)) return undefined
+  const ms = (v: unknown) => typeof v === 'number' && Number.isFinite(v) && v > 0 && v < 8.64e15 ? Math.round(v) : undefined
+  const desde = ms(value.desde), hasta = ms(value.hasta)
+  const pase = typeof value.pase === 'string' && /^(pase|emergencia):[A-Za-z0-9-]{1,60}$/.test(value.pase) ? value.pase : undefined
+  return { llave: value.llave, ...(desde ? { desde } : {}), ...(hasta ? { hasta } : {}), ...(pase ? { pase } : {}) }
 }
 function cleanAvisos(value: unknown): Settings['avisos'] {
   return isRecord(value) && typeof value.hora === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(value.hora) ? { hora: value.hora } : undefined
@@ -476,6 +482,7 @@ export function cleanSettings(value: unknown): Settings {
     toques2611: v.toques2611 === true ? true : undefined,
     hspu2611: v.hspu2611 === true ? true : undefined,
     quitar2611: v.quitar2611 === true ? true : undefined,
+    devolver2611: v.devolver2611 === true ? true : undefined,
     tablas: cleanTablas(v.tablas),
     amigos: cleanAmigos(v.amigos),
     aprobados: cleanAmigos(v.aprobados),
@@ -484,6 +491,7 @@ export function cleanSettings(value: unknown): Settings {
     avisos: cleanAvisos(v.avisos),
     modo: v.modo === 'competir' ? 'competir' as const : undefined,
     sinEdad: v.sinEdad === true ? true : undefined,
+    minLibres: int(v.minLibres, 0, 240),
     legal: isRecord(v.legal) && typeof v.legal.version === 'string' && /^\d{4}-\d\d-\d\d$/.test(v.legal.version) && typeof v.legal.fecha === 'string' && v.legal.fecha.length <= 40 ? { version: v.legal.version, fecha: v.legal.fecha, salud: v.legal.salud === true } : undefined,
   }) as Settings
 }

@@ -689,7 +689,16 @@ function cleanAmigos(value) {
 	return ids.length ? ids : void 0;
 }
 function cleanCandado(value) {
-	return isRecord(value) && typeof value.llave === "string" && /^[A-Za-z0-9]{16,40}$/.test(value.llave) ? { llave: value.llave } : void 0;
+	if (!isRecord(value) || typeof value.llave !== "string" || !/^[A-Za-z0-9]{16,40}$/.test(value.llave)) return void 0;
+	const ms = (v) => typeof v === "number" && Number.isFinite(v) && v > 0 && v < 864e13 ? Math.round(v) : void 0;
+	const desde = ms(value.desde), hasta = ms(value.hasta);
+	const pase = typeof value.pase === "string" && /^(pase|emergencia):[A-Za-z0-9-]{1,60}$/.test(value.pase) ? value.pase : void 0;
+	return {
+		llave: value.llave,
+		...desde ? { desde } : {},
+		...hasta ? { hasta } : {},
+		...pase ? { pase } : {}
+	};
 }
 function cleanAvisos(value) {
 	return isRecord(value) && typeof value.hora === "string" && /^([01]\d|2[0-3]):[0-5]\d$/.test(value.hora) ? { hora: value.hora } : void 0;
@@ -745,6 +754,7 @@ function cleanSettings(value) {
 		toques2611: v.toques2611 === true ? true : void 0,
 		hspu2611: v.hspu2611 === true ? true : void 0,
 		quitar2611: v.quitar2611 === true ? true : void 0,
+		devolver2611: v.devolver2611 === true ? true : void 0,
 		tablas: cleanTablas(v.tablas),
 		amigos: cleanAmigos(v.amigos),
 		aprobados: cleanAmigos(v.aprobados),
@@ -753,6 +763,7 @@ function cleanSettings(value) {
 		avisos: cleanAvisos(v.avisos),
 		modo: v.modo === "competir" ? "competir" : void 0,
 		sinEdad: v.sinEdad === true ? true : void 0,
+		minLibres: int(v.minLibres, 0, 240),
 		legal: isRecord(v.legal) && typeof v.legal.version === "string" && /^\d{4}-\d\d-\d\d$/.test(v.legal.version) && typeof v.legal.fecha === "string" && v.legal.fecha.length <= 40 ? {
 			version: v.legal.version,
 			fecha: v.legal.fecha,

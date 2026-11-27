@@ -1,13 +1,15 @@
 import { makeId, type Activity, type AppData } from './model'
 import { shiftDay } from './jardin'
 import { logSet } from './rutina'
-import { CAMARA_SET, REDES_SET } from './libre'
+import { CAMARA_SET, REDES_SET, esNotaCamara } from './libre'
 import { patronDe, type Patron, type Tipo } from './conteo'
 
 export const CAMARA_NOTE = CAMARA_SET
 export const REDES_NOTE = REDES_SET
 export const PASE_PREFIX = 'Pase:'
-export const PASES = [5, 10, 15] as const
+export const PASES = [5, 10, 15, 30] as const
+export const LIBRES_DEFECTO = 60
+export const LIBRES_OPCIONES = [0, 15, 30, 60, 90, 120] as const
 
 export const TASAS: Record<Patron, { cada: number; min: number; unidad: 'reps' | 's' }> = {
   empuje: { cada: 2, min: 1, unidad: 'reps' },
@@ -79,7 +81,7 @@ export function faltan(exercise: string, minutos: number): number {
 }
 
 export function ganados(data: AppData, day: string): number {
-  return Math.floor(data.sets.filter(s => s.day === day && s.note === REDES_NOTE).reduce((m, s) => m + minutosDe(s.exercise, s.seconds ?? s.reps ?? 0), 0) + 1e-9)
+  return Math.floor(data.sets.filter(s => s.day === day && esNotaCamara(s.note)).reduce((m, s) => m + minutosDe(s.exercise, s.seconds ?? s.reps ?? 0), 0) + 1e-9)
 }
 
 export function paseMinutos(a: Activity): number {
@@ -92,8 +94,19 @@ export function gastados(data: AppData, day: string): number {
   return data.activities.filter(a => a.day === day).reduce((m, a) => m + paseMinutos(a), 0)
 }
 
+export function libresDe(data: AppData): number {
+  return data.settings.minLibres ?? LIBRES_DEFECTO
+}
+
 export function saldo(data: AppData, day: string): number {
-  return Math.max(0, ganados(data, day) - gastados(data, day))
+  return Math.max(0, libresDe(data) + ganados(data, day) - gastados(data, day))
+}
+
+export function siguienteMinuto(exercise: string, valor: number): { min: number; faltan: number } | null {
+  const t = tasa(exercise)
+  if (!t) return null
+  const min = Math.floor(minutosDe(exercise, valor) + 1e-9)
+  return { min, faltan: Math.max(1, faltan(exercise, min + t.min) - valor) }
 }
 
 export function semanaMinutos(data: AppData, today: string): { ganados: number; gastados: number } {
@@ -106,11 +119,32 @@ export function paseActivity(day: string, app: string, minutos: number): Activit
   return { id: `pase:${makeId()}`, day, kind: 'other', note: `${PASE_PREFIX} ${app.slice(0, 20)} · ${minutos} min` }
 }
 
-export function hastaISO(ms: number): string {
+export function hastaTexto(ms: number): string {
   const d = new Date(ms)
-  const off = -d.getTimezoneOffset()
-  const p = (n: number) => String(Math.floor(Math.abs(n))).padStart(2, '0')
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}${off >= 0 ? '+' : '-'}${p(off / 60)}:${p(off % 60)}`
+  const p = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`
+}
+
+export const EMERGENCIA_PREFIX = 'Emergencia:'
+export const EMERGENCIA_MIN = 10
+export function emergenciaActivity(day: string, app: string): Activity {
+  return { id: `emergencia:${makeId()}`, day, kind: 'other', note: `${EMERGENCIA_PREFIX} ${app.slice(0, 20)} · ${EMERGENCIA_MIN} min` }
+}
+export function emergenciaUsada(data: AppData, day: string): boolean {
+  return data.activities.some(a => a.day === day && (a.note ?? '').startsWith(EMERGENCIA_PREFIX))
+}
+export const DEVOLVER_MS = 3 * 60000
+export function devolver2611(data: AppData): AppData {
+  return { ...data, activities: data.activities.filter(a => !(a.day === '2026-11-26' && paseMinutos(a) > 0)), settings: { ...data.settings, devolver2611: true } }
+}
+export function paseAbierto(data: AppData, now: number): { desde: number; hasta: number; pase?: string } | null {
+  const c = data.settings.candado
+  return c?.hasta && c.hasta > now ? { desde: c.desde ?? 0, hasta: c.hasta, pase: c.pase } : null
+}
+export function devolverPase(data: AppData): AppData {
+  const c = data.settings.candado
+  if (!c) return data
+  return { ...data, activities: c.pase ? data.activities.filter(a => a.id !== c.pase) : data.activities, settings: { ...data.settings, candado: { llave: c.llave } } }
 }
 
 export function nuevaLlave(): string {

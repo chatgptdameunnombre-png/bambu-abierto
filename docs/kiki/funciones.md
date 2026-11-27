@@ -124,3 +124,7 @@ Nombres serios como vicios a vencer: Letargo, Inercia, Abismo, Pretexto, Sopor, 
 ## Lo que viene
 
 Ajedrez (contra un bot y en línea con amigos): se probó y se quitó el 25-nov-2026; se va a incluir después. Ver [pendientes.md](pendientes.md).
+
+## Bloqueo de redes (candado)
+
+Al abrir Instagram, TikTok u otra, el atajo de Atajos revisa tu pase en la nube. Si no hay, te manda a bambú: ves tu saldo (libres + ganados − usados), abres 5, 10, 15 o 30 min, o ganas más con la cámara (buscador de ejercicios). **1 h libre al día** por defecto (Ajustes → Bloqueo de redes: ninguno, 15, 30 min, 1 h, 1 h 30 o 2 h). **Cualquier ejercicio que cuente la cámara suma minutos** (rutina, Libre, retos y Redes); lo anotado a mano no. La cámara dice en vivo "+N min" y cuánto falta para el siguiente. **Emergencia**: 10 min sin gastar minutos, sin límite. Si el atajo te regresa con el pase abierto, puedes devolverte los minutos en los primeros 3 minutos. La hora del pase va como `AAAA-MM-DD HH:MM:SS` (con `T` y zona, Atajos la leía como las 12:00).

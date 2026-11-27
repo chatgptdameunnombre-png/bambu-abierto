@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { dateKey, type AppData, type Routine, type RoutineItem, type RoutineKind, type TrainPlan } from './lib/model'
-import { applyBump, bumps, CATALOG, clockOf, doneCount, label, lockActive, logSet, newItem, nextStep, planOf, quietBump, roundsOf, routineProgress, setsNeeded, stepsOf, undoLast, weekIndex, WEEK_DAYS, WEEK_SHORT, type Step } from './lib/rutina'
+import { applyBump, bumps, CATALOG, clockOf, doneCount, label, lockActive, logSet, newItem, nextStep, planOf, quietBump, roundsOf, routineFor, routineProgress, setsNeeded, stepsOf, undoLast, weekIndex, WEEK_DAYS, WEEK_SHORT, type Step } from './lib/rutina'
 import { XP } from './lib/xp'
 import { chime, useNow, useWakeLock } from './ui'
 import { haptic } from './lib/haptic'
@@ -15,6 +15,8 @@ import { RedesPage } from './Candado'
 import { DuelosPage, useDuelosToca } from './Duelos'
 import { BotonCamara, CamaraValor } from './Candado'
 import { conCamara } from './lib/minutos'
+import { DeporteSheet } from './DeporteSheet'
+import { ajusteDe, decision, deportesOn, INTENSIDADES, lista, nombreDeporte } from './lib/deportes'
 
 type Commit = (update: (d: AppData) => AppData) => void
 type Msg = (t: string, undo?: () => void) => void
@@ -263,8 +265,14 @@ export function MiRutina({ data, commit, onMessage, onIr }: { data: AppData; com
   const [run, setRunState] = useState<{ start: string | null } | null>(() => runSaved(today) ? { start: null } : null)
   const setRun = (v: { start: string | null } | null) => { try { if (v) localStorage.setItem(RUN_KEY, today); else localStorage.removeItem(RUN_KEY) } catch { /* solo recuerda la rutina abierta */ } setRunState(v) }
   const plan = planOf(data)
-  const rt = plan.week[view]
   const isToday = view === todayIdx
+  const rtBase = plan.week[view]
+  const rt = isToday && rtBase && rtBase.items.length ? routineFor(data, today) : rtBase
+  const hoyDeportes = isToday ? deportesOn(data, today) : []
+  const aj = isToday ? ajusteDe(data, today) : null
+  const [deporte, setDeporte] = useState(false)
+  const borrarDeporte = (id: string) => { const a = data.activities.find(x => x.id === id); commit(d => ({ ...d, activities: d.activities.filter(x => x.id !== id) })); if (a) onMessage(`${nombreDeporte(a)} borrado.`, () => commit(d => d.activities.some(x => x.id === a.id) ? d : { ...d, activities: [...d.activities, a] })) }
+  const sinCambiar = () => { haptic(8); commit(d => ({ ...d, activities: d.activities.map(x => x.day === today && x.deporte ? { ...x, sinAjuste: true } : x) })); onMessage('Listo: tu rutina de hoy se queda igual.') }
   const prog = rt && isToday ? routineProgress(data, today, rt) : null
   const next = rt && isToday ? nextStep(data, today, rt) : null
   const locked = lockActive(data, today, clockOf(Date.now()))
@@ -289,6 +297,7 @@ export function MiRutina({ data, commit, onMessage, onIr }: { data: AppData; com
   if (mode === 'duelos') return <div className="d-page">{modeBar}<DuelosPage data={data} commit={commit} onMessage={onMessage} onAmigos={onIr ? () => onIr('Amigos') : undefined} /></div>
   if (mode === 'redes') return <div className="d-page">{modeBar}<RedesPage data={data} commit={commit} onAjustes={onIr ? () => onIr('Ajustes') : undefined} /></div>
   const sheets = <>
+    {deporte && <DeporteSheet data={data} commit={commit} onClose={() => setDeporte(false)} onMessage={onMessage} />}
     {armar && <ArmarSheet data={data} reemplaza={!vacia} onClose={() => setArmar(false)} onUsar={(week, r) => { commit(d => ({ ...d, settings: { ...d.settings, equipment: r.equipo, train: { ...planOf(d), week } } })); setArmar(false); setElegir(false); onMessage('Tu rutina está lista. Si un ejercicio no te gusta o no puedes, toca Cambiar.') }} />}
     {cambiar && <CambiarSheet data={data} nombre={cambiar.name} kind={cambiar.kind} onClose={() => setCambiar(null)} onCambiar={o => { savePlan(cambiarEnSemana(plan, cambiar.name, o)); onMessage(`${cambiar.name} cambió por ${o.name} en todos tus días.`); setCambiar(null) }} onQuitar={() => { savePlan(quitarDeSemana(plan, cambiar.name)); onMessage(`${cambiar.name} ya no está en tu rutina.`); setCambiar(null) }} />}
   </>
@@ -311,10 +320,23 @@ export function MiRutina({ data, commit, onMessage, onIr }: { data: AppData; com
       <div className="d-hero-text">
         <p>{isToday ? 'Hoy toca' : WEEK_DAYS[view]}</p>
         <h1>{rt ? rt.title : 'Descanso'}</h1>
-        {rt && <span>{rt.rounds} rondas · {rt.items.length} ejercicios</span>}
+        {rt ? <span>{rt.rounds} rondas · {rt.items.length} ejercicios</span> : isToday && aj && rtBase?.items.length ? <span>Por {lista(aj.nombres.map(n => n.toLowerCase()))}: ya cumpliste</span> : null}
       </div>
       <DuoIcon name={locked && isToday ? 'candado' : 'pesa'} size={64} />
     </div>
+
+    {isToday && !editing && <div className="d-deporte-hoy">
+      {hoyDeportes.length > 0 && <div className="d-card">
+        <div className="d-card-head"><h2>Otros deportes hoy</h2><DuoIcon name="trofeo" size={34} /></div>
+        <ul className="d-deporte-hechos">{hoyDeportes.map(a => <li key={a.id}>
+          <span><b>{nombreDeporte(a)}</b><small>{a.minutes} min · {INTENSIDADES.find(([v]) => v === a.intensity)?.[1] ?? 'Normal'}{a.sinAjuste ? ' · no cambia tu rutina' : ''}</small></span>
+          <button type="button" className="d-x" aria-label={`Borrar ${nombreDeporte(a)}`} onClick={() => borrarDeporte(a.id)}>×</button>
+        </li>)}</ul>
+        {aj && aj.nivel !== 'nada' && !!rtBase?.items.length && <p className="d-deporte-dice">{decision(aj, rtBase)}</p>}
+        {aj && aj.nivel !== 'nada' && !!rtBase?.items.length && <button type="button" className="d-btn white wide small" onClick={sinCambiar}>Que no cambie mi rutina</button>}
+      </div>}
+      <button type="button" className="d-btn white wide" onClick={() => { haptic(8); setDeporte(true) }}><DuoIcon name="trofeo" size={24} />Hice otro deporte</button>
+    </div>}
 
     {editing ? <Editor plan={plan} day={view} onCancel={() => setEditing(false)} onSave={p => { savePlan(p); setEditing(false); onMessage(`Rutina del ${WEEK_DAYS[view].toLowerCase()} guardada.`) }} /> : <>
       {isToday && rt && prog && <div className="d-card d-now">

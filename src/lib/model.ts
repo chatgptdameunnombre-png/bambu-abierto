@@ -39,7 +39,7 @@ export type TrainingSet = {
   reps?: number; seconds?: number; loadKg?: number; rir?: number; note?: string
 }
 export type Sport = 'caminar' | 'correr' | 'bici'
-export type Activity = { id: string; day: string; kind: 'football' | 'rest' | 'walk' | 'other'; minutes?: number; intensity?: number; note?: string; sport?: Sport; km?: number }
+export type Activity = { id: string; day: string; kind: 'football' | 'rest' | 'walk' | 'other'; minutes?: number; intensity?: number; note?: string; sport?: Sport; km?: number; deporte?: string; sinAjuste?: boolean }
 export type Checkin = {
   id: string; day: string; sleepHours?: number; energy?: number; steps?: number
   soreness?: string[]; pain?: string; painNote?: string; proteinMeals?: number; realFood?: boolean
@@ -287,7 +287,7 @@ export function cleanActivityRow(value: Rec): Activity | null {
   if (!id || !kind || !isDay(value.day)) return null
   const sport = (['caminar', 'correr', 'bici'] as const).find(k => k === value.sport)
   const km = num(value.km, 0, 500)
-  return compact({ id, day: value.day, kind, minutes: int(value.minutes, 1, 1440), intensity: int(value.intensity, 1, 3), note: cleanText(value.note, 300) || undefined, sport, km: km !== undefined ? Math.round(km * 100) / 100 : undefined })
+  return compact({ id, day: value.day, kind, minutes: int(value.minutes, 1, 1440), intensity: int(value.intensity, 1, 3), note: cleanText(value.note, 300) || undefined, sport, km: km !== undefined ? Math.round(km * 100) / 100 : undefined, deporte: typeof value.deporte === 'string' && /^[a-z]{2,20}$/.test(value.deporte) ? value.deporte : undefined, sinAjuste: value.sinAjuste === true ? true : undefined })
 }
 export function cleanCheckinRow(value: Rec): Checkin | null {
   if (!isDay(value.day)) return null

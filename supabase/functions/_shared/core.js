@@ -396,7 +396,9 @@ function cleanActivityRow(value) {
 		intensity: int(value.intensity, 1, 3),
 		note: cleanText(value.note, 300) || void 0,
 		sport,
-		km: km !== void 0 ? Math.round(km * 100) / 100 : void 0
+		km: km !== void 0 ? Math.round(km * 100) / 100 : void 0,
+		deporte: typeof value.deporte === "string" && /^[a-z]{2,20}$/.test(value.deporte) ? value.deporte : void 0,
+		sinAjuste: value.sinAjuste === true ? true : void 0
 	});
 }
 function cleanCheckinRow(value) {
@@ -1901,6 +1903,280 @@ function massPlan(data, today = dateKey()) {
 	};
 }
 //#endregion
+//#region src/lib/musculoNombre.ts
+var GUESS = [
+	[/handstand|pike|hombro|parado de cabeza|planche/, "Hombros"],
+	[/lagartij|push|fondo|pecho/, "Pecho"],
+	[/domin|chin|pull|remo|australian|lever|muscle up|espalda|toalla/, "Espalda"],
+	[/sentadill|squat|desplante|zancada|talon|gluteo|wall sit|puente|pierna|nordic/, "Piernas"],
+	[/abs|abdom|plancha|hollow|russian|crunch|l sit|dragon|v-up|toes/, "Abdomen"],
+	[/bicep|tricep|curl|brazo|antebrazo|colgar/, "Brazos"]
+];
+var sinAcentos = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+function musculoDeNombre(name) {
+	const n = sinAcentos(name);
+	return GUESS.find(([re]) => re.test(n))?.[1] ?? null;
+}
+//#endregion
+//#region src/lib/deportes.ts
+var TODO = [
+	"Pecho",
+	"Espalda",
+	"Hombros",
+	"Brazos",
+	"Abdomen",
+	"Piernas"
+];
+var DEPORTES = [
+	{
+		id: "futbol",
+		name: "Fútbol",
+		musculos: ["Piernas"]
+	},
+	{
+		id: "basquet",
+		name: "Básquet",
+		musculos: ["Piernas", "Hombros"]
+	},
+	{
+		id: "voleibol",
+		name: "Vóleibol",
+		musculos: ["Piernas", "Hombros"]
+	},
+	{
+		id: "americano",
+		name: "Fútbol americano",
+		musculos: [
+			"Piernas",
+			"Pecho",
+			"Hombros"
+		]
+	},
+	{
+		id: "beisbol",
+		name: "Béisbol",
+		musculos: ["Hombros", "Brazos"]
+	},
+	{
+		id: "rugby",
+		name: "Rugby",
+		musculos: [
+			"Piernas",
+			"Pecho",
+			"Hombros"
+		]
+	},
+	{
+		id: "hockey",
+		name: "Hockey",
+		musculos: ["Piernas"]
+	},
+	{
+		id: "handball",
+		name: "Handball",
+		musculos: ["Piernas", "Hombros"]
+	},
+	{
+		id: "escalar",
+		name: "Escalar",
+		musculos: [
+			"Espalda",
+			"Brazos",
+			"Abdomen"
+		]
+	},
+	{
+		id: "nadar",
+		name: "Nadar",
+		musculos: [
+			"Espalda",
+			"Hombros",
+			"Pecho"
+		]
+	},
+	{
+		id: "box",
+		name: "Box",
+		musculos: [
+			"Hombros",
+			"Brazos",
+			"Abdomen"
+		]
+	},
+	{
+		id: "artes",
+		name: "Artes marciales",
+		musculos: [
+			"Piernas",
+			"Abdomen",
+			"Hombros"
+		]
+	},
+	{
+		id: "lucha",
+		name: "Lucha o jiu-jitsu",
+		musculos: [
+			"Espalda",
+			"Brazos",
+			"Abdomen"
+		]
+	},
+	{
+		id: "correr",
+		name: "Correr",
+		musculos: ["Piernas"]
+	},
+	{
+		id: "bici",
+		name: "Bici",
+		musculos: ["Piernas"]
+	},
+	{
+		id: "caminar",
+		name: "Caminar",
+		musculos: ["Piernas"]
+	},
+	{
+		id: "senderismo",
+		name: "Senderismo",
+		musculos: ["Piernas"]
+	},
+	{
+		id: "tenis",
+		name: "Tenis",
+		musculos: [
+			"Hombros",
+			"Brazos",
+			"Piernas"
+		]
+	},
+	{
+		id: "padel",
+		name: "Pádel",
+		musculos: [
+			"Hombros",
+			"Brazos",
+			"Piernas"
+		]
+	},
+	{
+		id: "frontenis",
+		name: "Frontenis",
+		musculos: [
+			"Hombros",
+			"Brazos",
+			"Piernas"
+		]
+	},
+	{
+		id: "pingpong",
+		name: "Ping pong",
+		musculos: ["Brazos"]
+	},
+	{
+		id: "badminton",
+		name: "Bádminton",
+		musculos: ["Hombros", "Piernas"]
+	},
+	{
+		id: "remo",
+		name: "Remo",
+		musculos: [
+			"Espalda",
+			"Brazos",
+			"Piernas"
+		]
+	},
+	{
+		id: "surf",
+		name: "Surf",
+		musculos: ["Espalda", "Hombros"]
+	},
+	{
+		id: "patinar",
+		name: "Patinar o skate",
+		musculos: ["Piernas"]
+	},
+	{
+		id: "baile",
+		name: "Baile",
+		musculos: ["Piernas"]
+	},
+	{
+		id: "yoga",
+		name: "Yoga",
+		musculos: []
+	},
+	{
+		id: "pilates",
+		name: "Pilates",
+		musculos: ["Abdomen"]
+	},
+	{
+		id: "crossfit",
+		name: "CrossFit",
+		musculos: TODO
+	},
+	{
+		id: "pesas",
+		name: "Gimnasio con pesas",
+		musculos: TODO
+	},
+	{
+		id: "golf",
+		name: "Golf",
+		musculos: []
+	}
+];
+function deportePorId(id) {
+	return DEPORTES.find((d) => d.id === id) ?? null;
+}
+function carga(minutos, intensidad) {
+	return minutos * (intensidad >= 3 ? 2 : intensidad === 2 ? 1.5 : 1);
+}
+function nivelDe(c) {
+	return c >= 120 ? "descanso" : c >= 45 ? "rebaja" : "nada";
+}
+function nombreDeporte(a) {
+	return deportePorId(a.deporte)?.name ?? ((a.note ?? "").replace("Deporte:", "").trim() || "Otro deporte");
+}
+function deportesOn(data, day) {
+	return data.activities.filter((a) => a.day === day && !!a.deporte);
+}
+function resumen(list) {
+	if (!list.length) return null;
+	const minutos = list.reduce((m, a) => m + (a.minutes ?? 0), 0);
+	const c = list.reduce((m, a) => m + carga(a.minutes ?? 0, a.intensity ?? 2), 0);
+	const musculos = [...new Set(list.flatMap((a) => deportePorId(a.deporte)?.musculos ?? []))];
+	return {
+		nivel: nivelDe(c),
+		musculos,
+		nombres: list.map(nombreDeporte),
+		minutos
+	};
+}
+function ajusteDe(data, day) {
+	return resumen(deportesOn(data, day).filter((a) => !a.sinAjuste));
+}
+function ajustar(rt, aj) {
+	if (!aj || aj.nivel === "nada") return rt;
+	if (aj.nivel === "descanso") return null;
+	const usado = (name) => {
+		const m = musculoDeNombre(name);
+		return !!m && aj.musculos.includes(m);
+	};
+	const items = rt.items.filter((i) => i.when || !usado(i.name)).map((i) => !i.when && i.rounds ? {
+		...i,
+		rounds: Math.min(i.rounds, 2)
+	} : i);
+	if (!items.some((i) => !i.when)) return null;
+	return {
+		...rt,
+		rounds: Math.min(rt.rounds, 2),
+		items
+	};
+}
+//#endregion
 //#region src/lib/rutina.ts
 var r = (n, t) => [
 	n,
@@ -2071,7 +2347,7 @@ function planOf(data) {
 }
 function routineFor(data, day) {
 	const rt = planOf(data).week[weekIndex(day)];
-	return rt && rt.items.length ? rt : null;
+	return rt && rt.items.length ? ajustar(rt, ajusteDe(data, day)) : null;
 }
 function trainedOn(data, day) {
 	return data.sets.some((x) => x.day === day);

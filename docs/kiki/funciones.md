@@ -128,3 +128,8 @@ Ajedrez (contra un bot y en línea con amigos): se probó y se quitó el 25-nov-
 ## Bloqueo de redes (candado)
 
 Al abrir Instagram, TikTok u otra, el atajo de Atajos revisa tu pase en la nube. Si no hay, te manda a bambú: ves tu saldo (libres + ganados − usados), abres 5, 10, 15 o 30 min, o ganas más con la cámara (buscador de ejercicios). **1 h libre al día** por defecto (Ajustes → Bloqueo de redes: ninguno, 15, 30 min, 1 h, 1 h 30 o 2 h). **Cualquier ejercicio que cuente la cámara suma minutos** (rutina, Libre, retos y Redes); lo anotado a mano no. La cámara dice en vivo "+N min" y cuánto falta para el siguiente. **Emergencia**: 10 min sin gastar minutos, sin límite. Si el atajo te regresa con el pase abierto, puedes devolverte los minutos en los primeros 3 minutos. La hora del pase va como `AAAA-MM-DD HH:MM:SS` (con `T` y zona, Atajos la leía como las 12:00).
+
+## Hice otro deporte
+
+En Entrenar → Rutina → Hoy. Buscas el deporte (31 en la lista y "Otro"), eliges cuánto tiempo (30 min a 2 h) y qué tan fuerte (suave, normal, fuerte). Bambú decide con minutos × intensidad (suave 1, normal 1.5, fuerte 2): **120 o más** = descansas, cuenta como tu entreno (XP de rutina y sin candado de la hora de entrenar); **45 a 119** = te quita los músculos que ya usaste (fútbol, correr y bici: pierna; escalar: espalda, brazos y abdomen; nadar: espalda, hombros y pecho; box: hombros, brazos y abdomen) y baja a 2 rondas; **menos de 45** = no cambia nada. Si no te convence: "Solo registrarlo" o, ya guardado, "Que no cambie mi rutina". Se borra con ×.
+

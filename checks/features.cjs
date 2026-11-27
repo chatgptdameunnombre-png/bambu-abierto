@@ -2435,3 +2435,38 @@ async function audioChecks() {
   assert.ok(sw.includes('Promise.race') && sw.includes('1500'), 'con señal lenta abre lo guardado')
   ok('candado: hora del pase que entiende Atajos, devolver minutos si el atajo te regresa, emergencia de 10 min sin límite, tus minutos del 26-nov de vuelta, buscador y cuánto vas ganando')
 }
+
+{
+  const D = moduleOf('deportes')
+  const R = moduleOf('rutina')
+  const day = '2026-11-26'
+  const it = (name, kind = 'reps', target = 10) => ({ id: name, name, kind, target })
+  const semana = R.seedWeek()
+  const idx = R.weekIndex(day)
+  semana.week[idx] = { day: idx, title: 'Cuerpo completo', rounds: 3, items: [it('Sentadillas'), it('Lagartijas'), it('Dominadas', 'reps', 5), it('Plancha', 'seconds', 30), it('Desplantes')] }
+  let d = normalizeData({ ...EMPTY_DATA, profile: { name: 'K', onboardingComplete: true }, settings: { ...EMPTY_DATA.settings, train: semana } })
+  assert.equal(R.routineFor(d, day).items.length, 5)
+  assert.equal(D.buscarDeportes('futb').map(x => x.name).join(), 'Fútbol,Fútbol americano', 'buscador sin acentos')
+  assert.ok(D.DEPORTES.length >= 25)
+  assert.deepEqual([[30, 1], [45, 2], [60, 2], [90, 2], [60, 3], [120, 1]].map(([m, i]) => D.nivelDe(D.carga(m, i))), ['nada', 'rebaja', 'rebaja', 'descanso', 'descanso', 'descanso'])
+  const fut = D.deportePorId('futbol')
+  const conFut = (min, int, ajusta = true) => normalizeData({ ...d, activities: [...d.activities, D.deporteActivity(day, fut, '', min, int, ajusta)] })
+  const rebaja = R.routineFor(conFut(45, 2), day)
+  assert.deepEqual(rebaja.items.map(i => i.name), ['Lagartijas', 'Dominadas', 'Plancha'], 'fútbol moderado quita pierna')
+  assert.equal(rebaja.rounds, 2, 'y baja a 2 rondas')
+  assert.equal(R.routineFor(conFut(90, 2), day), null, 'fútbol fuerte: descanso, cuenta como entreno')
+  assert.equal(R.lockActive({ ...conFut(90, 2), settings: { ...conFut(90, 2).settings, train: { ...semana, lock: true, deadline: '08:00' } } }, day, '20:00'), false, 'el deporte fuerte quita el candado de la hora de entrenar')
+  assert.equal(R.routineFor(conFut(90, 3, false), day).items.length, 5, 'solo registrarlo no cambia la rutina')
+  assert.equal(R.routineFor(conFut(30, 1), day).items.length, 5, 'algo ligero no cambia nada')
+  const esc = normalizeData({ ...d, activities: [...d.activities, D.deporteActivity(day, D.deportePorId('escalar'), '', 60, 2, true)] })
+  assert.deepEqual(R.routineFor(esc, day).items.map(i => i.name), ['Sentadillas', 'Lagartijas', 'Desplantes'], 'escalar quita jalón y abdomen')
+  const otro = normalizeData({ ...d, activities: [...d.activities, D.deporteActivity(day, null, 'Paintball', 60, 2, true)] })
+  assert.equal(D.nombreDeporte(otro.activities.at(-1)), 'Paintball')
+  assert.equal(otro.activities.at(-1).deporte, 'otro')
+  assert.equal(R.routineFor(otro, day).rounds, 2, 'un deporte que no conozco solo baja rondas')
+  assert.equal(D.decision(D.ajusteDe(conFut(45, 2), day), semana.week[idx]), 'Te quito pierna y bajo a 2 rondas.')
+  assert.equal(D.decision(D.ajusteDe(conFut(90, 2), day), semana.week[idx]), 'Hoy descansas: ya cumpliste tu entreno.')
+  assert.equal(moduleOf('xp').xpOn(conFut(90, 2), day) - moduleOf('xp').xpOn(d, day), 30, 'el deporte fuerte da XP como una rutina')
+  assert.equal(normalizeData({ ...d, activities: [{ id: 'x1', day, kind: 'other', deporte: 'NO VALE', sinAjuste: 'si' }] }).activities[0].deporte, undefined)
+  ok('otros deportes: buscador, duración e intensidad deciden descanso, quitar músculos usados o nada; solo registrarlo no cambia la rutina; da XP y quita el candado de la hora')
+}

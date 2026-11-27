@@ -1,6 +1,7 @@
 import { activeHabits, dateKey, type AppData } from './model'
 import { dayScore, firstDay, gardenStats, GOOD, habitOn, shiftDay } from './jardin'
 import { clockOf, lockActive, planOf, routineFor, routineProgress } from './rutina'
+import { deporteXpOn } from './deportes'
 import { realReading } from './progress'
 import { challengeXpOn } from './libre'
 import { cardioXpOn } from './cardio'
@@ -26,7 +27,7 @@ export function xpOn(data: AppData, day: string): number {
   const sets = data.sets.filter(s => s.day === day).length * XP.set
   const read = data.reading.some(r => r.day === day && realReading(r)) ? XP.read : 0
   const bonus = (routineDone(data, day) ? XP.routine : 0) + (dayScore(data, day).pct >= GOOD ? XP.goodDay : 0)
-  return habits + tasks + sets + read + bonus + challengeXpOn(data, day) + cardioXpOn(data, day) + adventureXpOn(data, day) + dungeonXpOn(data, day) + seasonXpOn(data, day) + bossXpOn(data, day)
+  return habits + tasks + sets + read + bonus + challengeXpOn(data, day) + cardioXpOn(data, day) + adventureXpOn(data, day) + dungeonXpOn(data, day) + seasonXpOn(data, day) + bossXpOn(data, day) + deporteXpOn(data, day)
 }
 
 export function totalXp(data: AppData, today = dateKey()): number {

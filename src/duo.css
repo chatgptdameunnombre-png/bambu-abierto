@@ -1454,3 +1454,30 @@ button.d-card { box-shadow: 0 4px 0 var(--d-line); }
 .d-consent { display: grid; gap: 14px; }
 .d-check { display: flex; gap: 12px; align-items: flex-start; padding: 12px; border: 2px solid var(--d-line); border-radius: 14px; background: var(--d-surface); font-size: 15px; font-weight: 700; line-height: 1.4; color: var(--d-ink); cursor: pointer; }
 .d-check input { flex: none; width: 24px; height: 24px; margin: 0; accent-color: var(--d-green); }
+.d-deporte { display: grid; gap: 14px; }
+.d-deporte-lista { display: flex; flex-wrap: wrap; gap: 8px; }
+.d-deporte-lista button { min-height: 46px; padding: 8px 14px; border: 2px solid var(--d-line); border-radius: 14px; background: var(--d-surface); box-shadow: 0 3px 0 var(--d-line); color: var(--d-ink); font: inherit; font-size: 16px; font-weight: 800; cursor: pointer; }
+.d-deporte-lista button:active { transform: translateY(3px); box-shadow: none; }
+.d-deporte-lista button.otro { border-style: dashed; color: var(--d-blue); }
+.d-deporte-elegido { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border: 2px solid var(--d-green-lip); border-radius: 16px; background: var(--d-green-light); }
+.d-deporte-elegido b { font-size: 22px; font-weight: 900; color: var(--d-green-ink); }
+.d-deporte-elegido .d-input { flex: 1; min-width: 0; }
+.d-deporte-int { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.d-deporte-int button { display: grid; gap: 2px; justify-items: center; padding: 10px 6px; border: 2px solid var(--d-line); border-radius: 14px; background: var(--d-surface); box-shadow: 0 3px 0 var(--d-line); color: var(--d-ink); font: inherit; cursor: pointer; }
+.d-deporte-int button b { font-size: 16px; font-weight: 900; }
+.d-deporte-int button small { font-size: 12px; font-weight: 700; color: var(--d-dim); text-align: center; line-height: 1.2; }
+.d-deporte-int button.on { border-color: var(--d-blue); background: var(--d-blue-light); box-shadow: 0 3px 0 var(--d-blue-edge); }
+.d-deporte-int button.on b { color: var(--d-blue); }
+.d-deporte-decision { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; background: var(--d-surface); border: 2px solid var(--d-line); color: var(--d-dim); }
+.d-deporte-decision p { margin: 0; display: grid; gap: 2px; color: var(--d-ink); font-size: 16px; font-weight: 800; }
+.d-deporte-decision small { color: var(--d-dim); font-size: 12px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; }
+.d-deporte-decision.descanso { border-color: var(--d-green-lip); background: var(--d-green-light); color: var(--d-green-ink); }
+.d-deporte-decision.rebaja { border-color: var(--d-gold-lip); background: var(--d-gold-light); color: var(--d-gold); }
+.d-deporte-hoy { display: grid; gap: 12px; margin-bottom: 14px; }
+.d-deporte-hoy > .d-btn { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.d-deporte-hechos { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 8px; }
+.d-deporte-hechos li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border: 2px solid var(--d-line); border-radius: 14px; background: var(--d-bg); }
+.d-deporte-hechos span { display: grid; gap: 2px; }
+.d-deporte-hechos b { font-size: 17px; font-weight: 900; }
+.d-deporte-hechos small { color: var(--d-dim); font-weight: 700; }
+.d-deporte-dice { margin: 0 0 10px; font-size: 16px; font-weight: 800; color: var(--d-green-ink); }

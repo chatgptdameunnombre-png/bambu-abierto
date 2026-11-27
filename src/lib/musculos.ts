@@ -1,24 +1,14 @@
 import type { AppData, TrainingSet } from './model'
 import { exerciseList } from './libre'
+import { musculoDeNombre } from './musculoNombre'
 
 export type Muscle = 'Pecho' | 'Espalda' | 'Hombros' | 'Brazos' | 'Abdomen' | 'Piernas'
 export const MUSCLES: Muscle[] = ['Pecho', 'Espalda', 'Hombros', 'Brazos', 'Abdomen', 'Piernas']
 
 const BY_GROUP: Record<string, Muscle> = { Pecho: 'Pecho', Espalda: 'Espalda', Hombros: 'Hombros', Abdomen: 'Abdomen', Piernas: 'Piernas', 'Bíceps': 'Brazos', 'Tríceps': 'Brazos', Antebrazo: 'Brazos' }
-const GUESS: [RegExp, Muscle][] = [
-  [/handstand|pike|hombro|parado de cabeza|planche/, 'Hombros'],
-  [/lagartij|push|fondo|pecho/, 'Pecho'],
-  [/domin|chin|pull|remo|australian|lever|muscle up|espalda|toalla/, 'Espalda'],
-  [/sentadill|squat|desplante|zancada|talon|gluteo|wall sit|puente|pierna|nordic/, 'Piernas'],
-  [/abs|abdom|plancha|hollow|russian|crunch|l sit|dragon|v-up|toes/, 'Abdomen'],
-  [/bicep|tricep|curl|brazo|antebrazo|colgar/, 'Brazos'],
-]
-const plain = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
-
 export function muscleOf(name: string, group: string): Muscle | null {
   if (BY_GROUP[group]) return BY_GROUP[group]
-  const n = plain(name)
-  return GUESS.find(([re]) => re.test(n))?.[1] ?? null
+  return musculoDeNombre(name)
 }
 
 export type Period = 'semana' | 'mes' | 'siempre'

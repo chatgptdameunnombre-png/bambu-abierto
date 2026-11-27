@@ -1,3 +1,4 @@
+import { ajustar, ajusteDe } from './deportes'
 import { makeId, type AppData, type Routine, type RoutineItem, type RoutineKind, type TrainPlan, type TrainingSet } from './model'
 
 export const WEEK_DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
@@ -71,7 +72,7 @@ export function planOf(data: AppData): TrainPlan {
 }
 export function routineFor(data: AppData, day: string): Routine | null {
   const rt = planOf(data).week[weekIndex(day)]
-  return rt && rt.items.length ? rt : null
+  return rt && rt.items.length ? ajustar(rt, ajusteDe(data, day)) : null
 }
 
 export type Step = { item: RoutineItem; round: number; of: number; phase: 'before' | 'circuit' | 'after'; slot: number; side?: 1 | 2 }

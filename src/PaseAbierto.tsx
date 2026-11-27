@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { DuoIcon } from './DuoIcons'
-import { guardarPase } from './lib/firebase'
+import { avisarFinPase, guardarPase } from './lib/firebase'
 import { haptic } from './lib/haptic'
 import { hastaTexto, sobranDe, terminarPase } from './lib/minutos'
 import type { AppData } from './lib/model'
@@ -31,6 +31,7 @@ export function PaseAbierto({ data, commit, onMessage, boton = false }: { data: 
       return
     }
     commit(d => terminarPase(d, ahora))
+    if (data.settings.avisos) avisarFinPase(0)
     setBusy(false)
     onMessage(devueltos > 0 ? `Pase cerrado. Te devolví ${devueltos} min.` : 'Pase cerrado.')
   }

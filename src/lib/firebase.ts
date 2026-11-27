@@ -372,6 +372,11 @@ export async function guardarAvisos(uid: string, sub: Suscripcion, hora: string,
 export async function estadoAvisos(uid: string, e: EstadoAvisos): Promise<void> {
   await conToken(`${DOCS}:commit`, { writes: [{ update: { name: `${ROOT}/bambu_avisos/${uid}`, fields: toFields({ ...e }) }, updateMask: { fieldPaths: ['ultimo', 'hecho', 'racha'] }, currentDocument: { exists: true }, updateTransforms: stamp }] })
 }
+export function avisarFinPase(hasta: number): void {
+  const s = actual
+  if (!s) return
+  void conToken(`${DOCS}:commit`, { writes: [{ update: { name: `${ROOT}/bambu_avisos/${s.uid}`, fields: toFields({ paseHasta: Math.max(0, Math.round(hasta)) }) }, updateMask: { fieldPaths: ['paseHasta'] }, currentDocument: { exists: true }, updateTransforms: stamp }] }).catch(() => undefined)
+}
 export async function borrarAvisos(uid: string): Promise<void> {
   await conToken(`${DOCS}:commit`, { writes: [{ delete: `${ROOT}/bambu_avisos/${uid}` }] })
 }

@@ -2,7 +2,7 @@ import { lazy, Suspense, useState } from 'react'
 import { dateKey, type AppData } from './lib/model'
 import { CAMARA_BASICOS, CAMARA_GRUPOS, esCamara, tipoDe, type Tipo } from './lib/conteo'
 import { conCamara, DEVOLVER_MS, devolverPase, EMERGENCIA_MIN, emergenciaActivity, faltan, gastados, ganados, hastaTexto, LIBRES_OPCIONES, libresDe, minutosDe, nuevaLlave, paseAbierto, paseActivity, PASES, saldo, semanaMinutos, tasaCorta, tasaTexto } from './lib/minutos'
-import { borrarPase, guardarPase, urlPase } from './lib/firebase'
+import { avisarFinPase, borrarPase, guardarPase, urlPase } from './lib/firebase'
 import { clockOf, lockActive, planOf } from './lib/rutina'
 import { pauseActivity, pauseApp, PAUSE_APPS } from './lib/pause'
 import { DuoIcon } from './DuoIcons'
@@ -149,6 +149,7 @@ export function CandadoPage({ data, commit, app, onSalir }: { data: AppData; com
     }
     const act = urgencia ? emergenciaActivity(today, elegida?.id ?? 'redes') : paseActivity(today, elegida?.id ?? 'redes', min)
     commit(d => d.activities.some(a => a.id === act.id) ? d : { ...d, activities: [...d.activities, act], settings: { ...d.settings, candado: { llave, desde, hasta: fin, pase: act.id } } })
+    if (data.settings.avisos) avisarFinPase(fin)
     setPaso('listo')
     if (elegida?.scheme) window.location.href = elegida.scheme
   }
@@ -161,6 +162,7 @@ export function CandadoPage({ data, commit, app, onSalir }: { data: AppData; com
     haptic(10)
     try { await guardarPase(llave, hastaTexto(0)) } catch { setNota('No se pudo. Revisa tu señal.'); return }
     commit(devolverPase)
+    if (data.settings.avisos) avisarFinPase(0)
     setNota('Te devolví los minutos. Revisa el atajo en Ajustes → Bloqueo de redes.')
     setPaso('inicio')
   }

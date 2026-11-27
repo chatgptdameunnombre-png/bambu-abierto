@@ -2522,3 +2522,11 @@ async function audioChecks() {
   assert.ok(cand.includes('Abrir mis redes') && cand.includes("new URL('?candado=redes', document.baseURI)"), 'en Redes se abre un pase sin pasar por Safari')
   ok('abrir mis redes desde la app de la pantalla de inicio: botón en Redes y minutos arriba')
 }
+
+{
+  const leer = f => fs.readFileSync(path.join(__dirname, '..', f), 'utf8')
+  const fb = leer('src/lib/firebase.ts'), cand = leer('src/Candado.tsx'), pa = leer('src/PaseAbierto.tsx')
+  assert.ok(/fieldPaths: \['paseHasta'\]/.test(fb) && fb.includes('currentDocument: { exists: true }'), 'la hora del pase se guarda solo si ya tienes avisos')
+  assert.ok(cand.includes('avisarFinPase(fin)') && cand.includes('avisarFinPase(0)') && pa.includes('avisarFinPase(0)'), 'al abrir avisa la hora; al terminar o devolver la borra')
+  ok('aviso al teléfono 1 minuto antes y al acabar el pase (y se cancela con Ya terminé)')
+}

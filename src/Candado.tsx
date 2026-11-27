@@ -16,9 +16,9 @@ type Commit = (update: (d: AppData) => AppData) => void
 const APPS = PAUSE_APPS.filter(a => a.scheme)
 const hora = (ms: number) => new Date(ms).toLocaleTimeString('es-MX', { hour: 'numeric', minute: '2-digit' })
 
-export function CamaraValor({ ej, kind, onValor, onCerrar, limite, meta, redes = false, hastaFallar = false }: { ej: string; kind?: Tipo; onValor: (valor: number) => void; onCerrar: () => void; limite?: number; meta?: number; redes?: boolean; hastaFallar?: boolean }) {
+export function CamaraValor({ ej, kind, onValor, onCerrar, limite, meta, redes = false, hastaFallar = false, sinMinutos = false }: { ej: string; kind?: Tipo; onValor: (valor: number) => void; onCerrar: () => void; limite?: number; meta?: number; redes?: boolean; hastaFallar?: boolean; sinMinutos?: boolean }) {
   return <Suspense fallback={<div className="d-cam cargando"><div className="d-cam-intro"><h2>Preparando la cámara…</h2></div></div>}>
-    <CamaraReps ej={ej} kind={kind} onCerrar={onCerrar} onGuardar={onValor} limite={limite} meta={meta} redes={redes} hastaFallar={hastaFallar} />
+    <CamaraReps ej={ej} kind={kind} onCerrar={onCerrar} onGuardar={onValor} limite={limite} meta={meta} redes={redes} hastaFallar={hastaFallar} sinMinutos={sinMinutos} />
   </Suspense>
 }
 
@@ -80,7 +80,7 @@ export function RedesPage({ data, commit, onAjustes }: { data: AppData; commit: 
       <Saldo data={data} />
       {activo && !paseAbierto(data, Date.now()) && <button type="button" className="d-btn green wide d-abrir-redes" onClick={abrirRedes}><DuoIcon name="candado" size={24} />Abrir mis redes</button>}
       {activo && <PaseAbierto data={data} commit={commit} onMessage={setNota} boton />}
-      <p className="d-hint left">Cualquier ejercicio que cuente la cámara suma: aquí, en tu rutina, en Libre o en un reto. Se reinicia cada noche.{sem.ganados > 0 || sem.gastados > 0 ? ` Esta semana: ganaste ${sem.ganados} min y usaste ${sem.gastados}.` : ''}</p>
+      <p className="d-hint left">Suman los ejercicios que cuente la cámara aquí, en Libre o en un reto; tu rutina no cuenta. Se reinicia cada noche.{sem.ganados > 0 || sem.gastados > 0 ? ` Esta semana: ganaste ${sem.ganados} min y usaste ${sem.gastados}.` : ''}</p>
     </div>
 
     <div className="d-card d-redes-ganar">
@@ -214,7 +214,7 @@ export function CandadoPage({ data, commit, app, onSalir }: { data: AppData; com
           </div> : <p className="d-candado-falta">Ya no te quedan minutos. Gánalos con la cámara:</p>}
         {!data.settings.sinUsoImportante && <button type="button" className="d-btn white wide d-candado-urgencia" disabled={paso === 'abriendo'} onClick={emergencia}>{EMERGENCIA_MIN} min para uso importante</button>}
         <h2 className="d-sheet-h3">Gana más minutos</h2>
-        <p className="d-hint left">Cualquier ejercicio que cuente la cámara suma: aquí, en tu rutina, en Libre o en un reto.</p>
+        <p className="d-hint left">Suman los ejercicios que cuente la cámara aquí, en Libre o en un reto (tu rutina no cuenta).</p>
         <GanarMinutos onElegir={setEj} minimo={bloqueado || s >= PASES[0] ? 0 : PASES[0] - s} />
       </>}
       {!llave && nota && <p className="d-hint red">{nota}</p>}

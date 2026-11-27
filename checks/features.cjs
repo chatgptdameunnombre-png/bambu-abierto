@@ -2541,3 +2541,17 @@ async function audioChecks() {
   assert.ok((cuerpo.match(/tope\(/g) || []).length >= 4, 'prender avisos nunca se queda cargando para siempre')
   ok('prender avisos en iPhone: permiso primero y con tope de tiempo')
 }
+
+{
+  const mi = moduleOf('minutos'), L = moduleOf('libre')
+  const day = '2026-11-27'
+  const base = normalizeData({ ...EMPTY_DATA, profile: { name: 'K', onboardingComplete: true }, settings: { minLibres: 0 } })
+  const rut = mi.conCamara(base, day, 'Sentadillas', 'reps', 40, 1000, false, true)
+  assert.equal(rut.sets.at(-1).note, 'camara-rutina')
+  assert.equal(mi.ganados(rut, day), 0, 'los ejercicios de tu rutina no dan minutos de redes')
+  assert.equal(L.records(rut, undefined, true).get('Sentadillas').best, 40, 'pero sí cuentan como récord con cámara')
+  assert.equal(mi.ganados(mi.conCamara(base, day, 'Sentadillas', 'reps', 40, 1000), day), 10, 'Libre y retos sí dan minutos')
+  const src = fs.readFileSync(path.join(__dirname, '../src/MiRutina.tsx'), 'utf8')
+  assert.ok(src.includes('Date.now(), false, true)') && src.includes('sinMinutos'), 'la rutina guarda sin minutos y la cámara no enseña "vas ganando"')
+  ok('la rutina no da minutos de redes (Libre, retos y Redes sí)')
+}

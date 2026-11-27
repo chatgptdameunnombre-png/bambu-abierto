@@ -18,7 +18,8 @@ export function mondayOf(day: string): string {
 const counts = (s: TrainingSet) => s.note !== 'hecho' && ((s.reps ?? 0) > 0 || (s.seconds ?? 0) > 0)
 export const CAMARA_SET = 'camara'
 export const REDES_SET = 'redes'
-export const esNotaCamara = (note?: string) => note === CAMARA_SET || note === REDES_SET
+export const RUTINA_CAM_SET = 'camara-rutina'
+export const esNotaCamara = (note?: string) => note === CAMARA_SET || note === REDES_SET || note === RUTINA_CAM_SET
 export const conCamaraSet = (s: TrainingSet) => esNotaCamara(s.note) && counts(s)
 const valueOf = (s: TrainingSet) => s.seconds !== undefined ? s.seconds : s.reps ?? 0
 

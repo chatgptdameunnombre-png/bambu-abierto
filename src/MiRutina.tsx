@@ -78,7 +78,7 @@ function Runner({ data, commit, rt, today, start, rest, onClose }: { data: AppDa
     haptic([15, 30, 15])
     const before = step
     setTimer(t => ({ startedAt: null, before: t.before }))
-    commit(d => camara ? conCamara(d, today, item.name, item.kind === 'seconds' ? 'seconds' : 'reps', value) : logSet(d, today, item, value))
+    commit(d => camara ? conCamara(d, today, item.name, item.kind === 'seconds' ? 'seconds' : 'reps', value, Date.now(), false, true) : logSet(d, today, item, value))
     const after = steps.find(st => doneCount(data, today, st.item) + (st.item.name === item.name ? 1 : 0) < st.slot)
     const xp = XP.set + (after ? 0 : XP.routine)
     setEarned(e => e + xp)
@@ -159,7 +159,7 @@ function Runner({ data, commit, rt, today, start, rest, onClose }: { data: AppDa
       </button>}
       {item.kind === 'free' && <div className="d-dial gold"><DuoIcon name="estrella" size={96} /></div>}
       {item.kind !== 'free' && !feedback && !running && prepUntil === null && <BotonCamara ej={item.name} kind={item.kind} onClick={() => setCam(true)} />}
-      {cam && <CamaraValor ej={item.name} kind={item.kind} onCerrar={() => setCam(false)} onValor={v => { setCam(false); save(v, true) }} />}
+      {cam && <CamaraValor ej={item.name} kind={item.kind} sinMinutos onCerrar={() => setCam(false)} onValor={v => { setCam(false); save(v, true) }} />}
     </div>
     if (!feedback) footer = item.kind === 'reps'
       ? <button type="button" className="d-btn green wide" disabled={(adjust || item.target === 0) && count === 0} onClick={() => save(adjust || item.target === 0 ? count : item.target)}>{adjust || item.target === 0 ? `Guardar ${count}` : `Hice las ${item.target}${step.side ? ' de este lado' : ''}`}</button>

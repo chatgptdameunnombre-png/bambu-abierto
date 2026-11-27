@@ -1,7 +1,7 @@
 import { makeId, type Activity, type AppData } from './model'
 import { shiftDay } from './jardin'
 import { logSet } from './rutina'
-import { CAMARA_SET, REDES_SET, esNotaCamara } from './libre'
+import { CAMARA_SET, REDES_SET, RUTINA_CAM_SET } from './libre'
 import { patronDe, type Patron, type Tipo } from './conteo'
 
 export const CAMARA_NOTE = CAMARA_SET
@@ -81,7 +81,7 @@ export function faltan(exercise: string, minutos: number): number {
 }
 
 export function ganados(data: AppData, day: string): number {
-  return Math.floor(data.sets.filter(s => s.day === day && esNotaCamara(s.note)).reduce((m, s) => m + minutosDe(s.exercise, s.seconds ?? s.reps ?? 0), 0) + 1e-9)
+  return Math.floor(data.sets.filter(s => s.day === day && (s.note === CAMARA_SET || s.note === REDES_SET)).reduce((m, s) => m + minutosDe(s.exercise, s.seconds ?? s.reps ?? 0), 0) + 1e-9)
 }
 
 export function paseMinutos(a: Activity): number {
@@ -170,8 +170,8 @@ export function nuevaLlave(): string {
   return Array.from(a, b => 'abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'[b % 56]).join('')
 }
 
-export function conCamara(data: AppData, day: string, exercise: string, kind: 'reps' | 'seconds', valor: number, now = Date.now(), redes = false): AppData {
+export function conCamara(data: AppData, day: string, exercise: string, kind: 'reps' | 'seconds', valor: number, now = Date.now(), redes = false, rutina = false): AppData {
   const n = logSet(data, day, { id: redes ? 'redes' : 'camara', name: exercise, kind, target: 0 }, valor, now)
   const last = n.sets[n.sets.length - 1]
-  return { ...n, sets: [...n.sets.slice(0, -1), { ...last, note: redes ? REDES_NOTE : CAMARA_NOTE }] }
+  return { ...n, sets: [...n.sets.slice(0, -1), { ...last, note: redes ? REDES_NOTE : rutina ? RUTINA_CAM_SET : CAMARA_NOTE }] }
 }

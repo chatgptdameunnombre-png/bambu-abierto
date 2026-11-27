@@ -52,7 +52,7 @@ function errorTexto(e: unknown): string {
   return 'No pude arrancar la cámara. Cierra otras apps que la usen y vuelve a intentar.'
 }
 
-export default function CamaraReps({ ej, kind, onGuardar, onCerrar, limite: limiteProp, meta, hastaFallar = false }: { ej: string; kind?: Tipo; onGuardar: (valor: number) => void; onCerrar: () => void; limite?: number; meta?: number; redes?: boolean; hastaFallar?: boolean }) {
+export default function CamaraReps({ ej, kind, onGuardar, onCerrar, limite: limiteProp, meta, hastaFallar = false, sinMinutos = false }: { ej: string; kind?: Tipo; onGuardar: (valor: number) => void; onCerrar: () => void; limite?: number; meta?: number; redes?: boolean; hastaFallar?: boolean; sinMinutos?: boolean }) {
   const wod = wodDe(ej)
   const limite = limiteProp ?? wod?.seg
   const circ = useRef({ i: 0, rondas: 0 })
@@ -239,7 +239,7 @@ export default function CamaraReps({ ej, kind, onGuardar, onCerrar, limite: limi
       }
       if (valor !== prev && contando) {
         haptic(20)
-        const g = wod ? 0 : Math.floor(minutosDe(ej, valor) + 1e-9) - Math.floor(minutosDe(ej, prev) + 1e-9)
+        const g = wod || sinMinutos ? 0 : Math.floor(minutosDe(ej, valor) + 1e-9) - Math.floor(minutosDe(ej, prev) + 1e-9)
         const mas = g > 0 ? `más ${g} ${g === 1 ? 'minuto' : 'minutos'}` : ''
         if (mas) haptic([20, 40, 20])
         if (meta && prev < meta && valor >= meta) { haptic([30, 60, 30]); decir('¡Meta cumplida!') }
@@ -295,7 +295,7 @@ export default function CamaraReps({ ej, kind, onGuardar, onCerrar, limite: limi
     {fase === 'intro' && <div className="d-cam-intro">
       <h2>{wod ? wod.nombre : hastaFallar ? `${ej} · aguantar más` : limite ? `${ej} · ${limite} segundos` : ej}</h2>
       <p>{wod ? wod.como : comoDe(ej, patron)}</p>
-      {!wod && tasaTexto(ej) && <p className="d-cam-tasa">{tasaTexto(ej)} de redes</p>}
+      {!wod && !sinMinutos && tasaTexto(ej) && <p className="d-cam-tasa">{tasaTexto(ej)} de redes</p>}
       {wod ? <ul>{wod.reglas.map(r => <li key={r}>{r}</li>)}</ul> : hastaFallar ? <ul>
         <li>Cuando te vea cuento 3, 2, 1 y empieza a correr el tiempo.</li>
         <li>Solo cuenta con la postura correcta. Si la pierdes 3 segundos, se acaba.</li>
@@ -325,7 +325,7 @@ export default function CamaraReps({ ej, kind, onGuardar, onCerrar, limite: limi
       {limite && reloj !== null && reloj < 0 && <div className="d-cam-cuenta" aria-live="assertive">{-reloj}</div>}
       {prepN !== null && <div className="d-cam-cuenta" aria-live="assertive">{prepN}</div>}
       <div className="d-cam-count" aria-live="polite"><strong>{wod && enDuelo ? `${valor}/${wod.partes[vuelta.i].reps}` : `${valor}${unidad}`}</strong><small>{wod && enDuelo ? `Ronda ${vuelta.rondas + 1} · ${wod.partes[vuelta.i].ej} · ${mmss(reloj ?? 0)}` : hastaFallar && enDuelo ? 'Aguanta. Se acaba si pierdes la postura.' : enDuelo ? `Quedan ${reloj} s` : limite ? 'Ponte en posición' : meta ? valor >= meta ? `¡Meta cumplida! +${min} min` : `Meta ${meta}${unidad} · faltan ${meta - valor}${unidad}` : aguante ? 'segundos' : 'repeticiones'}</small></div>
-      {!wod && gana && <div className={`d-cam-gana ${gana.min > 0 ? 'on' : ''}`} aria-live="polite"><b key={gana.min}>+{gana.min} min</b><small>{gana.min > 0 ? `de redes · ${gana.faltan}${unidad} más = +${tasaMin}` : `haz ${gana.faltan}${unidad} y ganas ${tasaMin} min`}</small></div>}
+      {!wod && !sinMinutos && gana && <div className={`d-cam-gana ${gana.min > 0 ? 'on' : ''}`} aria-live="polite"><b key={gana.min}>+{gana.min} min</b><small>{gana.min > 0 ? `de redes · ${gana.faltan}${unidad} más = +${tasaMin}` : `haz ${gana.faltan}${unidad} y ganas ${tasaMin} min`}</small></div>}
       <div className="d-cam-foot">
         <p className={`d-cam-aviso ${vista.aviso && prepN === null ? 'on' : ''}`}>{prepN !== null ? (skill ? 'Acomódate. Al terminar la cuenta, ¡arriba!' : 'Acomódate en posición.') : vista.aviso && (!limite || reloj === null || reloj > 0) ? texto(vista.aviso, vista.ultima) : limite && reloj !== null && reloj < 0 ? '¡Prepárate!' : vista.visto ? '¡Así! Sigue.' : 'Buscándote…'}</p>
         <button type="button" className="d-btn green wide" onClick={terminar}>{limite ? enDuelo ? 'Terminar ya' : 'Salir' : vista.valor > 0 ? `Guardar ${vista.valor}${unidad}` : 'Salir'}</button>

@@ -1981,21 +1981,24 @@ ok('resumen de la semana: solo cámara, desde el lunes, récords nuevos contra l
   const js = W.scriptWidget('https://x.test/w?key=1')
   assert.ok(js.includes('const URL = "https://x.test/w?key=1"') && js.includes('Script.setWidget(w)') && !/innerHTML|eval\(/.test(js))
   assert.ok(js.includes('config.widgetFamily') && js.includes('accessoryRectangular') && js.includes('presentMedium'), 'un diseño por tamaño')
+  assert.deepEqual(W.ESTILOS_WIDGET.map(e => e.id), ['bosque', 'brote', 'logo'], 'tres diseños para elegir')
+  assert.equal(W.estadoWidget(d, hoy, 3).retos, 3, 'el widget sabe cuántos retos tienes pendientes')
   {
     class C { constructor(h) { this.h = h } static white() { return new C('#fff') } static clear() { return new C('') } }
     const font = s => ({ s })
     const Font = { heavyRoundedSystemFont: font, semiboldRoundedSystemFont: font }
-    class Nodo { constructor() { this.k = [] } addText(x) { const t = { x, centerAlignText() {}, rightAlignText() {} }; this.k.push(t); return t } addStack() { const n = new Nodo(); this.k.push(n); return n } addSpacer() {} addImage(i) { const n = { i }; this.k.push(n); return n } layoutHorizontally() {} layoutVertically() {} centerAlignContent() {} topAlignContent() {} setPadding() {} }
+    class Nodo { constructor() { this.k = [] } addText(x) { const t = { x, centerAlignText() {}, rightAlignText() {}, leftAlignText() {} }; this.k.push(t); return t } addStack() { const n = new Nodo(); this.k.push(n); return n } addSpacer() {} addImage(i) { const n = { i }; this.k.push(n); return n } layoutHorizontally() {} layoutVertically() {} centerAlignContent() {} topAlignContent() {} bottomAlignContent() {} setPadding() {} }
     class LW extends Nodo { presentSmall() {} presentMedium() {} }
     class DC { addPath() {} setFillColor() {} fillPath() {} getImage() { return {} } }
     class P { addRoundedRect() {} }
     const textos = n => n.k.flatMap(x => x.x !== undefined ? [x.x] : x.k ? textos(x) : [])
-    for (const fam of ['small', 'medium', 'large', 'accessoryRectangular', 'accessoryInline', 'accessoryCircular']) {
+    const dia = new Date(), hoyLocal = dia.getFullYear() + '-' + String(dia.getMonth() + 1).padStart(2, '0') + '-' + String(dia.getDate()).padStart(2, '0')
+    for (const estilo of ['bosque', 'brote', 'logo']) for (const fam of ['small', 'medium', 'large', 'accessoryRectangular', 'accessoryInline', 'accessoryCircular']) {
       let w
-      const datos = { fields: { dia: { stringValue: '2000-01-01' }, racha: { integerValue: '12' }, nivel: { integerValue: '5' } } }
-      const fn = new Function('Color', 'Font', 'Size', 'Rect', 'Path', 'DrawContext', 'ListWidget', 'Request', 'Script', 'config', `return (async () => {\n${js}\n})()`)
-      fn(C, Font, class { constructor(a, b) { this.w = a; this.h = b } }, class {}, P, DC, LW, class { loadJSON() { return Promise.resolve(datos) } }, { setWidget(x) { w = x }, complete() {} }, { widgetFamily: fam, runsInApp: false })
-        .then(() => { assert.ok(w && textos(w).some(t => /12/.test(t)), `el widget ${fam} enseña la racha`) })
+      const datos = { fields: { dia: { stringValue: hoyLocal }, racha: { integerValue: '12' }, nivel: { integerValue: '5' }, minutos: { integerValue: '63' }, retos: { integerValue: '2' }, xpHoy: { integerValue: '20' }, meta: { integerValue: '50' }, rutina: { stringValue: 'Rutina 1/9' } } }
+      const fn = new Function('Color', 'Font', 'Size', 'Rect', 'Path', 'DrawContext', 'ListWidget', 'Request', 'Script', 'config', 'LinearGradient', 'Point', `return (async () => {\n${W.scriptWidget('https://x.test/w', estilo)}\n})()`)
+      fn(C, Font, class { constructor(a, b) { this.w = a; this.h = b } }, class {}, P, DC, LW, class { loadJSON() { return Promise.resolve(datos) } loadImage() { return Promise.resolve({}) } }, { setWidget(x) { w = x }, complete() {} }, { widgetFamily: fam, runsInApp: false }, class {}, class {})
+        .then(() => { assert.ok(w && textos(w).some(t => /63/.test(t)), `el widget ${estilo} ${fam} enseña tus minutos de redes`); if (/^(small|medium|large)$/.test(fam) && estilo !== 'logo') assert.ok(textos(w).some(t => /reto/.test(t) || /⚔️/.test(t)), `el widget ${estilo} ${fam} avisa de retos`) })
     }
   }
   assert.equal(normalizeData({ ...d, settings: { ...d.settings, widget: { llave: 'corta' }, avisos: { hora: '25:00' } } }).settings.widget, undefined)

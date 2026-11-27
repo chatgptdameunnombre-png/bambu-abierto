@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { dateKey, type AppData } from './lib/model'
-import { borrarWidget, cuenta, estadoAvisos, guardarWidget, urlWidget } from './lib/firebase'
-import { estadoParaAvisos, estadoWidget, scriptWidget } from './lib/widget'
+import { borrarWidget, cuenta, estadoAvisos, guardarWidget, misRetos, urlWidget } from './lib/firebase'
+import { estadoReto } from './lib/retos'
+import { ESTILOS_WIDGET, estadoParaAvisos, estadoWidget, scriptWidget, type EstiloWidget } from './lib/widget'
 import { activar, apagar, estado, type Estado } from './lib/avisos'
 import { nuevaLlave } from './lib/minutos'
 import { DuoIcon } from './DuoIcons'
@@ -9,6 +10,17 @@ import { DuoIcon } from './DuoIcons'
 type Commit = (update: (d: AppData) => AppData) => void
 const leer = (k: string) => { try { return localStorage.getItem(k) } catch { return null } }
 const guardar = (k: string, v: string) => { try { localStorage.setItem(k, v) } catch { return } }
+
+let conRetos = true
+let retosCache: { uid: string; at: number; n: number } | null = null
+async function retosPendientes(uid: string): Promise<number> {
+  if (retosCache?.uid === uid && Date.now() - retosCache.at < 5 * 60000) return retosCache.n
+  try {
+    const n = (await misRetos(uid)).filter(r => estadoReto(r, uid) === 'te-toca').length
+    retosCache = { uid, at: Date.now(), n }
+    return n
+  } catch { return retosCache?.uid === uid ? retosCache.n : 0 }
+}
 
 export function usePublicarEstado(data: AppData, uid: string | undefined) {
   useEffect(() => {
@@ -18,8 +30,13 @@ export function usePublicarEstado(data: AppData, uid: string | undefined) {
     const t = window.setTimeout(() => {
       const hoy = dateKey()
       if (llave) {
-        const e = estadoWidget(data, hoy), k = `${llave}|${JSON.stringify(e)}`
-        if (leer('bambu.widget.ultimo') !== k) guardarWidget(llave, e).then(() => guardar('bambu.widget.ultimo', k)).catch(() => undefined)
+        void retosPendientes(uid).then(n => {
+          const e = estadoWidget(data, hoy, n), k = `${llave}|${JSON.stringify(e)}`
+          if (leer('bambu.widget.ultimo') === k) return
+          const sinRetos = () => { const { retos: _r, ...resto } = e; return guardarWidget(llave, resto) }
+          const enviar = conRetos ? guardarWidget(llave, e).catch(() => { conRetos = false; return sinRetos() }) : sinRetos()
+          enviar.then(() => guardar('bambu.widget.ultimo', k)).catch(() => undefined)
+        })
       }
       if (avisos) {
         const e = estadoParaAvisos(data, hoy), k = `${uid}|${JSON.stringify(e)}`
@@ -34,6 +51,7 @@ export function WidgetSetup({ data, commit, onMessage, cloud }: { data: AppData;
   const llave = data.settings.widget?.llave
   const [ver, setVer] = useState(false)
   const [busy, setBusy] = useState(false)
+  const [estilo, setEstilo] = useState<EstiloWidget>('bosque')
   const copiar = (t: string, que: string) => { navigator.clipboard?.writeText(t).then(() => onMessage(`${que} copiado.`)).catch(() => onMessage('No se pudo copiar.')) }
   async function prender() {
     const nueva = llave ?? nuevaLlave()
@@ -54,14 +72,18 @@ export function WidgetSetup({ data, commit, onMessage, cloud }: { data: AppData;
   }
   return <div className="d-card d-candado-setup">
     <div className="d-card-head"><h2>Widget en tu pantalla de inicio</h2><DuoIcon name="casa" size={36} /></div>
-    <p className="d-hint left">Ve tu racha, tu XP de hoy, tus minutos de redes y tu rutina sin abrir Bambú. Se actualiza cada vez que usas Bambú.</p>
+    <p className="d-hint left">Ve tus minutos de redes, tu racha, tu XP de hoy y si tienes retos sin abrir bambú. Se actualiza cada vez que usas bambú.</p>
+    <div className="d-widget-estilos" role="radiogroup" aria-label="Diseño del widget">{ESTILOS_WIDGET.map(e => <button key={e.id} type="button" role="radio" aria-checked={estilo === e.id} className={estilo === e.id ? 'on' : ''} onClick={() => setEstilo(e.id)}>
+      <img src={`widget/vista-${e.id}.png`} alt="" width="120" height="120" />
+      <b>{e.nombre}</b><small>{e.texto}</small>
+    </button>)}</div>
     {!cloud ? <p className="d-hint left red">Necesitas una cuenta para el widget.</p>
       : !llave ? <button type="button" className="d-btn green wide" disabled={busy} onClick={() => void prender()}>{busy ? 'Activando…' : 'Activar widget'}</button>
         : <>
           <button type="button" className="d-btn white wide" onClick={() => setVer(!ver)}>{ver ? 'Ocultar los pasos' : 'Ver cómo ponerlo'}</button>
           {ver && <ol className="d-steps-guide">
             <li><span>Instala <b>Scriptable</b> (gratis) desde la App Store.</span></li>
-            <li><span>Ábrelo, toca <b>+</b>, pega el código y ponle de nombre <b>Bambú</b>. <button type="button" className="d-link" onClick={() => copiar(scriptWidget(urlWidget(llave)), 'Código del widget')}>Copiar código</button></span></li>
+            <li><span>Ábrelo, toca <b>+</b>, pega el código y ponle de nombre <b>Bambú</b>. Si ya lo tenías, pega el nuevo encima del anterior. <button type="button" className="d-link" onClick={() => copiar(scriptWidget(urlWidget(llave), estilo), `Código del diseño ${ESTILOS_WIDGET.find(e => e.id === estilo)?.nombre}`)}>Copiar código</button></span></li>
             <li><span>En tu pantalla de inicio deja presionado, toca <b>+</b>, busca <b>Scriptable</b> y elige el tamaño <b>chico</b> o <b>mediano</b> (el mediano se ve mejor). También funciona en la pantalla bloqueada.</span></li>
             <li><span>Deja presionado el widget, toca <b>Editar widget</b> y en <b>Script</b> elige <b>Bambú</b>.</span></li>
           </ol>}

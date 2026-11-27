@@ -1492,3 +1492,9 @@ button.d-card { box-shadow: 0 4px 0 var(--d-line); }
 @media (min-width: 900px) { .page > .d-pase-abierto { left: auto; right: 24px; bottom: 24px; max-width: 420px; } }
 .page > .d-pase-abierto b { font-size: 15px; }
 .page > .d-pase-abierto .d-btn { padding-inline: 14px; }
+.d-widget-estilos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 4px 0 10px; }
+.d-widget-estilos button { display: grid; justify-items: center; gap: 4px; padding: 8px 6px 10px; border: 2px solid var(--d-line); border-radius: 16px; background: var(--d-surface); box-shadow: 0 3px 0 var(--d-line); color: var(--d-ink); font: inherit; text-align: center; cursor: pointer; }
+.d-widget-estilos button.on { border-color: var(--d-green-lip); background: var(--d-green-light); box-shadow: 0 3px 0 var(--d-green-lip); }
+.d-widget-estilos img { width: 100%; max-width: 120px; height: auto; aspect-ratio: 1; border-radius: 18px; }
+.d-widget-estilos b { font-size: 15px; font-weight: 900; }
+.d-widget-estilos small { font-size: 11px; font-weight: 700; color: var(--d-dim); line-height: 1.25; }

@@ -133,3 +133,7 @@ Al abrir Instagram, TikTok u otra, el atajo de Atajos revisa tu pase en la nube.
 
 En Entrenar → Rutina → Hoy. Buscas el deporte (31 en la lista y "Otro"), eliges cuánto tiempo (30 min a 2 h) y qué tan fuerte (suave, normal, fuerte). Bambú decide con minutos × intensidad (suave 1, normal 1.5, fuerte 2): **120 o más** = descansas, cuenta como tu entreno (XP de rutina y sin candado de la hora de entrenar); **45 a 119** = te quita los músculos que ya usaste (fútbol, correr y bici: pierna; escalar: espalda, brazos y abdomen; nadar: espalda, hombros y pecho; box: hombros, brazos y abdomen) y baja a 2 rondas; **menos de 45** = no cambia nada. Si no te convence: "Solo registrarlo" o, ya guardado, "Que no cambie mi rutina". Se borra con ×.
 
+## Widget (Scriptable)
+
+Ajustes → Widget: eliges **Bosque** (verde con Brote), **Brote** (oscuro, Brote cambia de cara: dormido, con ánimo o celebrando) o **Logo**, y copias su código a Scriptable. Los tres enseñan minutos de redes, racha, XP de hoy con barra, nivel y retos pendientes (⚔️), en chico, mediano, grande y pantalla bloqueada (en el redondo, tus minutos de redes).
+

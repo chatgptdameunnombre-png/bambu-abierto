@@ -1498,3 +1498,8 @@ button.d-card { box-shadow: 0 4px 0 var(--d-line); }
 .d-widget-estilos img { width: 100%; max-width: 120px; height: auto; aspect-ratio: 1; border-radius: 18px; }
 .d-widget-estilos b { font-size: 15px; font-weight: 900; }
 .d-widget-estilos small { font-size: 11px; font-weight: 700; color: var(--d-dim); line-height: 1.25; }
+.d-abrir-redes { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 4px; }
+.d-minutos .d-btn.white.wide { margin-top: 4px; }
+.d-stat.redes b { color: var(--d-blue) !important; }
+.d-stat.redes.on { background: var(--d-green-light); }
+.d-stat.redes.on b { color: var(--d-green-ink) !important; }

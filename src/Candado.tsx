@@ -73,10 +73,13 @@ export function RedesPage({ data, commit, onAjustes }: { data: AppData; commit: 
   const seg = ej ? tipoDe(ej) === 'seconds' : false
   const cuanto = ej ? faltan(ej, quiero) : 0
   const activo = !!data.settings.candado?.llave
+  const abrirRedes = () => { haptic(10); window.location.assign(new URL('?candado=redes', document.baseURI).href) }
   return <section className="d-redes">
     <div className="d-card d-minutos">
       <div className="d-card-head"><h2>Tus minutos de redes</h2><DuoIcon name="reloj" size={34} /></div>
       <Saldo data={data} />
+      {activo && !paseAbierto(data, Date.now()) && <button type="button" className="d-btn green wide d-abrir-redes" onClick={abrirRedes}><DuoIcon name="candado" size={24} />Abrir mis redes</button>}
+      {activo && <PaseAbierto data={data} commit={commit} onMessage={setNota} boton />}
       <p className="d-hint left">Cualquier ejercicio que cuente la cámara suma: aquí, en tu rutina, en Libre o en un reto. Se reinicia cada noche.{sem.ganados > 0 || sem.gastados > 0 ? ` Esta semana: ganaste ${sem.ganados} min y usaste ${sem.gastados}.` : ''}</p>
     </div>
 

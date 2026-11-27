@@ -2514,3 +2514,11 @@ async function audioChecks() {
   assert.equal(mi.terminarPase(e, t0 + 60000).activities.length, 1)
   ok('ya terminé: cierra el pase en la nube y devuelve los minutos completos que sobran')
 }
+
+{
+  const leer = f => fs.readFileSync(path.join(__dirname, '..', f), 'utf8')
+  const top = leer('src/DuoTop.tsx'), cand = leer('src/Candado.tsx')
+  assert.ok(top.includes("'?candado=redes'") && top.includes('saldo(data, today)'), 'arriba se ven tus minutos de redes y abren el candado dentro de la app')
+  assert.ok(cand.includes('Abrir mis redes') && cand.includes("new URL('?candado=redes', document.baseURI)"), 'en Redes se abre un pase sin pasar por Safari')
+  ok('abrir mis redes desde la app de la pantalla de inicio: botón en Redes y minutos arriba')
+}

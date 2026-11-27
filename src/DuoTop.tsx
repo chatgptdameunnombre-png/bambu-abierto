@@ -4,6 +4,7 @@ import { dateKey, type AppData } from './lib/model'
 import { dayScore, gardenStats, GOOD, shiftDay } from './lib/jardin'
 import { DAILY_GOAL, levelOf, totalXp, xpOn, XP } from './lib/xp'
 import { DuoIcon } from './DuoIcons'
+import { paseAbierto, saldo } from './lib/minutos'
 import { useNewCards } from './Album'
 import { Sheet } from './Sheet'
 import { RANKS, rankOf } from './lib/rangos'
@@ -34,6 +35,7 @@ export function StatsBar({ data, go }: { data: AppData; go: (s: Section) => void
   const score = dayScore(data, today)
   const lit = score.pct >= GOOD
   const xpToday = xpOn(data, today)
+  const redes = saldo(data, today), pase = !!paseAbierto(data, Date.now())
   const days = Array.from({ length: 7 }, (_, i) => shiftDay(today, i - 6))
   return <>
     <div className="d-stats">
@@ -43,6 +45,9 @@ export function StatsBar({ data, go }: { data: AppData; go: (s: Section) => void
       <button type="button" className="d-stat xp" onClick={() => setSheet('xp')} aria-label={`${xp} XP`}>
         <DuoIcon name="rayo" size={30} /><b>{xp}</b>
       </button>
+      {!!data.settings.candado?.llave && <button type="button" className={`d-stat redes ${pase ? 'on' : ''}`} onClick={() => window.location.assign(new URL('?candado=redes', document.baseURI).href)} aria-label={pase ? 'Redes abiertas. Ver tu pase' : `${redes} minutos de redes. Abrir mis redes`}>
+        <DuoIcon name="reloj" size={28} /><b>{redes}</b>
+      </button>}
       <button type="button" className="d-stat lvl" onClick={() => setSheet('xp')} aria-label={`Nivel ${lv.level}`}>
         <span className={`d-lvl t${rank.tier}`}>{lv.level}</span><b className="d-rank-name">{rank.name}</b>
       </button>

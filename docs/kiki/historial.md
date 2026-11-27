@@ -32,6 +32,7 @@ Commits del sitio donde se publicó cada cambio.
 | `e237d9c` (26-nov, noche) | Ya terminé: barra flotante en cualquier sección mientras el pase está abierto y botón en la pantalla del candado; cierra el pase en la nube y devuelve los minutos completos que sobran (el minuto empezado cuenta como usado; la emergencia no devuelve). |
 | `9802259` (26-nov, noche) | Widget de Scriptable rehecho por tamaño: chico (racha grande, barra de XP, minutos), mediano y grande (racha y minutos de redes grandes, barra de XP y rutina) y pantalla bloqueada. Antes era una lista de texto chiquita que no cabía en el chico. |
 | `d95bde1` (26-nov, noche) | Widget con 3 diseños para elegir en Ajustes (Bosque, Brote y Logo, con vista previa); los 3 muestran minutos de redes, racha, XP y retos pendientes, en chico, mediano, grande y pantalla bloqueada. Brote cambia de cara según tu día (imágenes en `public/widget/`). |
+| `3864039` (27-nov) | Abrir mis redes desde la app de la pantalla de inicio: botón en Entrenar → Redes y tus minutos arriba (el reloj azul); los dos abren el candado dentro de la app, sin pasar por Safari. |
 
 ## Decisiones de Kiki
 

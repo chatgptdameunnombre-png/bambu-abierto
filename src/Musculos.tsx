@@ -1,28 +1,56 @@
-import { useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
 import { dateKey, type AppData } from './lib/model'
 import { bodyAdvice, muscleStats, PERIODS, type Muscle, type MuscleStat, type Period } from './lib/musculos'
 import { fmtDay } from './ui'
 import { Sheet } from './Sheet'
 
-function Body({ stats, sel, onPick }: { stats: Record<Muscle, MuscleStat>; sel: Muscle | null; onPick: (m: Muscle) => void }) {
-  const part = (m: Muscle, shape: ReactNode, key: string) => <g key={key} className={`mu l${stats[m].level} ${sel === m ? 'sel' : ''}`} onClick={() => onPick(m)} role="button" aria-label={`${m}: ${stats[m].sets} series`}>{shape}</g>
-  const figure = (x: number, back: boolean) => <g transform={`translate(${x} 0)`}>
-    <circle className="mu-base" cx="60" cy="20" r="13" />
-    <rect className="mu-base" x="54" y="31" width="12" height="9" rx="3" />
-    {part('Hombros', <><ellipse cx="37" cy="48" rx="9.5" ry="8.5" /><ellipse cx="83" cy="48" rx="9.5" ry="8.5" /></>, `h${x}`)}
-    {back
-      ? part('Espalda', <><path d="M47 40 H73 L71 80 Q60 88 49 80Z" /><rect x="50" y="86" width="20" height="18" rx="5" /></>, 'esp')
-      : part('Pecho', <><rect x="46.5" y="40" width="13" height="22" rx="5" /><rect x="60.5" y="40" width="13" height="22" rx="5" /></>, 'pec')}
-    {part('Brazos', <><rect x="26" y="58" width="10" height="30" rx="5" /><rect x="84" y="58" width="10" height="30" rx="5" /><rect x="24" y="91" width="9" height="28" rx="4.5" /><rect x="87" y="91" width="9" height="28" rx="4.5" /></>, `b${x}`)}
-    {!back && part('Abdomen', <rect x="48" y="65" width="24" height="40" rx="7" />, 'abs')}
-    {part('Piernas', <>
-      {back ? <><rect x="46" y="106" width="13.5" height="17" rx="6" /><rect x="60.5" y="106" width="13.5" height="17" rx="6" /></> : <rect x="46" y="107" width="28" height="11" rx="5" />}
-      <rect x="46" y={back ? 126 : 121} width="13.5" height={back ? 46 : 50} rx="6" /><rect x="60.5" y={back ? 126 : 121} width="13.5" height={back ? 46 : 50} rx="6" />
-      <rect x="47" y="175" width="11" height="46" rx="5" /><rect x="62" y="175" width="11" height="46" rx="5" />
-    </>, `p${x}`)}
-    <text className="mu-cap" x="60" y="242" textAnchor="middle">{back ? 'Espalda' : 'Frente'}</text>
-  </g>
-  return <svg className="d-body" viewBox="0 0 260 250" aria-label="Mapa de tus músculos">{figure(0, false)}{figure(140, true)}</svg>
+const CAPAS: [Muscle, string][] = [['Hombros', 'hombros'], ['Pecho', 'pecho'], ['Brazos', 'brazos'], ['Abdomen', 'abdomen'], ['Espalda', 'espalda'], ['Piernas', 'piernas']]
+type Mascara = { w: number; h: number; a: Uint8ClampedArray }
+
+function useMascaras() {
+  const ref = useRef<Partial<Record<Muscle, Mascara>>>({})
+  useEffect(() => {
+    let vivo = true
+    for (const [m, f] of CAPAS) {
+      const im = new Image()
+      im.onload = () => {
+        if (!vivo) return
+        const c = document.createElement('canvas'); c.width = im.width; c.height = im.height
+        const x = c.getContext('2d', { willReadFrequently: true }); if (!x) return
+        x.drawImage(im, 0, 0)
+        ref.current[m] = { w: im.width, h: im.height, a: x.getImageData(0, 0, im.width, im.height).data }
+      }
+      im.src = `cuerpo/${f}.png`
+    }
+    return () => { vivo = false }
+  }, [])
+  return ref
+}
+
+export function Body({ stats, sel, onPick }: { stats: Record<Muscle, MuscleStat>; sel: Muscle | null; onPick: (m: Muscle) => void }) {
+  const mascaras = useMascaras()
+  function tocar(e: MouseEvent<HTMLDivElement>) {
+    const r = e.currentTarget.getBoundingClientRect()
+    const fx = (e.clientX - r.left) / r.width, fy = (e.clientY - r.top) / r.height
+    let mejor: Muscle | null = null, dist = Infinity
+    for (const [m] of CAPAS) {
+      const k = mascaras.current[m]; if (!k) continue
+      const cx = Math.round(fx * k.w), cy = Math.round(fy * k.h)
+      for (let dy = -10; dy <= 10; dy += 2) for (let dx = -10; dx <= 10; dx += 2) {
+        const x = cx + dx, y = cy + dy
+        if (x < 0 || y < 0 || x >= k.w || y >= k.h || k.a[(y * k.w + x) * 4 + 3] < 128) continue
+        const d = dx * dx + dy * dy
+        if (d < dist) { dist = d; mejor = m }
+      }
+    }
+    if (mejor) onPick(mejor)
+  }
+  return <div className="d-body-img" onClick={tocar}>
+    <img src="cuerpo/base.png" alt="Mapa de tus músculos" width={623} height={629} draggable={false} />
+    {CAPAS.map(([m, f]) => stats[m].level > 0 || sel === m ? <span key={f} className={`mu-capa l${stats[m].level} ${sel === m ? 'sel' : ''}`} style={{ WebkitMaskImage: `url(cuerpo/${f}.png)`, maskImage: `url(cuerpo/${f}.png)` }} aria-hidden="true" /> : null)}
+    <span className="mu-pie" style={{ left: '22.1%' }}>Frente</span><span className="mu-pie" style={{ left: '78.7%' }}>Espalda</span>
+    <div className="visually-hidden">{CAPAS.map(([m]) => <button key={m} type="button" onClick={() => onPick(m)}>{m}: {stats[m].sets} series</button>)}</div>
+  </div>
 }
 
 export function BodyCard({ data, onTrain }: { data: AppData; onTrain?: (m: Muscle) => void }) {

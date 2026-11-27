@@ -9,7 +9,7 @@ Todo lo que cambió desde la app original de Gael (`GaelProspectlab21/bambu-abie
 | Archivos tocados | 100 (64 nuevos, 36 modificados) |
 | Líneas | más de +19,000 / −1,000 |
 | Publicaciones en vivo | 24, del 24 al 25 de noviembre de 2026 |
-| Pruebas automáticas | 78 grupos (`node checks/features.cjs`) |
+| Pruebas automáticas | 81 grupos (`node checks/features.cjs`) |
 
 ## Punto de partida: la v7 de Gael
 
@@ -43,6 +43,7 @@ App personal de lectura (cronómetro, Biblia por capítulos, Crónica), entrenam
 | 25-nov noche | Opción "Solo competir con mis amigos" al crear cuenta. |
 | 25-nov noche | Retos de grupo, avisos con Brote, tuck planche y planchas corregidos, legales y carga más rápida. |
 | 26-nov | Plancha de frente y tuck planche que se pausaban estando bien; avisos que dicen qué falla. |
+| 26-nov noche | Rediseño: verde propio, Brote nuevo, bienvenida corta, rutina que arma Bambú, Coach y Biblia de Gael, cuerpo y logo de ChatGPT. |
 
 ## Cambios por área
 

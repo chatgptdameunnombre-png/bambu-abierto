@@ -11,14 +11,14 @@ import type { Extra, Monster, Scene } from './aventura'
 export const BOSS_XP = 100
 export const HIT = { set: 3, walk: 15, read: 20, routine: 30, dungeon: 20, crit: 1.5 }
 const BOSSES: [string, string, string, Extra, number, number, Scene][] = [
-  ['El Gran Mañanas', 'Todo lo deja para mañana', 'm9', 'corona', 2, 2, 'tormenta'],
-  ['Sofazilla', 'El sillón que despertó', 'm1', 'none', 3, 1, 'ciudad'],
-  ['Doctor Scroll', 'Opera tu pulgar', 'm2', 'antenas', 0, 3, 'pantalla'],
-  ['Barón Botana', 'Papitas a toda hora', 'm5', 'sombrero', 0, 2, 'fiesta'],
-  ['Lady Desvelo', 'Reina de las 3 a.m.', 'm7', 'corona', 0, 3, 'noche'],
-  ['Excusatrón 3000', 'Máquina de pretextos', 'm4', 'antenas', 2, 1, 'mazmorra'],
-  ['Capitán Pereza', 'Navega en la flojera', 'm8', 'gorro', 0, 2, 'volcan'],
-  ['Rey Pantuflas', 'Nunca se quita la pijama', 'm3', 'corona', 0, 2, 'nieve'],
+  ['El Eterno Mañana', 'Nunca llega su día', 'm9', 'corona', 2, 2, 'tormenta'],
+  ['Sedentarius', 'El sillón que cobró vida', 'm1', 'none', 3, 1, 'ciudad'],
+  ['El Hipnotista', 'Controla tu pulgar', 'm2', 'antenas', 0, 3, 'pantalla'],
+  ['El Glotón', 'Hambre sin fondo', 'm5', 'sombrero', 0, 2, 'fiesta'],
+  ['Dama de la Medianoche', 'Reina de las 3 a.m.', 'm7', 'corona', 0, 3, 'noche'],
+  ['El Autómata', 'Fábrica de pretextos', 'm4', 'antenas', 2, 1, 'mazmorra'],
+  ['Corsario del Desgano', 'Navega sin rumbo', 'm8', 'gorro', 0, 2, 'volcan'],
+  ['El Rey Ermitaño', 'Nunca sale de su cueva', 'm3', 'corona', 0, 2, 'nieve'],
 ]
 
 function shift(day: string, n: number): string {

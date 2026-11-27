@@ -9,7 +9,8 @@ import { StatsBar } from './DuoTop'
 import { DuoIcon, type DuoIconName } from './DuoIcons'
 import { activeHabits, dateKey, EMPTY_DATA, modulesOf, type AppData } from './lib/model'
 import { bedAction, nfcServerAction, trainingAction } from './lib/nfcActions'
-import { ajustarRutina2611, clockOf, deshacerRondas2611, seedWeek, toquesA7, hspuA3, quitar2611 } from './lib/rutina'
+import { ajustarRutina2611, clockOf, deshacerRondas2611, toquesA7, hspuA3, quitar2611 } from './lib/rutina'
+import { semanaVacia } from './lib/armar'
 import { applyRecords, diffRecords, toRecords, type RecordRow } from './lib/records'
 import { SyncEngine, type SyncStatus } from './lib/sync'
 import { cuenta, cuentaActiva as cloudConfigured, remoto, reportarFallo, type Sesion } from './lib/firebase'
@@ -547,7 +548,7 @@ export default function App() {
   if (cloudConfigured && !cloudReady) return <LoadingScreen text="Sincronizando tu espacio privado." />
   if (mostrarLegal && cloudConfigured && userId && !legalAceptado(data.settings)) return <Consentimiento onAceptar={salud => aceptar(commit, salud)} onSalir={() => void signOut()} />
   if (!data.profile.onboardingComplete) return <Onboarding initialName={data.profile.name} onComplete={r => commit(d => ({ ...d, profile: { name: r.name || 'Tú', onboardingComplete: true },
-    settings: { ...d.settings, modules: r.modules, habits: r.habits, train: r.competir ? { ...(d.settings.train ?? seedWeek()), lock: false } : d.settings.train ?? seedWeek(), walkDaily: true, cardioSetup: true, modo: r.competir ? 'competir' : undefined },
+    settings: { ...d.settings, modules: r.modules, habits: r.habits, train: r.competir ? { ...(d.settings.train ?? semanaVacia()), lock: false } : d.settings.train ?? semanaVacia(), walkDaily: true, cardioSetup: true, modo: r.competir ? 'competir' : undefined },
     habits: r.firstVotes.length ? { ...d.habits, [dateKey()]: [...new Set([...(d.habits[dateKey()] ?? []), ...r.firstVotes])] } : d.habits }))} />
   if (candado) return <Suspense fallback={<Cargando />}><CandadoPage data={data} commit={commit} app={candado} onSalir={to => { try { sessionStorage.removeItem(CANDADO_KEY) } catch { void 0 } setCandado(null); if (to) go(to) }} /></Suspense>
 

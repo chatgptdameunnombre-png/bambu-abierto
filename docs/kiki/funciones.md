@@ -21,19 +21,22 @@ Los módulos se prenden y apagan en **Ajustes → Qué usas**: Entreno, Tareas, 
 
 Enlaces directos: `?ir=hoy`, `entrenar`, `redes`, `retos`, `tareas`, `comida`, `jardin`, `amigos`, `ajustes`.
 
+## Bienvenida
+
+3 pantallas con cielo de noche y amanecer: **despiertas a Brote** (duerme con el brote caído; al tocarlo dice "¡Ay!", brinca con chispas, amanece y te saluda) y le dices tu nombre; eliges qué medir (Entreno, Tareas, Lectura, Biblia, Comida) con el interruptor "Solo competir con mis amigos"; y tus objetivos diarios. El bambú se planta solo. Ya no hay que mantener presionado ni el "¿Ya hiciste alguno hoy?". Una cuenta nueva **no recibe rutina ni candado**: la elige en Entrenar.
+
 ## Hoy
 
-Lista vertical del día: hábitos, rutina, lectura y tareas. Racha, XP del día y nivel arriba.
+Lista vertical del día: hábitos, rutina, lectura, **Biblia** (si está prendida) y tareas. Racha, XP del día y nivel arriba. Brote más grande y con volumen junto al paso que sigue.
 
-## Entrenar (5 pestañas)
+## Entrenar (4 pestañas)
 
 | Pestaña | Qué hace |
 |---|---|
-| **Rutina** | Rutina semanal por día (circuito por rondas, antes y después). Cada ejercicio con medidor, temporizador y botón **Contar con cámara**. Hora límite con candado de entreno. |
-| **Libre** | Botones grandes **Romper tu récord** (lista de récords con cámara y botón Superar que abre la cámara directo) y **Tablas con amigos**. Reto de la semana. Buscador de ejercicios con filtros (Todos, Famosos, por músculo, WOD) y "Otro ejercicio". |
+| **Rutina** | Tres botones arriba: **Hoy · Progreso · Recuperación**. La primera vez pregunta **"Que Bambú me la arme"** (equipo, días, tiempo por sesión y nivel; arma torso, pierna o cuerpo completo con ejercicios que puedes hacer) o **"La armo yo"**. Cada ejercicio tiene **Cambiar** (otro del mismo movimiento, más fácil o más difícil, en todos tus días) y Quitar; abajo, "Rehacer mi rutina". En Hoy: **¿Cuánto tiempo tienes? 15 min · 30 min · Completa** (15 = 3 ejercicios a 2 rondas; 30 = 5 a 3). **Progreso**: peso con gráfica y fotos de progreso (del coach de Gael). **Recuperación**: por grupo muscular, si está recuperando y cuándo queda listo, y series en 7 días contra la meta. Rutina semanal por día con medidor, temporizador, **Contar con cámara** y candado opcional. |
+| **Libre** | Arriba, la **Aventura**: tarjeta del monstruo con ¡Pelear! y Ver todo (jefe de la semana, mazmorra, temporada, álbum). Botones grandes **Romper tu récord** (lista de récords con cámara y botón Superar que abre la cámara directo) y **Tablas con amigos**. Reto de la semana. Buscador de ejercicios con filtros (Todos, Famosos, por músculo, WOD) y "Otro ejercicio". |
 | **Redes** | Saldo de minutos de redes del día. Eliges cuántos minutos quieres ganar (5, 10, 15, 30) y el ejercicio: te dice cuánto hacer y la cámara muestra la meta. Tabla de cuánto vale cada ejercicio. Estado del bloqueo de redes. |
 | **Retos** | Retos con la cámara de 2 a 10 personas: más repeticiones en 60 s, aguantar más o Cindy. Globo rojo cuando te toca. |
-| **Aventura** | Monstruos, temporada, mazmorra y jefes. Solo se ataca con lo que cuenta la cámara. |
 
 ## Cámara que cuenta
 
@@ -75,6 +78,8 @@ WOD en Libre: 20 minutos de 5 dominadas, 10 lagartijas y 15 sentadillas. La cám
 
 ## Jardín
 
+**Tu cuerpo**: la figura de músculos (imagen de ChatGPT) se pinta por grupo según lo que entrenaste en 7 días, 30 días o siempre; tocar un músculo abre sus números.
+
 Plantas por día, estadísticas (racha, XP, nivel, días al 100), comodín semanal, objetivos y **Tu semana**: repeticiones con cámara, días, XP, minutos ganados y usados, récords nuevos y botón **Compartir mi semana** (imagen vertical 1080×1920).
 
 ## Amigos
@@ -99,6 +104,14 @@ Correo y contraseña o Google. Los datos viven en el teléfono y se sincronizan 
 - Si una pantalla se cae, se intenta arreglar sola una vez. Si vuelve a fallar enseña "Algo falló" con solo dos botones: **Reintentar** y **Reportar**.
 - **Reportar** manda dónde falló, el error, la versión y el navegador (con o sin cuenta; sin cuenta va como `local`). Al borrar la cuenta se borran sus reportes.
 - Si la app que tienes abierta es de una versión anterior y le falta un archivo, se recarga sola una vez con la versión nueva (no lo hace sin señal ni dos veces seguidas).
+
+## Biblia
+
+Módulo propio (Ajustes → Qué usas o bienvenida). Botón **Biblia** en Hoy: abre el registro rápido con La Biblia elegida, los capítulos que siguen a un toque, "Otro capítulo" y versículos si fue solo un pedazo. Abajo el avance (capítulos de 1,328).
+
+## Monstruos
+
+Nombres serios como vicios a vencer: Letargo, Inercia, Abismo, Pretexto, Sopor, Gula, Estruendo, Insomnia, Desidia y El Postergador. Jefes de la semana: El Eterno Mañana, Sedentarius, El Hipnotista, El Glotón, Dama de la Medianoche, El Autómata, Corsario del Desgano y El Rey Ermitaño. El avance se guarda por número, así que nadie pierde nada.
 
 ## Lo que viene
 

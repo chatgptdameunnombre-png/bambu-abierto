@@ -24,6 +24,7 @@ Commits del sitio donde se publicó cada cambio.
 | `727c0b6` (26-nov) | Handstand toque de hombros a 7 repeticiones (antes "las que salgan"); tu rutina guardada se ajusta sola una vez. |
 | `4c4d3a7` (26-nov) | Handstand push up a 3 repeticiones (antes 5); tu rutina guardada se ajusta sola una vez. |
 | `3e2d7ce` (26-nov) | Se quitan de la rutina el parado de cabeza y el handstand push up (Kiki todavía no los puede hacer); siguen en la lista para agregarlos después y el historial no se borra. |
+| `bb9649d` (26-nov, noche) | Rediseño: verde propio #37CB69 (solo el verde); Brote nuevo (diseño de ChatGPT redibujado en vector, 7 caras, con volumen y más grande en Hoy); bienvenida de 3 pantallas con despertar animado y cielo de noche y amanecer; Aventura dentro de Libre (4 pestañas); rutina que arma Bambú (equipo, días, tiempo y nivel) o la armas tú, con Cambiar y Quitar en cada ejercicio; cuenta nueva sin rutina ni candado; Coach dentro de Rutina (sesión de 15 o 30 min, Progreso con peso y fotos, Recuperación con tus entrenos); Biblia (módulo, botón en Hoy, capítulos y versículos en el registro rápido); cuerpo de ChatGPT con capas por grupo; logo de ChatGPT (ícono, favicon y nombre); monstruos y jefes con nombres serios; Lectura cuenta días en blanco desde tu primer día. |
 
 ## Decisiones de Kiki
 
@@ -35,3 +36,5 @@ Commits del sitio donde se publicó cada cambio.
 - Los minutos de redes solo se ganan en la pestaña Redes (romper un récord no da minutos).
 - Ajedrez: quitarlo y hacerlo más adelante.
 - Quien solo quiere competir con sus amigos no debe cargar con racha, caminito ni objetivos: modo "Solo competir".
+- Lo que Kiki trae de ChatGPT (logo, cuerpo) se usa tal cual, sin redibujarlo.
+- Los anillos Cuerpo, Mente y Alma de Gael no entran por ahora.

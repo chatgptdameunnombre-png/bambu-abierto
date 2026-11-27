@@ -77,7 +77,7 @@
   --d-page: #0d1013; --d-page-2: #14181c; --d-bg: #171c21; --d-surface: #1d2329; --d-soft: #20272d; --d-line: #2d353d; --d-line-2: #3b454e;
   --d-head: #0d1013; --d-head-lip: #2d353d; --d-nav: #12161a; --d-white-60: rgba(255, 255, 255, .08);
   --d-ink: #f2f5f3; --d-dim: #aab5ae; --d-faint: #6f7c75;
-  --d-green: #58cc02; --d-green-lip: #46a302; --d-green-light: #1c2f12; --d-green-ink: #79e02a;
+  --d-green: #37cb69; --d-green-lip: #1e9348; --d-green-light: #0c2e16; --d-green-ink: #5fe786;
   --d-blue: #1cb0f6; --d-blue-lip: #1899d6; --d-blue-light: #10293a; --d-blue-edge: #1d6f99;
   --d-gold: #ffc800; --d-gold-lip: #e5a000; --d-gold-light: #33290a; --d-gold-ink: #ffc800;
   --d-orange: #ff9600; --d-orange-in: #ffc800; --d-red: #ff4b4b; --d-red-lip: #ea2b2b; --d-red-light: #3a1717;
@@ -85,9 +85,9 @@
   --d-off: #262e35; --d-off-ink: #4d5a64; --d-off-lip: #1b2127;
   --d-white: #ffffff; --d-shade: rgba(0, 0, 0, .65); --d-silver: #c9d1d6; --d-bronze: #d98a4e;
   --g-blue: #4285f4; --g-green: #34a853; --g-yellow: #fbbc05; --g-red: #ea4335; --g-ink: #1f1f1f;
-  --d-soil: #7a5636; --d-soil-dark: #5c3f26; --d-leaf: #58cc02; --d-leaf-2: #89e219; --d-cane: #7ac70c; --d-cane-node: #3f7300; --d-seed: #a07a52;
+  --d-soil: #7a5636; --d-soil-dark: #5c3f26; --d-leaf: #37cb69; --d-leaf-2: #7fd38f; --d-cane: #5fb84a; --d-cane-node: #2c6a2c; --d-seed: #a07a52;
   --d-sky: #0f2233; --d-star: #cfe6ff; --d-moon: #fff1b8; --d-hill-1: #163a24; --d-hill-2: #1d4a2c; --d-hill-3: #255c35; --d-spot: rgba(255, 255, 255, .12);
-  --d-t0: #b07a4a; --d-t0-lip: #8a5a30; --d-t1: #58cc02; --d-t1-lip: #46a302; --d-t2: #2bb5a0; --d-t2-lip: #1d8c7b;
+  --d-t0: #b07a4a; --d-t0-lip: #8a5a30; --d-t1: #37cb69; --d-t1-lip: #1e9348; --d-t2: #2bb5a0; --d-t2-lip: #1d8c7b;
   --d-t3: #1cb0f6; --d-t3-lip: #1899d6; --d-t4: #8e9bb0; --d-t4-lip: #6b788c; --d-t5: #ce82ff; --d-t5-lip: #a568cc;
   --d-t6: #ff9600; --d-t6-lip: #cc7600; --d-t7: #ff4b8b; --d-t7-lip: #d13a6f; --d-t8: #ffc800; --d-t8-lip: #e5a000; --d-t9: #4fe3ff; --d-t9-lip: #22b5d6;
   --d-m0: #8bd450; --d-m1: #c47ddb; --d-m2: #4fc3d9; --d-m3: #f5a742; --d-m4: #7c8cf0; --d-m5: #b08a5a; --d-m6: #e24f8b; --d-m7: #6b5fd1; --d-m8: #e0533a; --d-m9: #9aa3ad;
@@ -99,11 +99,11 @@
   --sc-tormenta-1: #161a20; --sc-tormenta-2: #384350; --sc-tormenta-far: #12161b; --sc-tormenta-near: #0b0e12; --sc-cloud: #2b333d;
   --sc-star: #fff8dc; --sc-moon: #f5e9b8; --sc-glow: #ffc800; --sc-floor: rgba(0, 0, 0, .38);
   --sc-nieve-1: #2a3b55; --sc-nieve-2: #6f8fb0; --sc-nieve-far: #c9dbea; --sc-nieve-near: #eaf2f9; --sc-pine: #1f3b3a;
-  --sc-fiesta-1: #2a1240; --sc-fiesta-2: #5b1f5e; --sc-fiesta-near: #1a0b28; --sc-flag-0: #ff4fa3; --sc-flag-1: #ff9600; --sc-flag-2: #b46cff; --sc-flag-3: #58cc02; --sc-petal: #ff9f1a;
+  --sc-fiesta-1: #2a1240; --sc-fiesta-2: #5b1f5e; --sc-fiesta-near: #1a0b28; --sc-flag-0: #ff4fa3; --sc-flag-1: #ff9600; --sc-flag-2: #b46cff; --sc-flag-3: #37cb69; --sc-petal: #ff9f1a;
   --sc-mazmorra-1: #1b1714; --sc-mazmorra-2: #2e2620; --sc-brick: #3a302a; --sc-brick-line: #251f1b; --sc-mazmorra-near: #120f0d; --sc-torch: #6b4a2e;
   --rar-comun: #8fa3b3; --rar-rara: #1cb0f6; --rar-epica: #ce82ff; --rar-legendaria: #ffc800;
   --d-ghost: #b9c7f5; --d-ghost-light: #232a45;
-  --mu-3: #79e02a; --mu-2: #46a302; --mu-1: #2b5a14; --mu-none: #2d353d; --mu-base: #3b454e;
+  --mu-3: #5ed98f; --mu-2: #1f8a4b; --mu-1: #1d4a2e; --mu-none: #2d353d; --mu-base: #3b454e;
   --d-mo-wing: rgba(220, 240, 255, .55); --d-mo-acc: #e8eef5; --d-mo-hat: #2a1f3d;
   --d-mo-dark: #1b1f24; --d-mo-tooth: #ffffff; --d-mo-belly: rgba(255, 255, 255, .22); --d-mo-horn: #f2e6c9;
   --d-radius: 16px; --d-radius-l: 22px;

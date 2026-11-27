@@ -7,6 +7,7 @@ import { backfillDays, streak, realReading } from './lib/progress'
 import { BinauralAudio } from './BinauralAudio'
 import { Card, Chips, Empty, Heading, Stepper, Tabs, fmtDay, mmss, useNow, useWakeLock } from './ui'
 import { freshReading } from './lib/sesionLectura'
+import { firstDay } from './lib/jardin'
 import { plural } from './lib/text'
 
 type Commit = (update: (d: AppData) => AppData) => void
@@ -106,7 +107,7 @@ function Session({ data, commit, onMessage }: Props) {
   </Card>
 }
 
-function ChapterPicker({ onAdd }: { onAdd: (id: string) => void }) {
+export function ChapterPicker({ onAdd }: { onAdd: (id: string) => void }) {
   const [bookId, setBookId] = useState(43)
   const [chapter, setChapter] = useState(1)
   return <div className="chapter-picker"><select className="text-input" value={bookId} onChange={e => { setBookId(Number(e.target.value)); setChapter(1) }} aria-label="Libro">{CANON.map(id => book(id)).map(b => <option key={b.id} value={b.id}>{b.name}</option>)}</select>
@@ -120,9 +121,10 @@ function ChapterPicker({ onAdd }: { onAdd: (id: string) => void }) {
  */
 function DayBand({ data, selected, onPick }: { data: AppData; selected: string | null; onPick: (day: string) => void }) {
   const days = useMemo(() => backfillDays(data), [data])
-  const missing = days.filter(d => !d.read && !d.isToday).length
+  const desde = firstDay(data, dateKey())
+  const missing = days.filter(d => !d.read && !d.isToday && d.day >= desde).length
   return <Card className="day-band-card">
-    <div className="section-heading"><div><span className="eyebrow">TUS ÚLTIMOS 14 DÍAS</span><h2>{missing ? `${missing} ${missing === 1 ? 'día' : 'días'} en blanco` : 'Sin huecos'}</h2></div></div>
+    <div className="section-heading"><div><span className="eyebrow">TUS ÚLTIMOS 14 DÍAS</span><h2>{missing ? `${missing} ${missing === 1 ? 'día' : 'días'} en blanco` : 'Sin huecos todavía'}</h2></div></div>
     <p className="hint">¿Leíste y se te olvidó anotarlo? Toca el día y regístralo con su fecha.</p>
     <div className="day-band" role="group" aria-label="Últimos 14 días de lectura">{days.map(d => {
       const n = new Date(`${d.day}T12:00:00`)

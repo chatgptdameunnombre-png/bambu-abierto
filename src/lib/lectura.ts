@@ -1,4 +1,5 @@
-import { makeId, type AppData, type Reading, type Work } from './model'
+import { makeId, type AppData, type BibleMark, type Reading, type Work } from './model'
+import { addChapterMarks, describeRanges, toRanges } from './bible'
 import { realReading, streak } from './progress'
 import { finishReading, readingSeconds } from './readingSession'
 
@@ -70,4 +71,30 @@ export function readingStats(data: AppData, today: string): ReadingStats {
     recent: [...real].sort((a, b) => b.day.localeCompare(a.day)).slice(0, 6).map(r => ({ day: r.day, minutes: r.minutes, book: title(r.workId) })),
     perBook: [...per.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([t, minutes]) => ({ title: t, minutes, page: data.works.find(w => w.title === t)?.currentPage })),
   }
+}
+
+export const BIBLIA = 'La Biblia'
+/**
+ * Marca capítulos de la Biblia en la última lectura de ese día (o en una nueva si no hay).
+ * Con UN capítulo y versículos ("1 al 12") queda como lectura parcial: no cuenta el capítulo entero.
+ */
+export function markBible(data: AppData, day: string, chapters: { book: number; chapter: number }[], verses = ''): AppData {
+  if (!chapters.length) return data
+  const v = verses.trim().slice(0, 60)
+  const partial = chapters.length === 1 && v
+  const ranges = toRanges(chapters)
+  const location = describeRanges(ranges) + (partial ? `, versículos ${v}` : '')
+  const last = data.reading.filter(r => r.day === day).at(-1)
+  const bibleWork = data.works.find(w => w.title === BIBLIA)?.id
+  const target = last && !last.bible?.length && (!last.workId || last.workId === bibleWork) ? last : null
+  const reading = target
+    ? data.reading.map(r => r.id === target.id ? { ...r, title: BIBLIA, bible: [...(r.bible ?? []), ...ranges], location } : r)
+    : [...data.reading, { id: `reading:${makeId()}`, day, minutes: 0, note: '', title: BIBLIA, bible: ranges, location, captureMode: 'manual', source: 'bambu' } as Reading]
+  let bible: BibleMark[]
+  if (partial) {
+    const { book, chapter } = chapters[0]; const id = `${book}:${chapter}`
+    const full = data.bible.some(m => m.id === id && !m.verses)
+    bible = full ? data.bible : [...data.bible.filter(m => m.id !== id), { id, book, chapter, day, verses: v, source: 'bambu' }]
+  } else bible = addChapterMarks(data.bible, chapters, day)
+  return { ...data, reading, bible }
 }

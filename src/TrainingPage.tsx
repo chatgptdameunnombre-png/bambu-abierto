@@ -233,7 +233,7 @@ function ProgressTab({ data, commit, onMessage }: Props) {
   const mass = massPlan(data)
   const used = [...new Set(data.sets.map(s => s.exercise))].map(id => exercise(id)).filter((e): e is Exercise => !!e)
   return <>
-    <BodyCard data={data} commit={commit} onMessage={onMessage} />
+    <PesoCard data={data} commit={commit} onMessage={onMessage} />
     <PhotoLab data={data} commit={commit} onMessage={onMessage} />
     <Card>
       <span className="eyebrow">TU ESCALERA</span>
@@ -260,7 +260,7 @@ function ProgressTab({ data, commit, onMessage }: Props) {
   </>
 }
 
-function BodyCard({ data, commit, onMessage }: Props) {
+export function PesoCard({ data, commit, onMessage }: Props) {
   const today = dateKey()
   const current = data.body.find(b => b.day === today)
   const last = [...data.body].filter(b => b.weightKg).sort((a, b) => b.day.localeCompare(a.day))[0]

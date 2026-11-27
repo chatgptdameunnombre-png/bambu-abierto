@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { dateKey, type AppData } from './lib/model'
+import { dateKey, modulesOf, type AppData } from './lib/model'
+import { BIBLIA, markBible } from './lib/lectura'
+import { TOTAL_CHAPTERS, bibleProgress, book as bookOf, nextChapters } from './lib/bible'
+import { ChapterPicker } from './ReadingPage'
 import { books, logReading, readingStats, readOn, startReading, stopReading, timerOf } from './lib/lectura'
 import { pauseReading, readingSeconds } from './lib/readingSession'
 import { XP } from './lib/xp'
@@ -13,11 +16,39 @@ type Commit = (update: (d: AppData) => AppData) => void
 const MINUTES = [10, 15, 20, 30, 45, 60]
 const TIMERS = [10, 20, 30, 45]
 
+type Ch = { book: number; chapter: number }
+const chId = (c: Ch) => `${c.book}:${c.chapter}`
+
+/** Capítulos de la Biblia: los que siguen en tu ruta a un toque, cualquier otro con el selector, y versículos si fue solo un pedazo. */
+function BiblePick({ data, picked, setPicked, verses, setVerses }: { data: AppData; picked: Ch[]; setPicked: (c: Ch[]) => void; verses: string; setVerses: (v: string) => void }) {
+  const next = nextChapters(data, data.settings.bibleOrder, 4)
+  const shown = [...next, ...picked.filter(p => !next.some(n => chId(n) === chId(p)))]
+  const isOn = (c: Ch) => picked.some(p => chId(p) === chId(c))
+  const toggle = (c: Ch) => setPicked(isOn(c) ? picked.filter(p => chId(p) !== chId(c)) : [...picked, c])
+  return <div className="d-field">¿Qué capítulos leíste?
+    <div className="d-chips">{shown.map(c => <button key={chId(c)} type="button" className={isOn(c) ? 'on' : ''} aria-pressed={isOn(c)} onClick={() => toggle(c)}>{bookOf(c.book).name} {c.chapter}</button>)}</div>
+    <details className="d-more"><summary>Otro capítulo</summary><ChapterPicker onAdd={id => { const [b, ch] = id.split(':').map(Number); if (!isOn({ book: b, chapter: ch })) setPicked([...picked, { book: b, chapter: ch }]) }} /></details>
+    {picked.length === 1 && <label className="d-field">¿Solo unos versículos? <small>opcional</small><input className="d-input" value={verses} maxLength={60} onChange={e => setVerses(e.target.value)} placeholder="Ej. 1 al 12" /></label>}
+  </div>
+}
+
+function BibleProgressLine({ data }: { data: AppData }) {
+  const p = bibleProgress(data, data.settings.bibleOrder)
+  if (!p.read && !p.partial && !modulesOf(data.settings).bible) return null
+  return <div className="d-bible-progress">
+    <h3>Tu Biblia</h3>
+    <p><b>{p.read.toLocaleString('es-MX')}</b> de {TOTAL_CHAPTERS.toLocaleString('es-MX')} capítulos · {p.percent}%</p>
+    <div className="d-bar" role="progressbar" aria-label="Avance de la Biblia" aria-valuemin={0} aria-valuemax={100} aria-valuenow={p.percent}><i style={{ width: `${Math.max(p.percent, p.read ? 2 : 0)}%` }} /></div>
+    {p.next && <small>Sigue: {bookOf(p.next.book).name} {p.next.chapter}</small>}
+  </div>
+}
+
 function BookPick({ data, value, onChange }: { data: AppData; value: string; onChange: (v: string) => void }) {
-  const list = books(data).slice(0, 4)
+  const list = books(data).filter(b => b.title !== BIBLIA).slice(0, 4)
+  const bible = modulesOf(data.settings).bible || modulesOf(data.settings).reading
   return <div className="d-field">¿Qué libro?
-    {list.length > 0 && <div className="d-chips">{list.map(b => <button key={b.id} type="button" className={value === b.title ? 'on' : ''} onClick={() => onChange(b.title)}>{b.title}{b.currentPage ? <small> pág. {b.currentPage}</small> : null}</button>)}</div>}
-    <input className="d-input" value={value} maxLength={200} onChange={e => onChange(e.target.value)} placeholder={list.length ? 'U otro libro' : 'Nombre del libro'} />
+    {(list.length > 0 || bible) && <div className="d-chips">{bible && <button type="button" className={value === BIBLIA ? 'on' : ''} aria-pressed={value === BIBLIA} onClick={() => onChange(value === BIBLIA ? '' : BIBLIA)}>La Biblia</button>}{list.map(b => <button key={b.id} type="button" className={value === b.title ? 'on' : ''} onClick={() => onChange(b.title)}>{b.title}{b.currentPage ? <small> pág. {b.currentPage}</small> : null}</button>)}</div>}
+    {value !== BIBLIA && <input className="d-input" value={value} maxLength={200} onChange={e => onChange(e.target.value)} placeholder={list.length ? 'U otro libro' : 'Nombre del libro'} />}
   </div>
 }
 
@@ -36,15 +67,18 @@ function Stats({ data }: { data: AppData }) {
       <h3>Por libro</h3>
       <ul className="d-read-list">{s.perBook.map(b => <li key={b.title}><DuoIcon name="libro" size={24} /><b>{b.title}{b.page ? <small> · pág. {b.page}</small> : null}</b><em>{b.minutes} min</em></li>)}</ul>
     </>}
+    <BibleProgressLine data={data} />
     {!s.recent.length && <p className="d-hint left">Aquí verás tus minutos, tu racha y cuánto llevas de cada libro.</p>}
   </div>
 }
 
-export function ReadSheet({ data, commit, onClose, onMessage }: { data: AppData; commit: Commit; onClose: () => void; onMessage: (t: string) => void }) {
+export function ReadSheet({ data, commit, onClose, onMessage, biblia = false }: { data: AppData; commit: Commit; onClose: () => void; onMessage: (t: string) => void; biblia?: boolean }) {
   const today = dateKey()
   const active = data.activeReading
-  const [step, setStep] = useState<'ask' | 'yes' | 'no' | 'done'>(readOn(data, today) ? 'done' : 'ask')
-  const [book, setBook] = useState(books(data)[0]?.title ?? '')
+  const [picked, setPicked] = useState<Ch[]>([])
+  const [verses, setVerses] = useState('')
+  const [step, setStep] = useState<'ask' | 'yes' | 'no' | 'marcar' | 'done'>(readOn(data, today) ? 'done' : 'ask')
+  const [book, setBook] = useState(biblia ? BIBLIA : books(data)[0]?.title ?? '')
   const [minutes, setMinutes] = useState(20)
   const [page, setPage] = useState('')
   const [mode, setMode] = useState<'crono' | 'timer'>('crono')
@@ -61,9 +95,12 @@ export function ReadSheet({ data, commit, onClose, onMessage }: { data: AppData;
     if (left !== null && left <= 0 && !fired.current) { fired.current = true; chime() }
   }, [left])
 
+  const isBible = book === BIBLIA
   function saveYes(el: HTMLElement) {
     const p = Number(page)
-    commit(d => logReading(d, today, { minutes, book, pageTo: Number.isInteger(p) && p > 0 ? p : undefined, mode: 'manual' }))
+    if (isBible) commit(d => markBible(logReading(d, today, { minutes, mode: 'manual' }), today, picked, verses))
+    else commit(d => logReading(d, today, { minutes, book, pageTo: Number.isInteger(p) && p > 0 ? p : undefined, mode: 'manual' }))
+    setPicked([]); setVerses('')
     reward(el, `+${XP.read} XP`)
     onMessage(`Lectura guardada: ${minutes} min${book.trim() ? ` de ${book.trim()}` : ''}.`)
     setStep('done')
@@ -76,10 +113,11 @@ export function ReadSheet({ data, commit, onClose, onMessage }: { data: AppData;
   function finish(el: HTMLElement) {
     const min = Math.max(1, Math.round(secs / 60))
     if (secs < 30) { commit(d => ({ ...d, activeReading: null })); onMessage('Fue muy corto, no se guardó.'); return }
+    const bible = active?.title === BIBLIA
     commit(d => stopReading(d))
     reward(el, `+${XP.read} XP`)
     onMessage(`Lectura guardada: ${min} min.`)
-    setStep('done')
+    setStep(bible ? 'marcar' : 'done')
   }
 
   if (active) return <Sheet title={active.title || 'Leyendo'} tall onClose={onClose}>
@@ -105,11 +143,13 @@ export function ReadSheet({ data, commit, onClose, onMessage }: { data: AppData;
     </div>}
     {step === 'yes' && <div className="d-form">
       <BookPick data={data} value={book} onChange={setBook} />
+      {isBible && <BiblePick data={data} picked={picked} setPicked={setPicked} verses={verses} setVerses={setVerses} />}
       <div className="d-field">¿Cuánto tiempo?
         <div className="d-seg wrap6">{MINUTES.map(m => <button key={m} type="button" className={minutes === m ? 'on' : ''} onClick={() => setMinutes(m)}>{m}</button>)}</div>
       </div>
-      <label className="d-field">Página a la que llegaste (opcional)<input className="d-input num" type="number" inputMode="numeric" min={1} max={20000} value={page} onChange={e => setPage(e.target.value)} /></label>
-      <div className="d-row2"><button type="button" className="d-btn white" onClick={() => setStep('ask')}>Atrás</button><button type="button" className="d-btn green wide" onClick={e => saveYes(e.currentTarget)}>Guardar {minutes} min</button></div>
+      {!isBible && <label className="d-field">Página a la que llegaste (opcional)<input className="d-input num" type="number" inputMode="numeric" min={1} max={20000} value={page} onChange={e => setPage(e.target.value)} /></label>}
+      <div className="d-row2"><button type="button" className="d-btn white" onClick={() => setStep('ask')}>Atrás</button><button type="button" className="d-btn green wide" disabled={isBible && !picked.length} onClick={e => saveYes(e.currentTarget)}>Guardar {minutes} min</button></div>
+      {isBible && !picked.length && <p className="d-hint left">Toca al menos un capítulo.</p>}
     </div>}
     {step === 'no' && <div className="d-form">
       <BookPick data={data} value={book} onChange={setBook} />
@@ -119,6 +159,10 @@ export function ReadSheet({ data, commit, onClose, onMessage }: { data: AppData;
       </div>
       {mode === 'timer' && <div className="d-seg">{TIMERS.map(m => <button key={m} type="button" className={timerMin === m ? 'on' : ''} onClick={() => setTimerMin(m)}>{m} min</button>)}</div>}
       <div className="d-row2"><button type="button" className="d-btn white" onClick={() => setStep('ask')}>Atrás</button><button type="button" className="d-btn blue wide" onClick={start}>Empezar a leer</button></div>
+    </div>}
+    {step === 'marcar' && <div className="d-form">
+      <BiblePick data={data} picked={picked} setPicked={setPicked} verses={verses} setVerses={setVerses} />
+      <div className="d-row2"><button type="button" className="d-btn white" onClick={() => setStep('done')}>Luego</button><button type="button" className="d-btn green wide" disabled={!picked.length} onClick={() => { commit(d => markBible(d, today, picked, verses)); onMessage('Capítulos marcados.'); setPicked([]); setVerses(''); setStep('done') }}>Marcar capítulos</button></div>
     </div>}
     {step === 'done' && <div className="d-done-line"><DuoIcon name="check" size={26} />¡Ya leíste hoy! Si leíste más, agrégalo.</div>}
     {step === 'done' && <button type="button" className="d-btn white wide" onClick={() => setStep('ask')}>Agregar otra lectura</button>}

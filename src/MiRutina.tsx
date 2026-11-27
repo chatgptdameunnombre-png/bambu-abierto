@@ -7,7 +7,10 @@ import { haptic } from './lib/haptic'
 import { BroteArt } from './Brote'
 import { DuoIcon } from './DuoIcons'
 import { LibrePage } from './Libre'
-import { AventuraPage } from './Aventura'
+import { AventuraCard, AventuraPage } from './Aventura'
+import { ArmarSheet, CambiarSheet, ElegirRutina } from './ArmarRutina'
+import { cambiarEnSemana, minutosDe, quitarDeSemana, recortar, type Tiempo } from './lib/armar'
+import { Progreso, Recuperacion } from './Progreso'
 import { RedesPage } from './Candado'
 import { DuelosPage, useDuelosToca } from './Duelos'
 import { BotonCamara, CamaraValor } from './Candado'
@@ -245,16 +248,16 @@ function Editor({ plan, day, onSave, onCancel }: { plan: TrainPlan; day: number;
   </div>
 }
 
-type Modo = 'rutina' | 'libre' | 'redes' | 'duelos' | 'aventura'
-const MODOS: Modo[] = ['rutina', 'libre', 'redes', 'duelos', 'aventura']
-const MODO_NOMBRE: Record<Modo, string> = { rutina: 'Rutina', libre: 'Libre', redes: 'Redes', duelos: 'Retos', aventura: 'Aventura' }
+type Modo = 'rutina' | 'libre' | 'redes' | 'duelos'
+const MODOS: Modo[] = ['rutina', 'libre', 'redes', 'duelos']
+const MODO_NOMBRE: Record<Modo, string> = { rutina: 'Rutina', libre: 'Libre', redes: 'Redes', duelos: 'Retos' }
 
 export function MiRutina({ data, commit, onMessage, onIr }: { data: AppData; commit: Commit; onMessage: Msg; onIr?: (a: 'Amigos' | 'Ajustes') => void }) {
   const today = dateKey()
   const todayIdx = weekIndex(today)
   const [view, setView] = useState(todayIdx)
   const [editing, setEditing] = useState(false)
-  const [mode, setModeState] = useState<Modo>(() => { try { const v = localStorage.getItem('bambu.entreno.modo') as Modo; return MODOS.includes(v) ? v : 'rutina' } catch { return 'rutina' } })
+  const [mode, setModeState] = useState<Modo>(() => { try { const v = localStorage.getItem('bambu.entreno.modo'); return v === 'aventura' ? 'libre' : MODOS.includes(v as Modo) ? v as Modo : 'rutina' } catch { return 'rutina' } })
   const toca = useDuelosToca()
   const setMode = (m: Modo) => { try { localStorage.setItem('bambu.entreno.modo', m) } catch { /* solo recuerda la pestaña */ } setModeState(m) }
   const [run, setRunState] = useState<{ start: string | null } | null>(() => runSaved(today) ? { start: null } : null)
@@ -268,15 +271,40 @@ export function MiRutina({ data, commit, onMessage, onIr }: { data: AppData; com
   const ideas = bumps(data, today)
   const savePlan = (p: TrainPlan) => commit(d => ({ ...d, settings: { ...d.settings, train: p } }))
 
-  const modeBar = <div className="d-mode five" role="tablist" aria-label="Tipo de entreno">
-    {MODOS.map(m => <button key={m} type="button" role="tab" aria-selected={mode === m} className={mode === m ? 'on' : ''} onClick={() => setMode(m)}>{MODO_NOMBRE[m]}{m === 'duelos' && toca > 0 && <i className="d-mode-badge" aria-label={`${toca} retos te esperan`}>{toca}</i>}</button>)}
+  const [aventura, setAventura] = useState(false)
+  const [elegir, setElegir] = useState(false)
+  const [manual, setManual] = useState(false)
+  const [armar, setArmar] = useState(false)
+  const [cambiar, setCambiar] = useState<{ name: string; kind: 'reps' | 'seconds' | 'free' } | null>(null)
+  const vacia = !plan.week.some(x => x && x.items.length)
+  const [sub, setSub] = useState<'hoy' | 'progreso' | 'recuperacion'>('hoy')
+  const [tiempo, setTiempo] = useState<Tiempo>(0)
+  const rtSesion = rt ? recortar(rt, tiempo) : null
+  const subBar = <div className="d-subtabs" role="tablist" aria-label="Secciones de rutina">{([['hoy', 'Hoy'], ['progreso', 'Progreso'], ['recuperacion', 'Recuperación']] as const).map(([k, l]) => <button key={k} type="button" role="tab" aria-selected={sub === k} className={sub === k ? 'on' : ''} onClick={() => setSub(k)}>{l}</button>)}</div>
+  const modeBar = <div className="d-mode four" role="tablist" aria-label="Tipo de entreno">
+    {MODOS.map(m => <button key={m} type="button" role="tab" aria-selected={mode === m} className={mode === m ? 'on' : ''} onClick={() => { setMode(m); setAventura(false) }}>{MODO_NOMBRE[m]}{m === 'duelos' && toca > 0 && <i className="d-mode-badge" aria-label={`${toca} retos te esperan`}>{toca}</i>}</button>)}
   </div>
-  if (mode === 'libre') return <div className="d-page">{modeBar}<LibrePage data={data} commit={commit} onAmigos={onIr ? () => onIr('Amigos') : undefined} /></div>
+  if (mode === 'libre' && aventura) return <div className="d-page">{modeBar}<button type="button" className="d-back-link" onClick={() => setAventura(false)}>‹ Libre</button><AventuraPage data={data} commit={commit} /></div>
+  if (mode === 'libre') return <div className="d-page">{modeBar}<AventuraCard data={data} commit={commit} onAbrir={() => setAventura(true)} /><LibrePage data={data} commit={commit} onAmigos={onIr ? () => onIr('Amigos') : undefined} /></div>
   if (mode === 'duelos') return <div className="d-page">{modeBar}<DuelosPage data={data} commit={commit} onMessage={onMessage} onAmigos={onIr ? () => onIr('Amigos') : undefined} /></div>
   if (mode === 'redes') return <div className="d-page">{modeBar}<RedesPage data={data} commit={commit} onAjustes={onIr ? () => onIr('Ajustes') : undefined} /></div>
-  if (mode === 'aventura') return <div className="d-page">{modeBar}<AventuraPage data={data} commit={commit} /></div>
+  const sheets = <>
+    {armar && <ArmarSheet data={data} reemplaza={!vacia} onClose={() => setArmar(false)} onUsar={(week, r) => { commit(d => ({ ...d, settings: { ...d.settings, equipment: r.equipo, train: { ...planOf(d), week } } })); setArmar(false); setElegir(false); onMessage('Tu rutina está lista. Si un ejercicio no te gusta o no puedes, toca Cambiar.') }} />}
+    {cambiar && <CambiarSheet data={data} nombre={cambiar.name} kind={cambiar.kind} onClose={() => setCambiar(null)} onCambiar={o => { savePlan(cambiarEnSemana(plan, cambiar.name, o)); onMessage(`${cambiar.name} cambió por ${o.name} en todos tus días.`); setCambiar(null) }} onQuitar={() => { savePlan(quitarDeSemana(plan, cambiar.name)); onMessage(`${cambiar.name} ya no está en tu rutina.`); setCambiar(null) }} />}
+  </>
+  if ((vacia && !manual && !editing) || elegir) return <section className="d-page">
+    {modeBar}
+    <ElegirRutina onBambu={() => setArmar(true)} onYo={() => { setElegir(false); setManual(true); setEditing(true) }} onCancelar={vacia ? undefined : () => setElegir(false)} />
+    {sheets}
+  </section>
+  if (sub !== 'hoy') return <section className="d-page">
+    {modeBar}
+    {subBar}
+    {sub === 'progreso' ? <Progreso data={data} commit={commit} onMessage={onMessage} /> : <Recuperacion data={data} />}
+  </section>
   return <section className="d-page">
     {modeBar}
+    {subBar}
     <div className="d-days" role="tablist" aria-label="Días">{WEEK_SHORT.map((d, i) => <button key={i} type="button" role="tab" aria-selected={view === i} className={`${view === i ? 'on' : ''} ${i === todayIdx ? 'today' : ''} ${plan.week[i] ? '' : 'rest'}`} onClick={() => { setView(i); setEditing(false) }}>{d}</button>)}</div>
 
     <div className={`d-hero ${locked && isToday ? 'red' : 'green'}`}>
@@ -293,7 +321,12 @@ export function MiRutina({ data, commit, onMessage, onIr }: { data: AppData; com
         <div className="d-now-top"><b>{prog.done} de {prog.total} series</b><span>+{XP.routine} XP al terminar</span></div>
         <div className="d-bar green thick"><span style={{ width: `${prog.total ? prog.done / prog.total * 100 : 0}%` }} /></div>
         {plan.lock && !prog.done && <p className={`d-hint left ${locked ? 'red' : ''}`}>{locked ? 'Tus redes están bloqueadas hasta que entrenes.' : `Antes de las ${plan.deadline} o se bloquean tus redes.`}</p>}
-        {next ? <button type="button" className="d-btn green wide" onClick={() => setRun({ start: null })}>{prog.done ? 'Seguir' : 'Empezar rutina'}</button>
+        {next && !prog.done && <div className="d-tiempo">
+          <span>¿Cuánto tiempo tienes?</span>
+          <div className="d-tiempo-ops">{([[15, '15 min'], [30, '30 min'], [0, 'Completa']] as const).map(([t, l]) => <button key={t} type="button" className={tiempo === t ? 'on' : ''} aria-pressed={tiempo === t} onClick={() => setTiempo(t)}>{l}</button>)}</div>
+          <small>{rtSesion ? `Unos ${minutosDe(rtSesion, plan.restSeconds)} min · ${rtSesion.items.length} ejercicios, ${rtSesion.rounds} rondas${tiempo ? '. Los más importantes primero.' : '.'}` : ''}</small>
+        </div>}
+        {next ? <button type="button" className="d-btn green wide" onClick={() => setRun({ start: null })}>{prog.done ? 'Seguir' : tiempo ? `Empezar sesión de ${tiempo} min` : 'Empezar rutina'}</button>
           : <p className="d-done-line"><DuoIcon name="check" size={26} />¡Rutina completa! Toca el piso para cerrarla.</p>}
       </div>}
 
@@ -314,16 +347,19 @@ export function MiRutina({ data, commit, onMessage, onIr }: { data: AppData; com
         <ul className="d-ex">{rt.items.map(it => {
           const n = setsNeeded(rt, it), d = isToday ? Math.min(n, doneCount(data, today, it)) : 0
           const full = isToday && d >= n
-          return <li key={it.id}>
+          return <li key={it.id} className="con-cambiar">
             <button type="button" className={`d-ex-row ${full ? 'done' : ''}`} disabled={!isToday || full} onClick={() => setRun({ start: it.id })}>
               <span className={`d-ex-icon ${it.kind}`}><DuoIcon name={full ? 'check' : it.kind === 'seconds' ? 'reloj' : it.kind === 'free' ? 'estrella' : 'pesa'} size={30} /></span>
               <span className="d-ex-text"><b>{it.name}</b><small>{label(it)}{it.when === 'before' ? ' · antes' : it.when === 'after' ? ' · al final' : roundsOf(rt, it) !== rt.rounds ? ` · ${roundsOf(rt, it)} veces` : ''}</small></span>
               <span className="d-dots">{Array.from({ length: n }, (_, k) => <i key={k} className={k < d ? 'on' : ''} />)}</span>
             </button>
+            <button type="button" className="d-ex-cambiar" aria-label={`Cambiar ${it.name}`} title="Cambiar" onClick={() => setCambiar({ name: it.name, kind: it.kind })}><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 8h13l-4-4M20 16H7l4 4" /></svg></button>
           </li>
         })}</ul>
+        <button type="button" className="d-link d-rehacer" onClick={() => setElegir(true)}>Rehacer mi rutina</button>
       </div> : <div className="d-card"><p className="d-hint left">Día de descanso.</p><button type="button" className="d-btn blue wide" onClick={() => setEditing(true)}>Poner rutina</button></div>}
     </>}
-    {run && rt && isToday && <Runner data={data} commit={commit} rt={rt} today={today} start={run.start} rest={plan.restSeconds} onClose={() => setRun(null)} />}
+    {sheets}
+    {run && rt && isToday && <Runner data={data} commit={commit} rt={rtSesion ?? rt} today={today} start={run.start} rest={plan.restSeconds} onClose={() => setRun(null)} />}
   </section>
 }

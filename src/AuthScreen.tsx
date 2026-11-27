@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { cuenta, errorDeCuenta, google, setLocalOnly } from './lib/firebase'
 import { LegalLinks } from './Legal'
 import { DuoIcon } from './DuoIcons'
+import { Cielo } from './Onboarding'
 
 type View = 'entrar' | 'crear' | 'recuperar'
 
@@ -50,9 +51,10 @@ export function AuthScreen() {
   }
 
   const title = view === 'crear' ? 'Crea tu cuenta' : view === 'recuperar' ? 'Recupera tu acceso' : 'Entra a tu cuenta'
-  return <main className="d-auth">
+  return <main className="d-auth ob-fondo">
+    <Cielo />
     <section className="d-auth-card">
-      <div className="d-auth-brand"><img src="icon.svg" width="44" height="44" alt="" /><b>bambú</b></div>
+      <div className="d-auth-brand"><img src="icon.svg" width="44" height="44" alt="" /><img className="d-auth-nombre" src="logo-nombre.png" width="104" height="30" alt="bambú" /></div>
       <h1>{title}</h1>
       <p className="d-auth-copy">{view === 'crear' ? 'Tu progreso se guarda en tu cuenta y puedes competir en las tablas. Si ya usabas Bambú en este teléfono, se sube todo lo que tienes.' : view === 'recuperar' ? 'Escribe tu correo y te mandamos un enlace para poner una contraseña nueva.' : 'Con Google o con tu correo.'}</p>
       {view !== 'recuperar' && <>

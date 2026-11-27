@@ -19,7 +19,7 @@ type Props = {
   onExport: () => void; onImport: (file?: File) => void; onSignOut: () => void; onDelete: (password?: string) => Promise<void>
 }
 
-const MODS: [keyof Modules, string, DuoIconName][] = [['training', 'Entreno', 'pesa'], ['focus', 'Tareas', 'lista'], ['reading', 'Lectura', 'libro'], ['food', 'Comida', 'plato']]
+const MODS: [keyof Modules, string, DuoIconName][] = [['training', 'Entreno', 'pesa'], ['focus', 'Tareas', 'lista'], ['reading', 'Lectura', 'libro'], ['bible', 'Biblia', 'estrella'], ['food', 'Comida', 'plato']]
 
 function Toggle({ on, onClick, title, text }: { on: boolean; onClick: () => void; title: string; text?: string }) {
   return <button type="button" className={`d-toggle ${on ? 'on' : ''}`} aria-pressed={on} onClick={onClick}>

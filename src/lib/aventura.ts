@@ -7,16 +7,16 @@ export type Monster = { id: number; name: string; title: string; hp: number; wea
 export const TAG = 'aventura:'
 
 export const MONSTERS: Monster[] = [
-  { id: 0, name: 'Zzzapo', title: 'El sapo dormilón', hp: 40, weak: 'Piernas', color: 'm0', horns: 0, eyes: 2, xp: 20, scene: 'noche', extra: 'gorro' },
-  { id: 1, name: 'Cojinator', title: 'El sofá que te traga', hp: 60, weak: 'Pecho', color: 'm1', horns: 2, eyes: 1, xp: 25, scene: 'ciudad', extra: 'none' },
-  { id: 2, name: 'Scrollípedo', title: 'Gusano de mil scrolls', hp: 80, weak: 'Abdomen', color: 'm2', horns: 0, eyes: 3, xp: 30, scene: 'pantalla', extra: 'antenas' },
-  { id: 3, name: 'Excusarón', title: 'Zumba "mañana empiezo"', hp: 100, weak: 'Hombros', color: 'm3', horns: 0, eyes: 2, xp: 35, scene: 'bosque', extra: 'alas' },
-  { id: 4, name: 'Snoozilla', title: 'Apaga tu alarma 5 veces', hp: 125, weak: 'Espalda', color: 'm4', horns: 2, eyes: 2, xp: 40, scene: 'noche', extra: 'zzz' },
-  { id: 5, name: 'Chatarrón', title: 'Golem de papitas y refresco', hp: 150, weak: 'Piernas', color: 'm5', horns: 1, eyes: 1, xp: 45, scene: 'ciudad', extra: 'none' },
-  { id: 6, name: 'Notificón', title: 'Rey de las notificaciones', hp: 180, weak: 'Cardio', color: 'm6', horns: 0, eyes: 2, xp: 50, scene: 'pantalla', extra: 'corona' },
-  { id: 7, name: 'Desvelatrix', title: 'La bruja de las 3 a.m.', hp: 210, weak: 'Abdomen', color: 'm7', horns: 0, eyes: 3, xp: 55, scene: 'bosque', extra: 'sombrero' },
-  { id: 8, name: 'Flojosaurio Rex', title: 'Escupe fuego de flojera', hp: 250, weak: 'Pecho', color: 'm8', horns: 2, eyes: 2, xp: 60, scene: 'volcan', extra: 'dragon' },
-  { id: 9, name: 'Procrastitán', title: 'Jefe final: todo para luego', hp: 300, weak: 'Espalda', color: 'm9', horns: 0, eyes: 1, xp: 75, scene: 'tormenta', extra: 'corona' },
+  { id: 0, name: 'Letargo', title: 'Guardián del sueño pesado', hp: 40, weak: 'Piernas', color: 'm0', horns: 0, eyes: 2, xp: 20, scene: 'noche', extra: 'gorro' },
+  { id: 1, name: 'Inercia', title: 'El trono que no te deja levantarte', hp: 60, weak: 'Pecho', color: 'm1', horns: 2, eyes: 1, xp: 25, scene: 'ciudad', extra: 'none' },
+  { id: 2, name: 'Abismo', title: 'Devora tus horas en la pantalla', hp: 80, weak: 'Abdomen', color: 'm2', horns: 0, eyes: 3, xp: 30, scene: 'pantalla', extra: 'antenas' },
+  { id: 3, name: 'Pretexto', title: 'Susurra "mañana empiezo"', hp: 100, weak: 'Hombros', color: 'm3', horns: 0, eyes: 2, xp: 35, scene: 'bosque', extra: 'alas' },
+  { id: 4, name: 'Sopor', title: 'Señor de la alarma pospuesta', hp: 125, weak: 'Espalda', color: 'm4', horns: 2, eyes: 2, xp: 40, scene: 'noche', extra: 'zzz' },
+  { id: 5, name: 'Gula', title: 'Coloso de la comida chatarra', hp: 150, weak: 'Piernas', color: 'm5', horns: 1, eyes: 1, xp: 45, scene: 'ciudad', extra: 'none' },
+  { id: 6, name: 'Estruendo', title: 'Soberano de las notificaciones', hp: 180, weak: 'Cardio', color: 'm6', horns: 0, eyes: 2, xp: 50, scene: 'pantalla', extra: 'corona' },
+  { id: 7, name: 'Insomnia', title: 'Hechicera de la madrugada', hp: 210, weak: 'Abdomen', color: 'm7', horns: 0, eyes: 3, xp: 55, scene: 'bosque', extra: 'sombrero' },
+  { id: 8, name: 'Desidia', title: 'Dragón que apaga tu fuego', hp: 250, weak: 'Pecho', color: 'm8', horns: 2, eyes: 2, xp: 60, scene: 'volcan', extra: 'dragon' },
+  { id: 9, name: 'El Postergador', title: 'Jefe final: todo para después', hp: 300, weak: 'Espalda', color: 'm9', horns: 0, eyes: 1, xp: 75, scene: 'tormenta', extra: 'corona' },
 ]
 
 export const dodgeChance = (index: number) => Math.round((0.1 + 0.02 * index) * 100) / 100

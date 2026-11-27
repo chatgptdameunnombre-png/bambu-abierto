@@ -35,7 +35,7 @@ export function Consentimiento({ onAceptar, onSalir }: { onAceptar: (salud: bool
   const [ver, setVer] = useState<'privacidad' | 'terminos' | null>(null)
   return <main className="d-auth">
     <section className="d-auth-card d-consent">
-      <div className="d-auth-brand"><img src="icon.svg" width="44" height="44" alt="" /><b>bambú</b></div>
+      <div className="d-auth-brand"><img src="icon.svg" width="44" height="44" alt="" /><img className="d-auth-nombre" src="logo-nombre.png" width="104" height="30" alt="bambú" /></div>
       <h1>Antes de empezar</h1>
       <p className="d-auth-copy">{AVISO_CORTO()}</p>
       <div className="d-row2">

@@ -1701,6 +1701,78 @@ ok('aguantes: plancha en codos y con brazos estirados por separado, acostado, co
 }
 ok('plancha y tuck planche: de frente con las piernas a la vista ya no se mide como de lado, de lado se mide contra el piso aunque el teléfono esté chueco, ya adentro tolera la orilla, avisos que dicen qué falla (cadera, rodillas, pies, brazos), tuck con la cadera alta, brazo de atrás mal visto y puntas colgando')
 
+{
+  const duolingo = ['58cc02', '46a302', '89e219', '7ac70c', '79e02a']
+  const archivos = ['src/tokens.css', 'src/lib/widget.ts', 'src/bambu.css', 'src/duo.css', 'index.html'].map(f => path.join(__dirname, '..', f)).filter(f => fs.existsSync(f))
+  for (const f of archivos) { const t = fs.readFileSync(f, 'utf8').toLowerCase(); for (const h of duolingo) assert.ok(!t.includes('#' + h), `${path.basename(f)} todavía trae el verde #${h} de Duolingo`) }
+  const tokens = fs.readFileSync(path.join(__dirname, '../src/tokens.css'), 'utf8')
+  assert.match(tokens, /--d-green: #37cb69/, 'el verde es el de la paleta de Gael')
+}
+ok('verde propio: ningún verde de Duolingo en la paleta ni en el widget, verde de la paleta de Gael')
+
+{
+  const A = moduleOf('armar')
+  const R = moduleOf('rutina')
+  const nombres = (w) => w.flatMap(rt => rt ? rt.items.map(i => i.name) : [])
+  const puede = (equipo) => (n) => { const o = A.OPCIONES.find(x => x.name === n); return o && o.equipo.every(e => e === 'nada' || equipo.includes(e)) }
+  const casa = A.armarSemana({ equipo: ['nada'], dias: 3, minutos: 30, nivel: 'empiezo' })
+  assert.deepEqual(casa.map(rt => rt ? rt.title : null), ['Torso', null, 'Pierna y core', null, 'Cuerpo completo', null, null], '3 días: torso, pierna y cuerpo completo con descanso entre medio')
+  assert.ok(nombres(casa).every(puede(['nada'])), 'solo con el piso no pone nada que necesite equipo')
+  assert.ok(casa.every(rt => !rt || (rt.items.length >= 3 && rt.items.length <= 5 && rt.rounds === 3)), '30 minutos: hasta 5 ejercicios y 3 rondas')
+  assert.ok(casa.every(rt => !rt || new Set(rt.items.map(i => i.name)).size === rt.items.length), 'ningún ejercicio se repite el mismo día')
+  const barra = A.armarSemana({ equipo: ['nada', 'barra', 'silla'], dias: 4, minutos: 45, nivel: 'entreno' })
+  assert.ok(nombres(barra).some(n => /Dominada|Chin ups|australianas/.test(n)), 'con barra entra un jalón de barra')
+  assert.ok(nombres(barra).every(puede(['nada', 'barra', 'silla'])))
+  assert.deepEqual(barra.map(rt => !!rt), [true, true, false, true, true, false, false])
+  assert.ok(barra.every(rt => !rt || rt.items.length <= 7))
+  assert.notDeepEqual(barra[0].items.map(i => i.name), barra[3].items.map(i => i.name), 'el segundo día de torso varía los ejercicios')
+  const corto = A.armarSemana({ equipo: ['nada'], dias: 2, minutos: 15, nivel: 'empiezo' })
+  assert.deepEqual(corto.map(rt => !!rt), [true, false, false, true, false, false, false])
+  assert.ok(corto.every(rt => !rt || (rt.items.length <= 3 && rt.rounds === 2)), '15 minutos: 3 ejercicios y 2 rondas')
+  assert.equal(A.armarSemana({ equipo: ['nada'], dias: 6, minutos: 30, nivel: 'empiezo' }).filter(Boolean).length, 6)
+  const empuje = (nivel) => A.armarSemana({ equipo: ['nada', 'silla', 'pared'], dias: 3, minutos: 30, nivel })[0].items[0]
+  const nivelDe = (n) => A.OPCIONES.find(o => o.name === n).level
+  assert.ok(nivelDe(empuje('avanzado').name) > nivelDe(empuje('empiezo').name), 'avanzado pone una versión más difícil que principiante')
+  const cambios = A.cambiosPara('Lagartija normal', ['nada'], 'reps')
+  assert.ok(cambios.some(c => c.opcion.name === 'Lagartija con rodillas' && c.etiqueta === 'Más fácil'))
+  assert.ok(cambios.some(c => c.opcion.name === 'Lagartija diamante' && c.etiqueta === 'Más difícil'))
+  assert.ok(cambios.every(c => puede(['nada'])(c.opcion.name)), 'solo ofrece cambios que puedes hacer con tu equipo')
+  assert.ok(A.cambiosPara('Muscle up', ['nada'], 'reps').length > 0, 'un ejercicio propio también se puede cambiar')
+  const plan = { deadline: '19:00', lock: false, restSeconds: 60, week: casa }
+  const cambiado = A.cambiarEnSemana(plan, casa[0].items[0].name, A.OPCIONES.find(o => o.name === 'Lagartija normal'))
+  assert.ok(nombres(cambiado.week).includes('Lagartija normal') && !nombres(cambiado.week).includes(casa[0].items[0].name), 'se cambia en todos los días')
+  assert.equal(cambiado.week[0].items[0].id, casa[0].items[0].id, 'conserva su lugar en la rutina')
+  const sinNada = casa[0].items.reduce((p, it) => A.quitarDeSemana(p, it.name), plan)
+  assert.equal(sinNada.week[0], null, 'si quitas todos los de un día, queda de descanso')
+  assert.deepEqual(A.semanaVacia().week, [null, null, null, null, null, null, null])
+  assert.equal(A.semanaVacia().lock, false, 'una cuenta nueva no arranca con las redes bloqueadas')
+  assert.ok(nombres(casa).every(n => R.label({ name: n, kind: 'reps', target: 1 })), 'cada ejercicio armado se muestra en la rutina')
+}
+ok('rutina armada por Bambú: días, tiempo, nivel y equipo, sin repetir ejercicios, cambiar por uno más fácil o más difícil en todos los días, quitar y cuenta nueva sin rutina ni candado')
+
+{
+  const A = moduleOf('armar')
+  const L = moduleOf('lectura')
+  const rt = { title: 'Torso', rounds: 3, items: [{ id: 'w', name: 'Muscle up', kind: 'reps', target: 2, when: 'before' }, ...['a', 'b', 'c', 'd', 'e', 'f', 'g'].map(id => ({ id, name: `Ej ${id}`, kind: 'reps', target: 10 })), { id: 'z', name: 'Colgarse', kind: 'seconds', target: 30, when: 'after' }] }
+  const quince = A.recortar(rt, 15), treinta = A.recortar(rt, 30)
+  assert.deepEqual(quince.items.map(i => i.id), ['a', 'b', 'c'], '15 min: los 3 primeros del circuito, sin los de antes y al final')
+  assert.equal(quince.rounds, 2)
+  assert.deepEqual(treinta.items.map(i => i.id), ['a', 'b', 'c', 'd', 'e'])
+  assert.equal(treinta.rounds, 3)
+  assert.equal(A.recortar(rt, 0), rt, 'completa no cambia nada')
+  assert.ok(A.minutosDe(quince, 60) < A.minutosDe(treinta, 60) && A.minutosDe(treinta, 60) < A.minutosDe(rt, 60))
+  assert.ok(A.minutosDe(quince, 60) >= 8 && A.minutosDe(quince, 60) <= 16, String(A.minutosDe(quince, 60)))
+  const base = normalizeData({ ...EMPTY_DATA, profile: { name: 'K', onboardingComplete: true } })
+  const dia = '2026-11-26'
+  const leida = L.markBible(base, dia, [{ book: 1, chapter: 1 }, { book: 1, chapter: 2 }])
+  assert.equal(leida.bible.filter(m => m.day === dia).length, 2, 'marca los capítulos de la Biblia de hoy')
+  assert.equal(leida.reading.at(-1).title, L.BIBLIA)
+  const parcial = L.markBible(base, dia, [{ book: 43, chapter: 3 }], '1 al 16')
+  assert.equal(parcial.bible[0].verses, '1 al 16', 'con versículos queda como lectura parcial')
+  assert.equal(L.markBible(base, dia, []), base)
+}
+ok('sesión de 15 o 30 minutos sobre tu propia rutina y Biblia en el registro rápido (capítulos y versículos)')
+
 
 
 ok('cámara para todo: variantes (diamante, arqueras, abiertas, inclinadas…), planche, lever y bandera con postura, cualquier otro ejercicio aprende su recorrido y los aguantes cuentan solo quieto')

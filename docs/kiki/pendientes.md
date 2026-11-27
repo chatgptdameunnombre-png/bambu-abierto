@@ -22,3 +22,9 @@ Se hizo y se publicó el 25-nov-2026 (commit `abb4090` del sitio) y **ese mismo 
 | Armar el widget con Scriptable | Kiki |
 | Primer reto con Gael (aceptar su solicitud en Amigos) | Kiki |
 | Llenar los datos del responsable para activar los legales (y que un abogado los revise) | Kiki |
+| Probar en el iPhone: la bienvenida nueva, armar la rutina con Bambú, sesión de 15 min, Progreso, Recuperación y la Biblia | Kiki |
+| Pedir a ChatGPT el ícono 1 solo en 1024 px para que se vea nítido en grande (hoy está recortado de la hoja de 9) | Kiki |
+| Volver a conectar Noche y Bloque de enfoque (el código ya está; hoy no hay botón que lleve) | Claude, con OK de Kiki |
+| Los ajustes de la rutina de Kiki (toques a 7, sin parado de cabeza ni handstand push up) se aplican a todos: limitarlos a su cuenta | Claude |
+| Nombres serios para los 48 monstruos de temporada (siguen los chistosos) | Kiki decide |
+| Decidir con Gael: una sola nube, amigos solo por código, quitar "Pasar mis datos" | Kiki y Gael |

@@ -268,6 +268,27 @@ function SeasonView({ data, commit, onClose }: { data: AppData; commit: Commit; 
   </div>
 }
 
+export function AventuraCard({ data, commit, onAbrir }: { data: AppData; commit: Commit; onAbrir: () => void }) {
+  const today = dateKey()
+  const { battles, current } = adventure(data)
+  const [fight, setFight] = useState(false)
+  const now = battles[current]
+  if (!now) return <button type="button" className="d-adv-mini done" onClick={onAbrir}>
+    <span className="d-adv-mini-info"><small className="d-eyebrow">Aventura completa</small><b>¡Eres leyenda!</b><small>Jefe de la semana, mazmorra y álbum</small></span><span className="d-go">›</span>
+  </button>
+  return <div className="d-adv-mini">
+    <span className={`d-week-art sc-${now.monster.scene}`}><SceneArt scene={now.monster.scene} /><MonsterArt m={now.monster} size={70} /></span>
+    <span className="d-adv-mini-info">
+      <small className="d-eyebrow">Aventura · monstruo {current + 1} de {MONSTERS.length}</small>
+      <b>{now.monster.name}</b>
+      <span className="d-hp"><span style={{ width: `${(now.monster.hp - now.dealt) / now.monster.hp * 100}%` }} /></span>
+      <small>{now.monster.hp - now.dealt} de vida · débil a {now.monster.weak.toLowerCase()}</small>
+      <span className="d-adv-mini-btns"><button type="button" className="d-btn red small" onClick={() => setFight(true)}>¡Pelear!</button><button type="button" className="d-link" onClick={onAbrir}>Ver todo ›</button></span>
+    </span>
+    {fight && <Fight data={data} commit={commit} m={now.monster} dealt={now.dealt} eyebrow={`Monstruo ${current + 1} de ${MONSTERS.length}`} dodgeLevel={current} next={MONSTERS[current + 1]?.name} onStrike={(d, e, k, v, dg2) => attack(d, today, current, e, k, v, Date.now(), dg2)} onClose={() => setFight(false)} />}
+  </div>
+}
+
 export function AventuraPage({ data, commit }: { data: AppData; commit: Commit }) {
   const today = dateKey()
   const { battles, current } = adventure(data)

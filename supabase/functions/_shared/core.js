@@ -742,6 +742,9 @@ function cleanSettings(value) {
 		cardioSetup: v.cardioSetup === true ? true : void 0,
 		rutina2611: v.rutina2611 === true ? true : void 0,
 		rondas2611: v.rondas2611 === true ? true : void 0,
+		toques2611: v.toques2611 === true ? true : void 0,
+		hspu2611: v.hspu2611 === true ? true : void 0,
+		quitar2611: v.quitar2611 === true ? true : void 0,
 		tablas: cleanTablas(v.tablas),
 		amigos: cleanAmigos(v.amigos),
 		aprobados: cleanAmigos(v.aprobados),
@@ -1936,7 +1939,7 @@ function routine(day, title, seeds) {
 }
 var PUSH_A = [
 	s("Handstand contra pared", 30),
-	r("Handstand toque de hombros", 0),
+	r("Handstand toque de hombros", 7),
 	s("Planche lean", 10),
 	r("Pike push ups", 5),
 	r("Fondos", 10),
@@ -1987,11 +1990,9 @@ var PULL = [
 ];
 var PUSH_B = [
 	s("Handstand contra pared", 30),
-	r("Handstand toque de hombros", 0),
-	r("Handstand push up con pared", 5),
+	r("Handstand toque de hombros", 7),
 	s("Tuck planche", 15),
 	s("Planche lean", 10),
-	s("Parado de cabeza", 20),
 	r("Pike push ups", 5),
 	r("Fondos", 10),
 	r("Lagartijas down", 15),

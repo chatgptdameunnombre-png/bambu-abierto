@@ -1424,7 +1424,7 @@ button.d-card { box-shadow: 0 4px 0 var(--d-line); }
 .d-candado-body .d-candado-falta { margin: 0; color: var(--d-ink); font-weight: 800; }
 .d-candado-devolver { width: 100%; display: grid; gap: 10px; text-align: left; }
 .d-candado-devolver .d-btn { white-space: nowrap; font-size: 15px; }
-.d-candado-urgencia { color: var(--d-red); }
+.d-candado-urgencia { color: var(--d-red) !important; }
 .d-candado-body .d-ganar-grupos { width: 100%; text-align: left; }
 .d-candado-body .d-hint.left { justify-self: stretch; margin: -6px 0 0; }
 .d-buscar { position: relative; display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 14px; border: 2px solid var(--d-line); border-radius: 16px; background: var(--d-bg); color: var(--d-dim); }

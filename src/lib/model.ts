@@ -114,6 +114,7 @@ export type Settings = {
   lsit2711?: boolean
   metas2711?: boolean
   cuerda2711?: boolean
+  talones2711?: boolean
 }
 /** `north` es en quién te quieres convertir, con tus palabras. La reflexión de la noche te lo pregunta. */
 export type Profile = { name: string; onboardingComplete: boolean; north?: string }
@@ -492,6 +493,7 @@ export function cleanSettings(value: unknown): Settings {
     lsit2711: v.lsit2711 === true ? true : undefined,
     metas2711: v.metas2711 === true ? true : undefined,
     cuerda2711: v.cuerda2711 === true ? true : undefined,
+    talones2711: v.talones2711 === true ? true : undefined,
     tablas: cleanTablas(v.tablas),
     amigos: cleanAmigos(v.amigos),
     aprobados: cleanAmigos(v.aprobados),

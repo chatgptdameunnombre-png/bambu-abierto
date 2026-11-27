@@ -46,6 +46,7 @@ Commits del sitio donde se publicó cada cambio.
 | `34a8694` (27-nov) | Ejercicios del día revisados: crunches y salto de cuerda con medida propia; la plancha lateral ya no cuenta con la cadera abajo; el hollow ya no se pausa con las piernas casi rectas; wall sit y L sit de lado. En la rutina, los aguantes paran solos al llegar a la meta. Crunches a 30 y plancha lateral a 45 s (tu rutina guardada se ajusta sola una vez). |
 | `07044a9` (27-nov) | Abs con piernas arriba cuentan por lo que suben tus hombros desde donde empezaste (aunque el teléfono esté chueco); a medias no cuenta. El aguante isométrico de abs ahora es en V (sentado, torso atrás y pies en el aire, rodillas dobladas o rectas): con rodillas o pies en el piso, o acostado, no cuenta. Los aguantes acostados aguantan un parpadeo de la cámara sin pausarse. |
 | `2a9b4fe` (27-nov) | Fuera el salto de cuerda de la rutina y pistol squat a 2 rondas (por pierna); tu rutina guardada se ajusta sola una vez. |
+| `3fec753` (27-nov) | Animación **¡Completado!** en la rutina: al acabar el tiempo (reloj o cámara) o al llegar a la meta con la cámara, la cámara se cierra, sale un check verde con chispas, el ejercicio y el XP, y a los 2 s vuelves sola a la rutina. Con cámara las repeticiones también paran en la meta. Fuera las subidas de talones en wall sit (tu rutina se ajusta una vez). |
 
 ## Decisiones de Kiki
 

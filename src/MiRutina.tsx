@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { dateKey, type AppData, type Routine, type RoutineItem, type RoutineKind, type TrainPlan } from './lib/model'
 import { applyBump, bumps, CATALOG, clockOf, doneCount, label, lockActive, logSet, newItem, nextStep, planOf, quietBump, roundsOf, routineFor, routineProgress, setsNeeded, stepsOf, undoLast, weekIndex, WEEK_DAYS, WEEK_SHORT, type Step } from './lib/rutina'
 import { XP } from './lib/xp'
@@ -33,6 +33,24 @@ function Ring({ total, left }: { total: number; left: number }) {
   </svg>
 }
 
+const CHISPAS: CSSProperties[] = Array.from({ length: 18 }, (_, i) => { const a = i / 18 * Math.PI * 2 + (i % 3) * 0.2, d = 96 + (i % 4) * 22; return { '--dx': `${Math.round(Math.cos(a) * d)}px`, '--dy': `${Math.round(Math.sin(a) * d)}px`, '--rot': `${(i * 47) % 360}deg` } as CSSProperties })
+
+function Completado({ nombre, valor, xp, onFin }: { nombre: string; valor: string; xp: number; onFin: () => void }) {
+  const fin = useRef(onFin)
+  useEffect(() => {
+    const cierra = window.setTimeout(() => fin.current(), 1900)
+    return () => window.clearTimeout(cierra)
+  }, [])
+  return <div className="d-hecho" role="status" aria-live="assertive" onClick={onFin}>
+    <div className="d-hecho-in">
+      <div className="d-hecho-check"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M18 33 l10 10 l19 -21" /></svg><span className="d-hecho-chispas" aria-hidden="true">{CHISPAS.map((c, i) => <i key={i} className={`c${i % 4}`} style={c} />)}</span></div>
+      <b>¡Completado!</b>
+      <span>{nombre} · {valor}</span>
+      <em>+{xp} XP</em>
+    </div>
+  </div>
+}
+
 function Runner({ data, commit, rt, today, start, rest, onClose }: { data: AppData; commit: Commit; rt: Routine; today: string; start: string | null; rest: number; onClose: () => void }) {
   useWakeLock(true)
   const [focus, setFocus] = useState<string | null>(start)
@@ -45,6 +63,7 @@ function Runner({ data, commit, rt, today, start, rest, onClose }: { data: AppDa
   const [opened] = useState(() => Date.now())
   const [earned, setEarned] = useState(0)
   const [cam, setCam] = useState(false)
+  const [hecho, setHecho] = useState<{ nombre: string; valor: string; xp: number } | null>(null)
   const steps = useMemo(() => stepsOf(rt), [rt])
   const pending = steps.filter(st => doneCount(data, today, st.item) < st.slot)
   const step: Step | null = (focus && pending.find(st => st.item.id === focus)) || nextStep(data, today, rt)
@@ -82,7 +101,9 @@ function Runner({ data, commit, rt, today, start, rest, onClose }: { data: AppDa
     const after = steps.find(st => doneCount(data, today, st.item) + (st.item.name === item.name ? 1 : 0) < st.slot)
     const xp = XP.set + (after ? 0 : XP.routine)
     setEarned(e => e + xp)
-    setFeedback({ name: item.name, value: `${item.kind === 'seconds' ? `${Math.round(value)} s` : item.kind === 'free' ? 'hecho' : `${value} reps`}${before.side ? before.side === 1 ? ', lado izquierdo' : ', lado derecho' : ''}`, xp, side: before.side, rest: !!after && rest > 0 && before.phase === 'circuit' && after.phase === 'circuit' && after.round > before.round })
+    const texto = `${item.kind === 'seconds' ? `${Math.round(value)} s` : item.kind === 'free' ? 'hecho' : `${value} reps`}${before.side ? before.side === 1 ? ', lado izquierdo' : ', lado derecho' : ''}`
+    setFeedback({ name: item.name, value: texto, xp, side: before.side, rest: !!after && rest > 0 && before.phase === 'circuit' && after.phase === 'circuit' && after.round > before.round })
+    if ((item.kind === 'seconds' || camara) && item.target > 0 && value >= item.target) setHecho({ nombre: item.name, valor: texto, xp })
     setFocus(before.side === 1 ? item.id : null)
   }
   function hold() {
@@ -189,6 +210,7 @@ function Runner({ data, commit, rt, today, start, rest, onClose }: { data: AppDa
       </div>
       <button type="button" className="d-btn green wide" onClick={next}>{feedback.side === 1 ? 'Continuar: lado derecho' : 'Continuar'}</button>
     </footer> : <footer className="d-run-foot">{footer}</footer>}
+    {hecho && <Completado {...hecho} onFin={() => setHecho(null)} />}
   </div>
 }
 

@@ -2645,7 +2645,7 @@ async function audioChecks() {
   const meta = n => d.settings.train.week.flatMap(rt => rt ? rt.items.filter(i => i.name === n).map(i => i.target) : [])
   assert.ok(meta('Crunches').every(t => t === 30) && meta('Plancha lateral').every(t => t === 45), 'crunches a 30 y plancha lateral a 45 s')
   const mr = fs.readFileSync(path.join(__dirname, '../src/MiRutina.tsx'), 'utf8'), cam = fs.readFileSync(path.join(__dirname, '../src/CamaraReps.tsx'), 'utf8')
-  assert.ok(mr.includes('paraEnMeta') && cam.includes('if (paraEnMeta && aguante) { terminar(); return }'), 'en la rutina la cámara para sola al llegar a los segundos')
+  assert.ok(mr.includes('paraEnMeta') && cam.includes('if (paraEnMeta) { terminar(); return }'), 'en la rutina la cámara para sola al llegar a la meta')
   ok('ejercicios del día: hollow sin pausas, plancha lateral sin cadera abajo, crunches y cuerda con medida propia, metas 30 y 45 s, la cámara para en la meta')
 }
 
@@ -2687,4 +2687,22 @@ async function audioChecks() {
   assert.equal(normalizeData(d).settings.cuerda2711, true)
   assert.ok(fs.readFileSync(path.join(__dirname, '../src/App.tsx'), 'utf8').includes('cuerda2711(d)'))
   ok('rutina de Kiki: sin salto de cuerda y pistol squat a 2 rondas (también en su rutina guardada, una sola vez)')
+}
+
+{
+  const R = moduleOf('rutina')
+  const semana = R.seedWeek()
+  assert.ok(!semana.week.some(rt => rt && rt.items.some(i => i.name === 'Subidas de talones en wall sit')), 'sin subidas de talones en wall sit')
+  assert.ok(semana.week.some(rt => rt && rt.items.some(i => i.name === 'Wall sit')) && semana.week.some(rt => rt && rt.items.some(i => i.name === 'Elevaciones de talones')), 'wall sit y elevaciones de talones se quedan')
+  const vieja = { ...semana, week: semana.week.map(rt => rt ? { ...rt, items: [...rt.items, { id: 'tw', name: 'Subidas de talones en wall sit', kind: 'reps', target: 15 }] } : rt) }
+  const d = R.talones2711(normalizeData({ ...EMPTY_DATA, profile: { name: 'K', onboardingComplete: true }, settings: { ...EMPTY_DATA.settings, train: vieja } }))
+  assert.ok(d.settings.talones2711 && !d.settings.train.week.some(rt => rt && rt.items.some(i => i.name === 'Subidas de talones en wall sit')))
+  assert.equal(normalizeData(d).settings.talones2711, true)
+  const mr = fs.readFileSync(path.join(__dirname, '../src/MiRutina.tsx'), 'utf8'), cam = fs.readFileSync(path.join(__dirname, '../src/CamaraReps.tsx'), 'utf8'), css = fs.readFileSync(path.join(__dirname, '../src/duo.css'), 'utf8')
+  assert.ok(mr.includes('talones2711') === false && fs.readFileSync(path.join(__dirname, '../src/App.tsx'), 'utf8').includes('talones2711(d)'))
+  assert.ok(cam.includes("if (paraEnMeta) { terminar(); return }"), 'en la rutina la cámara para al llegar a la meta, también en repeticiones')
+  assert.ok(mr.includes("(item.kind === 'seconds' || camara) && item.target > 0 && value >= item.target) setHecho("), 'completado al acabar el tiempo o al llegar a la meta con cámara')
+  assert.ok(mr.includes('¡Completado!') && /window\.setTimeout\(\(\) => fin\.current\(\), 1900\)/.test(mr), 'la animación se cierra sola y vuelve a la rutina')
+  assert.ok(/prefers-reduced-motion: reduce\) \{ \.d-hecho/.test(css))
+  ok('rutina: animación ¡Completado! al acabar el tiempo o la meta con cámara (se cierra sola a los 2 s); sin subidas de talones en wall sit')
 }

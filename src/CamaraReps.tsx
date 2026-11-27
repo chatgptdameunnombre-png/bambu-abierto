@@ -242,7 +242,7 @@ export default function CamaraReps({ ej, kind, onGuardar, onCerrar, limite: limi
         const g = wod || sinMinutos ? 0 : Math.floor(minutosDe(ej, valor) + 1e-9) - Math.floor(minutosDe(ej, prev) + 1e-9)
         const mas = g > 0 ? `más ${g} ${g === 1 ? 'minuto' : 'minutos'}` : ''
         if (mas) haptic([20, 40, 20])
-        if (meta && prev < meta && valor >= meta) { haptic([30, 60, 30]); decir('¡Meta cumplida!'); if (paraEnMeta && aguante) { terminar(); return } }
+        if (meta && prev < meta && valor >= meta) { haptic([30, 60, 30]); decir('¡Meta cumplida!'); if (paraEnMeta) { terminar(); return } }
         else if (!aguante) decir(mas ? `${valor}, ${mas}` : String(valor))
         else if (mas) decir(`¡${mas}!`)
         else if (valor % 10 === 0 && valor !== dicho) { dicho = valor; decir(`${valor} segundos`) }

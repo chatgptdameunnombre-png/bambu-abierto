@@ -42,6 +42,7 @@ Commits del sitio donde se publicó cada cambio.
 | `b475647` (27-nov) | La rutina ya no da minutos de redes (nota `camara-rutina`: cuenta como récord con cámara, no como minutos). Libre, retos y Redes sí. En la rutina la cámara ya no enseña "vas ganando". |
 | `a626a5f` (27-nov) | En la rutina de Kiki, "Pistol squat asistida" pasa a "Pistol squat" (una vez, solo su cuenta, `pistol2711`). |
 | `c79d37b` (27-nov) | Cámara de frente: sentadillas, desplantes y pistol squat ya cuentan midiendo cuánto baja la cadera (en hombros de ancho); de frente la profundidad de la rodilla casi no se ve y la versión vieja contaba 0. Elevaciones de talones con su propia medida (cuánto suben los hombros). Comparado contra la versión vieja con posturas simuladas. |
+| `971b474` (27-nov) | Puente de glúteo con medida propia de lado (ángulo hombro-cadera-rodilla; a medias no cuenta y dice "Sube la cadera"). De lado te encuentra: los ejercicios generales pedían ver 3 de 4 puntos del tronco (de lado solo se ven 2), visibilidad mínima de 0.5 a 0.4 y el detector suelta menos (confianza 0.3). L sit de lado con los ángulos de la imagen (no depende de la profundidad) y a 15 s en la rutina de Kiki. |
 
 ## Decisiones de Kiki
 

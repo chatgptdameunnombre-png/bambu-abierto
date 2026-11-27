@@ -23,7 +23,7 @@ function obtenerMotor(): Promise<Landmarker> {
     const archivos = await vision.FilesetResolver.forVisionTasks(new URL('pose', document.baseURI).href)
     return await vision.PoseLandmarker.createFromOptions(archivos, {
       baseOptions: { modelAssetPath: new URL('pose/pose_landmarker_lite.task', document.baseURI).href, delegate: 'CPU' },
-      runningMode: 'VIDEO', numPoses: 1,
+      runningMode: 'VIDEO', numPoses: 1, minPoseDetectionConfidence: 0.3, minPosePresenceConfidence: 0.3, minTrackingConfidence: 0.3,
     }) as unknown as Landmarker
   })().catch(e => { motor = null; throw e })
   return motor

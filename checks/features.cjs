@@ -2588,3 +2588,38 @@ async function audioChecks() {
   assert.equal(C.opcionesDe('Sentadilla con salto').salto, true, 'la sentadilla con salto sigue midiendo la rodilla')
   ok('piernas de frente: sentadillas, desplantes y pistol por la caída de la cadera; talones por la subida de los hombros')
 }
+
+{
+  const C = moduleOf('conteo')
+  const P = (x, y, v = 1) => ({ x, y, z: 0, v })
+  const ruido = s => (Math.sin(s * 12.9898) * 43758.5453 % 1) * 0.004
+  const puente = (sube, k) => { const sh = P(0.25, 0.8 + ruido(k)), hp = P(0.5, 0.8 - sube + ruido(k + 1)), kn = P(0.68, 0.62 + ruido(k + 2)), an = P(0.78, 0.8); const img = Array.from({ length: 33 }, () => P(0.5, 0.95, 0)); Object.assign(img, { 0: P(0.17, 0.78), 11: sh, 12: sh, 13: P(0.3, 0.8), 14: P(0.3, 0.8), 15: P(0.4, 0.8), 16: P(0.4, 0.8), 23: hp, 24: hp, 25: kn, 26: kn, 27: an, 28: an, 31: P(0.84, 0.81), 32: P(0.84, 0.81) }); return { img, mundo: img, aspecto: 1 } }
+  const corre = (reps, sube) => { let c = C.nuevoConteo('Puente de glúteo'), t = 0, k = 0, aviso = null; for (let i = 0; i < 1500; i += 33) { c = C.paso(c, puente(0, k++), t); t += 33 } for (let r = 0; r < reps; r++) { for (let i = 0; i <= 2400; i += 33) { c = C.paso(c, puente(sube * Math.sin(Math.PI * i / 2400), k++), t); t += 33; aviso = c.aviso || aviso } for (let i = 0; i < 600; i += 33) { c = C.paso(c, puente(0, k++), t); t += 33 } } return { reps: c.reps, aviso } }
+  assert.equal(C.patronDe('Puente de glúteo'), 'puente')
+  assert.equal(corre(8, 0.1).reps, 8, 'puente completo cuenta')
+  assert.equal(corre(8, 0.072).reps, 8, 'casi en línea también cuenta')
+  const media = corre(6, 0.058)
+  assert.equal(media.reps, 0, 'a medias no cuenta')
+  assert.equal(media.aviso, 'cadera', 'y te dice que subas la cadera')
+  ok('puente de glúteo: medida propia de lado (hombro-cadera-rodilla), a medias no cuenta y avisa')
+}
+
+{
+  const C = moduleOf('conteo'), R = moduleOf('rutina')
+  const P = (x, y, v) => ({ x, y, z: 0, v })
+  const dePieLado = (lejos) => { const img = Array.from({ length: 33 }, () => P(0.5, 0.95, 0)); for (const [i, [x, y]] of Object.entries({ 0: [0.5, 0.15], 11: [0.5, 0.28], 13: [0.5, 0.42], 15: [0.5, 0.55], 23: [0.5, 0.55], 25: [0.5, 0.73], 27: [0.5, 0.9] })) { img[i] = P(x, y, 0.95); img[+i + 1] = P(x + 0.01, y, lejos) } return { img, mundo: img, aspecto: 1 } }
+  assert.ok(C.medir('generico', dePieLado(0.2), C.opcionesDe('Crunches')).visto, 'de lado te ve aunque el lado lejano casi no se vea')
+  assert.ok(C.medir('quieto', dePieLado(0.2), C.opcionesDe('Aguante isométrico de abs')).visto)
+  const cam = fs.readFileSync(path.join(__dirname, '../src/CamaraReps.tsx'), 'utf8')
+  assert.ok(/minTrackingConfidence: 0\.3/.test(cam), 'el detector no te suelta tan fácil de lado')
+  const lsit = (caida, mal) => { const img = Array.from({ length: 33 }, () => P(0.5, 0.95, 0)); const pon = (i, x, y) => { img[i] = P(x, y, 0.9); img[i + 1] = P(x + 0.01, y, 0.25) }; img[0] = P(0.42, 0.27, 0.9); pon(11, 0.45, 0.35); pon(13, 0.47, 0.48); pon(15, 0.48, 0.62); pon(23, 0.47, 0.6); pon(25, 0.65, 0.6 + caida * 0.4); pon(27, 0.82, 0.6 + caida); const mundo = img.map((p, i) => mal && i >= 25 && i <= 28 ? { ...p, y: p.y + 0.15, x: p.x - 0.06 } : p); return { img, mundo, aspecto: 1 } }
+  const vale = m => m.visto && m.postura && m.recto
+  assert.ok(vale(C.medir('lsit', lsit(0, true), C.opcionesDe('L sit'))), 'L sit de lado cuenta aunque la profundidad de la cámara salga mal')
+  assert.equal(vale(C.medir('lsit', lsit(0.25, false), C.opcionesDe('L sit'))), false, 'con las piernas caídas no es L sit')
+  const d = normalizeData({ ...EMPTY_DATA, profile: { name: 'K', onboardingComplete: true }, settings: { ...EMPTY_DATA.settings, train: R.seedWeek() } })
+  const conL = d.settings.train.week.flatMap(rt => rt ? rt.items.filter(i => i.name === 'L sit') : [])
+  assert.ok(conL.length && conL.every(i => i.target === 15), 'L sit a 15 segundos')
+  const viejo = { ...d, settings: { ...d.settings, train: { ...d.settings.train, week: d.settings.train.week.map(rt => rt ? { ...rt, items: rt.items.map(i => i.name === 'L sit' ? { ...i, target: 10 } : i) } : rt) } } }
+  assert.ok(R.lsit2711(viejo).settings.train.week.flatMap(rt => rt ? rt.items.filter(i => i.name === 'L sit') : []).every(i => i.target === 15))
+  ok('de lado: te encuentra aunque no vea el lado lejano; L sit con ángulos de la imagen; L sit a 15 s')
+}

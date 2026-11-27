@@ -111,6 +111,7 @@ export type Settings = {
   quitar2611?: boolean
   devolver2611?: boolean
   pistol2711?: boolean
+  lsit2711?: boolean
 }
 /** `north` es en quién te quieres convertir, con tus palabras. La reflexión de la noche te lo pregunta. */
 export type Profile = { name: string; onboardingComplete: boolean; north?: string }
@@ -486,6 +487,7 @@ export function cleanSettings(value: unknown): Settings {
     quitar2611: v.quitar2611 === true ? true : undefined,
     devolver2611: v.devolver2611 === true ? true : undefined,
     pistol2711: v.pistol2711 === true ? true : undefined,
+    lsit2711: v.lsit2711 === true ? true : undefined,
     tablas: cleanTablas(v.tablas),
     amigos: cleanAmigos(v.amigos),
     aprobados: cleanAmigos(v.aprobados),

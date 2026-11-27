@@ -35,6 +35,7 @@ Commits del sitio donde se publicó cada cambio.
 | `3864039` (27-nov) | Abrir mis redes desde la app de la pantalla de inicio: botón en Entrenar → Redes y tus minutos arriba (el reloj azul); los dos abren el candado dentro de la app, sin pasar por Safari. |
 | `d65b7ea` (27-nov) | Aviso al teléfono 1 minuto antes y al acabar tu pase (también de noche, porque tú lo abriste). Al tocarlo abre el candado. "Ya terminé" y "Devolverme los minutos" lo cancelan. Necesita los avisos prendidos. |
 | `5e13492` (27-nov) | Botón de emergencia (10 min) justo abajo de "Usar mis min" en el candado, en vez de al final de la pantalla. |
+| `5433bd9` (27-nov) | La emergencia ahora es "Algo rápido: abrir 10 min" (contestar un mensaje o publicar), en botón normal y no en rojo. Al abrir cualquier pase sale "Ya terminé" ahí mismo, también en los rápidos. |
 
 ## Decisiones de Kiki
 

@@ -154,7 +154,7 @@ export function CandadoPage({ data, commit, app, onSalir }: { data: AppData; com
     if (elegida?.scheme) window.location.href = elegida.scheme
   }
   function emergencia() {
-    if (!window.confirm(`¿Abrir ${EMERGENCIA_MIN} minutos de emergencia? No gasta tus minutos. Úsalo solo para emergencias.`)) return
+    if (!window.confirm(`¿Abrir ${EMERGENCIA_MIN} minutos para algo rápido, como contestar un mensaje o publicar? No gasta tus minutos. Cuando acabes, toca "Ya terminé".`)) return
     void abrir(EMERGENCIA_MIN, true)
   }
   async function devolver() {
@@ -181,6 +181,7 @@ export function CandadoPage({ data, commit, app, onSalir }: { data: AppData; com
       <h1>Abierto hasta las {hora(hasta)}</h1>
       <p>Te quedan {saldo(data, today)} min para hoy.</p>
       {botonesApps}
+      <PaseAbierto data={data} commit={commit} onMessage={setNota} boton />
       <button type="button" className="d-link" onClick={() => onSalir()}>Ir a bambú</button>
     </div> : paso === 'resistio' ? <div className="d-candado-body">
       <span className="d-candado-ico oro"><DuoIcon name="estrella" size={56} /></span>
@@ -211,7 +212,7 @@ export function CandadoPage({ data, commit, app, onSalir }: { data: AppData; com
             <div className="d-candado-pases">{PASES.map(m => <button key={m} type="button" className="d-btn green" disabled={m > s || paso === 'abriendo'} onClick={() => void abrir(m)}>{m}<small>min</small></button>)}</div>
             {!PASES.includes(s as typeof PASES[number]) && s < PASES[PASES.length - 1] * 4 && <button type="button" className="d-btn white wide" disabled={paso === 'abriendo'} onClick={() => void abrir(s)}>Usar mis {s} min</button>}
           </div> : <p className="d-candado-falta">Ya no te quedan minutos. Gánalos con la cámara:</p>}
-        <button type="button" className="d-btn white wide d-candado-urgencia" disabled={paso === 'abriendo'} onClick={emergencia}>🚨 Emergencia: abrir {EMERGENCIA_MIN} min</button>
+        <button type="button" className="d-btn white wide d-candado-urgencia" disabled={paso === 'abriendo'} onClick={emergencia}><span>Algo rápido: abrir {EMERGENCIA_MIN} min</span><small>Contestar un mensaje o publicar. No gasta tus minutos.</small></button>
         <h2 className="d-sheet-h3">Gana más minutos</h2>
         <p className="d-hint left">Cualquier ejercicio que cuente la cámara suma: aquí, en tu rutina, en Libre o en un reto.</p>
         <GanarMinutos onElegir={setEj} minimo={bloqueado || s >= PASES[0] ? 0 : PASES[0] - s} />
@@ -277,7 +278,7 @@ export function CandadoSetup({ data, commit, onMessage, cloud }: { data: AppData
     <div className="d-field">Minutos libres cada día
       <div className="d-chips">{LIBRES_OPCIONES.map(m => <button key={m} type="button" className={libres === m ? 'on' : ''} aria-pressed={libres === m} onClick={() => setLibres(m)}>{textoLibres(m)}</button>)}</div>
     </div>
-    <p className="d-hint left">{libres ? `Cada día te doy ${textoLibres(libres)} gratis` : 'No te doy minutos gratis'}; lo demás lo ganas con cualquier ejercicio que cuente la cámara. El botón de emergencia abre {EMERGENCIA_MIN} min sin gastar tus minutos.</p>
+    <p className="d-hint left">{libres ? `Cada día te doy ${textoLibres(libres)} gratis` : 'No te doy minutos gratis'}; lo demás lo ganas con cualquier ejercicio que cuente la cámara. El botón "Algo rápido" abre {EMERGENCIA_MIN} min para contestar un mensaje o publicar, sin gastar tus minutos.</p>
     <details className="d-more"><summary>Cuánto vale cada ejercicio</summary>
       <table className="d-rec-table"><tbody>{CAMARA_BASICOS.map(e => e.name).map(n => <tr key={n}><td><b>{n}</b></td><td>{tasaTexto(n).split(' = ')[0]}</td><td className="rec">{tasaTexto(n).split(' = ')[1]}</td></tr>)}</tbody></table>
     </details>

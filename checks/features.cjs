@@ -2471,3 +2471,25 @@ async function audioChecks() {
   assert.equal(normalizeData({ ...d, activities: [{ id: 'x1', day, kind: 'other', deporte: 'NO VALE', sinAjuste: 'si' }] }).activities[0].deporte, undefined)
   ok('otros deportes: buscador, duración e intensidad deciden descanso, quitar músculos usados o nada; solo registrarlo no cambia la rutina; da XP y quita el candado de la hora')
 }
+
+{
+  const mi = moduleOf('minutos')
+  const day = '2026-11-26'
+  const base = normalizeData({ ...EMPTY_DATA, profile: { name: 'K', onboardingComplete: true }, settings: { minLibres: 30, candado: { llave: 'abcdefghijkmnpqrstu' } } })
+  const pase = mi.paseActivity(day, 'instagram', 10)
+  const t0 = Date.parse('2026-11-26T21:00:00')
+  const d = normalizeData({ ...base, activities: [pase], settings: { ...base.settings, candado: { llave: 'abcdefghijkmnpqrstu', desde: t0, hasta: t0 + 600000, pase: pase.id } } })
+  assert.equal(mi.saldo(d, day), 20)
+  assert.equal(mi.sobranDe(d, t0 + 3 * 60000 + 20000), 6, 'a los 3 min 20 s sobran 6 completos')
+  const fin = mi.terminarPase(d, t0 + 3 * 60000 + 20000)
+  assert.equal(mi.saldo(fin, day), 26, 'ya terminé: te devuelve lo que sobró')
+  assert.match(fin.activities[0].note, /· 4 min$/)
+  assert.deepEqual(fin.settings.candado, { llave: 'abcdefghijkmnpqrstu' })
+  assert.equal(mi.saldo(mi.terminarPase(d, t0 + 5000), day), 29, 'el minuto empezado cuenta como usado')
+  assert.equal(mi.sobranDe(d, t0 + 700000), 0, 'ya vencido no devuelve nada')
+  const urg = mi.emergenciaActivity(day, 'instagram')
+  const e = normalizeData({ ...base, activities: [urg], settings: { ...base.settings, candado: { llave: 'abcdefghijkmnpqrstu', desde: t0, hasta: t0 + 600000, pase: urg.id } } })
+  assert.equal(mi.sobranDe(e, t0 + 60000), 0, 'la emergencia no devuelve minutos')
+  assert.equal(mi.terminarPase(e, t0 + 60000).activities.length, 1)
+  ok('ya terminé: cierra el pase en la nube y devuelve los minutos completos que sobran')
+}

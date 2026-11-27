@@ -134,6 +134,23 @@ export function emergenciaUsada(data: AppData, day: string): boolean {
   return data.activities.some(a => a.day === day && (a.note ?? '').startsWith(EMERGENCIA_PREFIX))
 }
 export const DEVOLVER_MS = 3 * 60000
+export function sobranDe(data: AppData, now: number): number {
+  const c = data.settings.candado
+  if (!c?.hasta || c.hasta <= now) return 0
+  const pase = c.pase ? data.activities.find(a => a.id === c.pase) : undefined
+  return pase && paseMinutos(pase) ? Math.min(paseMinutos(pase), Math.floor((c.hasta - now) / 60000)) : 0
+}
+export function terminarPase(data: AppData, now: number): AppData {
+  const c = data.settings.candado
+  if (!c) return data
+  const sobran = sobranDe(data, now)
+  const activities = sobran > 0 ? data.activities.flatMap(a => {
+    if (a.id !== c.pase) return [a]
+    const usados = paseMinutos(a) - sobran
+    return usados > 0 ? [{ ...a, note: (a.note ?? '').replace(/\d{1,3} min$/, `${usados} min`) }] : []
+  }) : data.activities
+  return { ...data, activities, settings: { ...data.settings, candado: { llave: c.llave } } }
+}
 export function devolver2611(data: AppData): AppData {
   return { ...data, activities: data.activities.filter(a => !(a.day === '2026-11-26' && paseMinutos(a) > 0)), settings: { ...data.settings, devolver2611: true } }
 }

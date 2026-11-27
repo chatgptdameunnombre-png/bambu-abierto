@@ -10,6 +10,7 @@ import { DuoIcon, type DuoIconName } from './DuoIcons'
 import { activeHabits, dateKey, EMPTY_DATA, modulesOf, type AppData } from './lib/model'
 import { bedAction, nfcServerAction, trainingAction } from './lib/nfcActions'
 import { devolver2611 } from './lib/minutos'
+import { PaseAbierto } from './PaseAbierto'
 import { ajustarRutina2611, clockOf, deshacerRondas2611, toquesA7, hspuA3, quitar2611 } from './lib/rutina'
 import { semanaVacia } from './lib/armar'
 import { applyRecords, diffRecords, toRecords, type RecordRow } from './lib/records'
@@ -591,6 +592,7 @@ export default function App() {
       <header className="top" aria-label={lost ? 'No encontrada' : labelOf(page)}><StatsBar data={data} go={go} /><button type="button" className={`top-gear ${page === 'Ajustes' ? 'on' : ''}`} aria-label="Ajustes" onClick={() => go('Ajustes')}><DuoIcon name="engrane" size={30} /></button></header>
       <div className="page">
         {!online && <OfflineBanner pending={status?.pending ?? 0} cloud={cloudConfigured} />}
+        <PaseAbierto data={data} commit={commit} onMessage={t => message(t)} />
         {update && <button type="button" className="update-banner" onClick={() => window.location.reload()}><span><strong>Versión nueva lista.</strong> Toca para estrenarla.</span><i aria-hidden="true">↻</i></button>}
         {lost ? <NotFound onHome={goHome} onGo={s => go(s)} /> : <Guard onReport={reportar} where={page} key={page}><div className="section-in">
           <CrashProbe />

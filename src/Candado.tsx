@@ -9,6 +9,7 @@ import { DuoIcon } from './DuoIcons'
 import { Sheet } from './Sheet'
 import { haptic } from './lib/haptic'
 import { siFaltaArchivo } from './lib/version'
+import { PaseAbierto } from './PaseAbierto'
 
 const CamaraReps = lazy(() => import('./CamaraReps').catch(e => siFaltaArchivo<typeof import('./CamaraReps')>(e)))
 type Commit = (update: (d: AppData) => AppData) => void
@@ -186,6 +187,8 @@ export function CandadoPage({ data, commit, app, onSalir }: { data: AppData; com
       <h1>Tu pase sigue abierto</h1>
       <p>Hasta las {hora(abierto.hasta)}, te quedan {Math.max(1, Math.ceil((abierto.hasta - ahora) / 60000))} min.</p>
       {botonesApps}
+      <PaseAbierto data={data} commit={commit} onMessage={setNota} boton />
+      {nota && <p className="d-hint">{nota}</p>}
       {ahora - abierto.desde < DEVOLVER_MS && <div className="d-card d-candado-devolver">
         <b>¿El atajo te regresó aquí sin dejarte entrar?</b>
         <button type="button" className="d-btn white wide" onClick={() => void devolver()}>Devolverme los minutos</button>

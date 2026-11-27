@@ -1,7 +1,7 @@
 import type { AppData } from './model'
 import { gardenStats, shiftDay } from './jardin'
 import { DAILY_GOAL, levelOf, totalXp, xpOn } from './xp'
-import { planOf, routineFor, routineProgress } from './rutina'
+import { routineFor, routineProgress } from './rutina'
 import { saldo } from './minutos'
 import type { EstadoAvisos, EstadoWidget } from './firebase'
 import { esCompetir } from './modo'
@@ -19,11 +19,6 @@ export function estadoWidget(data: AppData, today: string, retos = 0): EstadoWid
     rutina: p ? (p.done >= p.total ? 'Rutina lista' : `Rutina ${p.done}/${p.total}`) : 'Descanso',
     retos: Math.max(0, Math.min(99, Math.round(retos))),
   }
-}
-
-export function semanaDe(data: AppData): string {
-  const s = JSON.stringify(planOf(data).week.map(rt => rt && rt.items.length ? [rt.title, rt.rounds, rt.items.map(i => [i.name, i.kind, i.target, i.rounds ?? 0, i.when ?? '', i.sides ? 1 : 0])] : null))
-  return s.length <= 12000 ? s : ''
 }
 
 export function ultimoActivo(data: AppData, today: string, dias = 45): string {

@@ -2745,20 +2745,6 @@ async function audioChecks() {
 }
 
 {
-  const W = moduleOf('widget'), R = moduleOf('rutina')
-  const d = normalizeData({ ...EMPTY_DATA, profile: { name: 'K', onboardingComplete: true }, settings: { ...EMPTY_DATA.settings, train: R.seedWeek() } })
-  const sem = JSON.parse(W.semanaDe(d))
-  assert.equal(sem.length, 7)
-  const viernes = sem[4]
-  assert.equal(viernes[0], 'Piernas y abdomen'); assert.equal(viernes[1], 3)
-  assert.deepEqual(viernes[2].find(i => i[0] === 'Pistol squat'), ['Pistol squat', 'reps', 5, 2, '', 1])
-  assert.ok(W.semanaDe(d).length < 12000)
-  const wsrc = fs.readFileSync(path.join(__dirname, '../src/Widget.tsx'), 'utf8')
-  assert.ok(wsrc.includes('conSemana = false; return sinSemana()'), 'si las reglas aún no aceptan la rutina, el widget se guarda sin ella')
-  ok('la app publica tu rutina de la semana junto al widget para que la hoja de Google se actualice sola')
-}
-
-{
   const R = moduleOf('rutina')
   const viernes = R.seedWeek().week[4].items.map(i => i.name)
   assert.deepEqual(viernes, ['Sentadillas', 'L sit', 'Desplantes', 'Leg raises', 'Pistol squat', 'Plancha lateral', 'Wall sit', 'Hollow hold', 'Elevaciones de talones', 'Abs con piernas arriba', 'Elevaciones de talón a una pierna', 'Aguante isométrico de abs', 'Puente de glúteo a una pierna'])

@@ -30,6 +30,7 @@ Commits del sitio donde se publicó cada cambio.
 | `3fb7ef2` (26-nov, noche) | Hice otro deporte: buscador con 31 deportes y Otro, duración e intensidad; carga = minutos × intensidad (suave 1, normal 1.5, fuerte 2). 120 o más = descanso (cuenta como entreno, XP de rutina, sin candado de la hora); 45 a 119 = quita los músculos que usaste y baja a 2 rondas; menos = nada. "Solo registrarlo" no cambia la rutina. Emergencia sin límite. |
 | `6c9a82e` (26-nov, noche) | Bloqueo de redes revisado: el atajo se simuló en la Mac con el mismo lector de fechas de Apple contra el pase real (el formato viejo se leía como 12:00, el nuevo deja pasar). Botón "Probar mi atajo (1 min gratis)" en Ajustes y paso de la fecha más claro (mantener presionada, quitar filas vacías). |
 | `e237d9c` (26-nov, noche) | Ya terminé: barra flotante en cualquier sección mientras el pase está abierto y botón en la pantalla del candado; cierra el pase en la nube y devuelve los minutos completos que sobran (el minuto empezado cuenta como usado; la emergencia no devuelve). |
+| `9802259` (26-nov, noche) | Widget de Scriptable rehecho por tamaño: chico (racha grande, barra de XP, minutos), mediano y grande (racha y minutos de redes grandes, barra de XP y rutina) y pantalla bloqueada. Antes era una lista de texto chiquita que no cabía en el chico. |
 
 ## Decisiones de Kiki
 

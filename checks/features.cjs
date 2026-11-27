@@ -1980,6 +1980,24 @@ ok('resumen de la semana: solo cámara, desde el lunes, récords nuevos contra l
   assert.equal(W.estadoParaAvisos(normalizeData({ ...EMPTY_DATA }), hoy).ultimo, '')
   const js = W.scriptWidget('https://x.test/w?key=1')
   assert.ok(js.includes('const URL = "https://x.test/w?key=1"') && js.includes('Script.setWidget(w)') && !/innerHTML|eval\(/.test(js))
+  assert.ok(js.includes('config.widgetFamily') && js.includes('accessoryRectangular') && js.includes('presentMedium'), 'un diseño por tamaño')
+  {
+    class C { constructor(h) { this.h = h } static white() { return new C('#fff') } static clear() { return new C('') } }
+    const font = s => ({ s })
+    const Font = { heavyRoundedSystemFont: font, semiboldRoundedSystemFont: font }
+    class Nodo { constructor() { this.k = [] } addText(x) { const t = { x, centerAlignText() {}, rightAlignText() {} }; this.k.push(t); return t } addStack() { const n = new Nodo(); this.k.push(n); return n } addSpacer() {} addImage(i) { const n = { i }; this.k.push(n); return n } layoutHorizontally() {} layoutVertically() {} centerAlignContent() {} topAlignContent() {} setPadding() {} }
+    class LW extends Nodo { presentSmall() {} presentMedium() {} }
+    class DC { addPath() {} setFillColor() {} fillPath() {} getImage() { return {} } }
+    class P { addRoundedRect() {} }
+    const textos = n => n.k.flatMap(x => x.x !== undefined ? [x.x] : x.k ? textos(x) : [])
+    for (const fam of ['small', 'medium', 'large', 'accessoryRectangular', 'accessoryInline', 'accessoryCircular']) {
+      let w
+      const datos = { fields: { dia: { stringValue: '2000-01-01' }, racha: { integerValue: '12' }, nivel: { integerValue: '5' } } }
+      const fn = new Function('Color', 'Font', 'Size', 'Rect', 'Path', 'DrawContext', 'ListWidget', 'Request', 'Script', 'config', `return (async () => {\n${js}\n})()`)
+      fn(C, Font, class { constructor(a, b) { this.w = a; this.h = b } }, class {}, P, DC, LW, class { loadJSON() { return Promise.resolve(datos) } }, { setWidget(x) { w = x }, complete() {} }, { widgetFamily: fam, runsInApp: false })
+        .then(() => { assert.ok(w && textos(w).some(t => /12/.test(t)), `el widget ${fam} enseña la racha`) })
+    }
+  }
   assert.equal(normalizeData({ ...d, settings: { ...d.settings, widget: { llave: 'corta' }, avisos: { hora: '25:00' } } }).settings.widget, undefined)
   assert.deepEqual(normalizeData({ ...d, settings: { ...d.settings, widget: { llave: 'WidgetLlaveSecreta12' }, avisos: { hora: '19:00' } } }).settings.avisos, { hora: '19:00' })
 }

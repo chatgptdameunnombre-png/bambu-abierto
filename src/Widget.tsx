@@ -62,7 +62,7 @@ export function WidgetSetup({ data, commit, onMessage, cloud }: { data: AppData;
           {ver && <ol className="d-steps-guide">
             <li><span>Instala <b>Scriptable</b> (gratis) desde la App Store.</span></li>
             <li><span>Ábrelo, toca <b>+</b>, pega el código y ponle de nombre <b>Bambú</b>. <button type="button" className="d-link" onClick={() => copiar(scriptWidget(urlWidget(llave)), 'Código del widget')}>Copiar código</button></span></li>
-            <li><span>En tu pantalla de inicio deja presionado, toca <b>+</b>, busca <b>Scriptable</b> y elige el tamaño chico.</span></li>
+            <li><span>En tu pantalla de inicio deja presionado, toca <b>+</b>, busca <b>Scriptable</b> y elige el tamaño <b>chico</b> o <b>mediano</b> (el mediano se ve mejor). También funciona en la pantalla bloqueada.</span></li>
             <li><span>Deja presionado el widget, toca <b>Editar widget</b> y en <b>Script</b> elige <b>Bambú</b>.</span></li>
           </ol>}
           <button type="button" className="d-link" onClick={() => void quitar()}>Quitar widget</button>

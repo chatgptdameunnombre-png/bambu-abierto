@@ -763,6 +763,7 @@ function cleanSettings(value) {
 		cuerda2711: v.cuerda2711 === true ? true : void 0,
 		talones2711: v.talones2711 === true ? true : void 0,
 		legs2711: v.legs2711 === true ? true : void 0,
+		orden2711: v.orden2711 === true ? true : void 0,
 		tablas: cleanTablas(v.tablas),
 		amigos: cleanAmigos(v.amigos),
 		aprobados: cleanAmigos(v.aprobados),
@@ -2339,12 +2340,522 @@ function seedWeek() {
 			routine(1, "Piernas y abdomen", LEGS_A),
 			routine(2, "Espalda, bíceps y antebrazo", PULL),
 			routine(3, "Hombros, pecho y tríceps", PUSH_B),
-			routine(4, "Piernas y abdomen", LEGS_B),
+			intercalarPiernas(routine(4, "Piernas y abdomen", LEGS_B)),
 			routine(5, "Espalda, bíceps y antebrazo", PULL),
 			routine(6, "Abdomen y cardio", CORE)
 		]
 	};
 }
+var CATALOG = [
+	[
+		"Handstand contra pared",
+		"seconds",
+		30,
+		"Hombros"
+	],
+	[
+		"Handstand toque de hombros",
+		"reps",
+		7,
+		"Hombros"
+	],
+	[
+		"Handstand push up con pared",
+		"reps",
+		3,
+		"Hombros"
+	],
+	[
+		"Tuck planche",
+		"seconds",
+		15,
+		"Hombros"
+	],
+	[
+		"Planche lean",
+		"seconds",
+		10,
+		"Hombros"
+	],
+	[
+		"Parado de cabeza",
+		"seconds",
+		20,
+		"Hombros"
+	],
+	[
+		"Pike push ups",
+		"reps",
+		5,
+		"Hombros"
+	],
+	[
+		"Fondos",
+		"reps",
+		10,
+		"Pecho"
+	],
+	[
+		"Lagartijas",
+		"reps",
+		15,
+		"Pecho"
+	],
+	[
+		"Lagartijas up",
+		"reps",
+		15,
+		"Pecho"
+	],
+	[
+		"Lagartijas down",
+		"reps",
+		15,
+		"Pecho"
+	],
+	[
+		"Lagartijas con toque de hombro",
+		"reps",
+		10,
+		"Pecho"
+	],
+	[
+		"Lagartijas lentas",
+		"reps",
+		10,
+		"Pecho"
+	],
+	[
+		"Lagartijas diamante",
+		"reps",
+		10,
+		"Tríceps"
+	],
+	[
+		"Pistol squat asistida",
+		"reps",
+		5,
+		"Piernas",
+		true
+	],
+	[
+		"Sentadillas",
+		"reps",
+		15,
+		"Piernas"
+	],
+	[
+		"Desplantes",
+		"reps",
+		15,
+		"Piernas"
+	],
+	[
+		"Wall sit",
+		"seconds",
+		60,
+		"Piernas"
+	],
+	[
+		"Subidas de talones en wall sit",
+		"reps",
+		15,
+		"Piernas"
+	],
+	[
+		"Elevaciones de talones",
+		"reps",
+		15,
+		"Piernas"
+	],
+	[
+		"Elevaciones de talón a una pierna",
+		"reps",
+		15,
+		"Piernas",
+		true
+	],
+	[
+		"Puente de glúteo a una pierna",
+		"reps",
+		12,
+		"Piernas",
+		true
+	],
+	[
+		"Hollow hold",
+		"seconds",
+		45,
+		"Abdomen"
+	],
+	[
+		"Abs con piernas arriba",
+		"reps",
+		25,
+		"Abdomen"
+	],
+	[
+		"Abs crackers",
+		"reps",
+		15,
+		"Abdomen"
+	],
+	[
+		"Russian twist",
+		"reps",
+		55,
+		"Abdomen"
+	],
+	[
+		"Plancha",
+		"seconds",
+		60,
+		"Abdomen"
+	],
+	[
+		"Plancha con brazos estirados",
+		"seconds",
+		45,
+		"Abdomen"
+	],
+	[
+		"L sit",
+		"seconds",
+		10,
+		"Abdomen"
+	],
+	[
+		"Crunches",
+		"reps",
+		25,
+		"Abdomen"
+	],
+	[
+		"Leg raises",
+		"reps",
+		15,
+		"Abdomen"
+	],
+	[
+		"Plancha lateral",
+		"seconds",
+		30,
+		"Abdomen",
+		true
+	],
+	[
+		"Aguante isométrico de abs",
+		"seconds",
+		30,
+		"Abdomen"
+	],
+	[
+		"Dominadas lentas",
+		"reps",
+		5,
+		"Espalda"
+	],
+	[
+		"Curl de toalla superior",
+		"reps",
+		15,
+		"Espalda"
+	],
+	[
+		"Curl de toalla inferior",
+		"reps",
+		20,
+		"Espalda"
+	],
+	[
+		"Remo con toalla en barra",
+		"reps",
+		10,
+		"Espalda"
+	],
+	[
+		"Muscle up",
+		"reps",
+		2,
+		"Espalda"
+	],
+	[
+		"Chin ups lentas",
+		"reps",
+		5,
+		"Bíceps"
+	],
+	[
+		"Colgarse de la barra",
+		"seconds",
+		30,
+		"Antebrazo"
+	],
+	[
+		"Dominadas",
+		"reps",
+		8,
+		"Espalda"
+	],
+	[
+		"Dominadas australianas",
+		"reps",
+		12,
+		"Espalda"
+	],
+	[
+		"Chin ups",
+		"reps",
+		8,
+		"Bíceps"
+	],
+	[
+		"Front lever tuck",
+		"seconds",
+		10,
+		"Espalda"
+	],
+	[
+		"Back lever tuck",
+		"seconds",
+		10,
+		"Espalda"
+	],
+	[
+		"Skin the cat",
+		"reps",
+		3,
+		"Espalda"
+	],
+	[
+		"Lagartijas arqueras",
+		"reps",
+		6,
+		"Pecho",
+		true
+	],
+	[
+		"Lagartijas declinadas",
+		"reps",
+		12,
+		"Pecho"
+	],
+	[
+		"Lagartijas explosivas",
+		"reps",
+		8,
+		"Pecho"
+	],
+	[
+		"Pseudo planche push ups",
+		"reps",
+		8,
+		"Pecho"
+	],
+	[
+		"Lagartijas a una mano",
+		"reps",
+		3,
+		"Pecho",
+		true
+	],
+	[
+		"Fondos en banco",
+		"reps",
+		15,
+		"Tríceps"
+	],
+	[
+		"Handstand push up",
+		"reps",
+		3,
+		"Hombros"
+	],
+	[
+		"Handstand libre",
+		"seconds",
+		15,
+		"Hombros"
+	],
+	[
+		"Planche",
+		"seconds",
+		5,
+		"Hombros"
+	],
+	[
+		"Pistol squat",
+		"reps",
+		5,
+		"Piernas",
+		true
+	],
+	[
+		"Sentadilla búlgara",
+		"reps",
+		10,
+		"Piernas",
+		true
+	],
+	[
+		"Sentadilla con salto",
+		"reps",
+		15,
+		"Piernas"
+	],
+	[
+		"Shrimp squat",
+		"reps",
+		5,
+		"Piernas",
+		true
+	],
+	[
+		"Nordic curl",
+		"reps",
+		5,
+		"Piernas"
+	],
+	[
+		"Elevaciones de piernas colgado",
+		"reps",
+		10,
+		"Abdomen"
+	],
+	[
+		"Toes to bar",
+		"reps",
+		8,
+		"Abdomen"
+	],
+	[
+		"Dragon flag",
+		"reps",
+		5,
+		"Abdomen"
+	],
+	[
+		"V-ups",
+		"reps",
+		15,
+		"Abdomen"
+	],
+	[
+		"Burpees",
+		"reps",
+		15,
+		"Cardio"
+	],
+	[
+		"Mountain climbers",
+		"reps",
+		30,
+		"Cardio"
+	],
+	[
+		"Jumping jacks",
+		"reps",
+		40,
+		"Cardio"
+	],
+	[
+		"Lagartijas abiertas",
+		"reps",
+		12,
+		"Pecho"
+	],
+	[
+		"Lagartijas inclinadas",
+		"reps",
+		15,
+		"Pecho"
+	],
+	[
+		"Lagartijas en rodillas",
+		"reps",
+		15,
+		"Pecho"
+	],
+	[
+		"Dominadas abiertas",
+		"reps",
+		6,
+		"Espalda"
+	],
+	[
+		"Dominadas arqueras",
+		"reps",
+		3,
+		"Espalda",
+		true
+	],
+	[
+		"Sentadilla sumo",
+		"reps",
+		15,
+		"Piernas"
+	],
+	[
+		"Puente de glúteo",
+		"reps",
+		15,
+		"Piernas"
+	],
+	[
+		"Front lever",
+		"seconds",
+		5,
+		"Espalda"
+	],
+	[
+		"Back lever",
+		"seconds",
+		5,
+		"Espalda"
+	],
+	[
+		"Bandera humana",
+		"seconds",
+		5,
+		"Hombros"
+	],
+	[
+		"Cuervo",
+		"seconds",
+		20,
+		"Hombros"
+	],
+	[
+		"Cindy",
+		"reps",
+		300,
+		"WOD"
+	],
+	[
+		"Salto de cuerda",
+		"reps",
+		20,
+		"Cardio"
+	],
+	[
+		"Burpees suaves sin lagartija",
+		"reps",
+		20,
+		"Cardio"
+	],
+	[
+		"Correr 5 km o bici",
+		"free",
+		0,
+		"Cardio intenso"
+	],
+	[
+		"Caminar 30 a 60 min",
+		"free",
+		0,
+		"Obligatorio"
+	]
+];
 function weekIndex(day) {
 	return ((/* @__PURE__ */ new Date(`${day}T12:00:00`)).getDay() + 6) % 7;
 }
@@ -2370,6 +2881,25 @@ function lockActive(data, day, clock) {
 function clockOf(now) {
 	const d = new Date(now);
 	return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
+var PIERNA_RE = /sentadilla|squat|desplante|zancada|lunge|wall sit|tal[oó]n|pantorrilla|puente de gl[uú]teo|nordic/i;
+var esPierna = (n) => CATALOG.find((c) => c[0] === n)?.[3] === "Piernas" || PIERNA_RE.test(n);
+function intercalarPiernas(rt) {
+	const circuito = rt.items.filter((i) => !i.when);
+	const piernas = circuito.filter((i) => esPierna(i.name)), otros = circuito.filter((i) => !esPierna(i.name));
+	const mezcla = [];
+	for (let k = 0; k < Math.max(piernas.length, otros.length); k++) {
+		if (piernas[k]) mezcla.push(piernas[k]);
+		if (otros[k]) mezcla.push(otros[k]);
+	}
+	return {
+		...rt,
+		items: [
+			...rt.items.filter((i) => i.when === "before"),
+			...mezcla,
+			...rt.items.filter((i) => i.when === "after")
+		]
+	};
 }
 //#endregion
 //#region src/lib/text.ts

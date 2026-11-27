@@ -350,7 +350,7 @@ export async function leerReto(id: string): Promise<Reto | null> {
   if (!res.ok) return null
   return retoDe(await res.json() as FsDoc & { updateTime?: string })
 }
-export type EstadoWidget = { dia: string; racha: number; nivel: number; xpHoy: number; meta: number; minutos: number; rutina: string; retos?: number }
+export type EstadoWidget = { dia: string; racha: number; nivel: number; xpHoy: number; meta: number; minutos: number; rutina: string; retos?: number; semana?: string }
 export async function guardarWidget(llave: string, e: EstadoWidget): Promise<void> {
   const s = actual
   if (!s) throw new NubeError('SIN_SESION')

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { dateKey, type AppData } from './lib/model'
 import { borrarWidget, cuenta, estadoAvisos, guardarWidget, misRetos, urlWidget } from './lib/firebase'
 import { estadoReto } from './lib/retos'
-import { ESTILOS_WIDGET, estadoParaAvisos, estadoWidget, scriptWidget, type EstiloWidget } from './lib/widget'
+import { ESTILOS_WIDGET, estadoParaAvisos, estadoWidget, scriptWidget, semanaDe, type EstiloWidget } from './lib/widget'
 import { AvisoTarde, activar, apagar, estado, type Estado } from './lib/avisos'
 import { nuevaLlave } from './lib/minutos'
 import { DuoIcon } from './DuoIcons'
@@ -12,6 +12,7 @@ const leer = (k: string) => { try { return localStorage.getItem(k) } catch { ret
 const guardar = (k: string, v: string) => { try { localStorage.setItem(k, v) } catch { return } }
 
 let conRetos = true
+let conSemana = true
 let retosCache: { uid: string; at: number; n: number } | null = null
 async function retosPendientes(uid: string): Promise<number> {
   if (retosCache?.uid === uid && Date.now() - retosCache.at < 5 * 60000) return retosCache.n
@@ -31,10 +32,13 @@ export function usePublicarEstado(data: AppData, uid: string | undefined) {
       const hoy = dateKey()
       if (llave) {
         void retosPendientes(uid).then(n => {
-          const e = estadoWidget(data, hoy, n), k = `${llave}|${JSON.stringify(e)}`
+          const semana = semanaDe(data)
+          const e = { ...estadoWidget(data, hoy, n), ...(semana ? { semana } : {}) }, k = `${llave}|${JSON.stringify(e)}`
           if (leer('bambu.widget.ultimo') === k) return
-          const sinRetos = () => { const { retos: _r, ...resto } = e; return guardarWidget(llave, resto) }
-          const enviar = conRetos ? guardarWidget(llave, e).catch(() => { conRetos = false; return sinRetos() }) : sinRetos()
+          const { semana: _s, ...base } = e
+          const sinRetos = () => { const { retos: _r, ...resto } = base; return guardarWidget(llave, resto) }
+          const sinSemana = () => conRetos ? guardarWidget(llave, base).catch(() => { conRetos = false; return sinRetos() }) : sinRetos()
+          const enviar = conSemana && semana ? guardarWidget(llave, e).catch(() => { conSemana = false; return sinSemana() }) : sinSemana()
           enviar.then(() => guardar('bambu.widget.ultimo', k)).catch(() => undefined)
         })
       }

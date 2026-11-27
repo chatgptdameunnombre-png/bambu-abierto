@@ -28,7 +28,7 @@ export function seedWeek(): TrainPlan {
     deadline: '19:00', lock: true, restSeconds: 60,
     week: [
       routine(0, 'Hombros, pecho y tríceps', PUSH_A), routine(1, 'Piernas y abdomen', LEGS_A), routine(2, 'Espalda, bíceps y antebrazo', PULL),
-      routine(3, 'Hombros, pecho y tríceps', PUSH_B), routine(4, 'Piernas y abdomen', LEGS_B), routine(5, 'Espalda, bíceps y antebrazo', PULL),
+      routine(3, 'Hombros, pecho y tríceps', PUSH_B), intercalarPiernas(routine(4, 'Piernas y abdomen', LEGS_B)), routine(5, 'Espalda, bíceps y antebrazo', PULL),
       routine(6, 'Abdomen y cardio', CORE),
     ],
   }
@@ -199,6 +199,19 @@ export function cuerda2711(data: AppData): AppData {
 export function talones2711(data: AppData): AppData {
   const train = data.settings.train
   return { ...data, settings: { ...data.settings, train: train ? { ...train, week: train.week.map(rt => rt ? { ...rt, items: rt.items.filter(i => i.name !== 'Subidas de talones en wall sit') } : rt) } : undefined, talones2711: true } }
+}
+const PIERNA_RE = /sentadilla|squat|desplante|zancada|lunge|wall sit|tal[oó]n|pantorrilla|puente de gl[uú]teo|nordic/i
+const esPierna = (n: string) => CATALOG.find(c => c[0] === n)?.[3] === 'Piernas' || PIERNA_RE.test(n)
+export function intercalarPiernas(rt: Routine): Routine {
+  const circuito = rt.items.filter(i => !i.when)
+  const piernas = circuito.filter(i => esPierna(i.name)), otros = circuito.filter(i => !esPierna(i.name))
+  const mezcla: RoutineItem[] = []
+  for (let k = 0; k < Math.max(piernas.length, otros.length); k++) { if (piernas[k]) mezcla.push(piernas[k]); if (otros[k]) mezcla.push(otros[k]) }
+  return { ...rt, items: [...rt.items.filter(i => i.when === 'before'), ...mezcla, ...rt.items.filter(i => i.when === 'after')] }
+}
+export function orden2711(data: AppData): AppData {
+  const train = data.settings.train
+  return { ...data, settings: { ...data.settings, train: train ? { ...train, week: train.week.map((rt, i) => rt && i === 4 ? intercalarPiernas(rt) : rt) } : undefined, orden2711: true } }
 }
 export function legs2711(data: AppData): AppData {
   const train = data.settings.train

@@ -43,6 +43,8 @@ Commits del sitio donde se publicó cada cambio.
 | `a626a5f` (27-nov) | En la rutina de Kiki, "Pistol squat asistida" pasa a "Pistol squat" (una vez, solo su cuenta, `pistol2711`). |
 | `c79d37b` (27-nov) | Cámara de frente: sentadillas, desplantes y pistol squat ya cuentan midiendo cuánto baja la cadera (en hombros de ancho); de frente la profundidad de la rodilla casi no se ve y la versión vieja contaba 0. Elevaciones de talones con su propia medida (cuánto suben los hombros). Comparado contra la versión vieja con posturas simuladas. |
 | `971b474` (27-nov) | Puente de glúteo con medida propia de lado (ángulo hombro-cadera-rodilla; a medias no cuenta y dice "Sube la cadera"). De lado te encuentra: los ejercicios generales pedían ver 3 de 4 puntos del tronco (de lado solo se ven 2), visibilidad mínima de 0.5 a 0.4 y el detector suelta menos (confianza 0.3). L sit de lado con los ángulos de la imagen (no depende de la profundidad) y a 15 s en la rutina de Kiki. |
+| `34a8694` (27-nov) | Ejercicios del día revisados: crunches y salto de cuerda con medida propia; la plancha lateral ya no cuenta con la cadera abajo; el hollow ya no se pausa con las piernas casi rectas; wall sit y L sit de lado. En la rutina, los aguantes paran solos al llegar a la meta. Crunches a 30 y plancha lateral a 45 s (tu rutina guardada se ajusta sola una vez). |
+| `07044a9` (27-nov) | Abs con piernas arriba cuentan por lo que suben tus hombros desde donde empezaste (aunque el teléfono esté chueco); a medias no cuenta. El aguante isométrico de abs ahora es en V (sentado, torso atrás y pies en el aire, rodillas dobladas o rectas): con rodillas o pies en el piso, o acostado, no cuenta. Los aguantes acostados aguantan un parpadeo de la cámara sin pausarse. |
 
 ## Decisiones de Kiki
 
@@ -56,3 +58,5 @@ Commits del sitio donde se publicó cada cambio.
 - Quien solo quiere competir con sus amigos no debe cargar con racha, caminito ni objetivos: modo "Solo competir".
 - Lo que Kiki trae de ChatGPT (logo, cuerpo) se usa tal cual, sin redibujarlo.
 - Los anillos Cuerpo, Mente y Alma de Gael no entran por ahora.
+- La rutina no da minutos de redes y sus aguantes paran al llegar a la meta.
+- El aguante isométrico de abs se hace en V (Kiki lo eligió sobre la plancha con rodillas).

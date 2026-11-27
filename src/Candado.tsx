@@ -212,7 +212,7 @@ export function CandadoPage({ data, commit, app, onSalir }: { data: AppData; com
             <div className="d-candado-pases">{PASES.map(m => <button key={m} type="button" className="d-btn green" disabled={m > s || paso === 'abriendo'} onClick={() => void abrir(m)}>{m}<small>min</small></button>)}</div>
             {!PASES.includes(s as typeof PASES[number]) && s < PASES[PASES.length - 1] * 4 && <button type="button" className="d-btn white wide" disabled={paso === 'abriendo'} onClick={() => void abrir(s)}>Usar mis {s} min</button>}
           </div> : <p className="d-candado-falta">Ya no te quedan minutos. Gánalos con la cámara:</p>}
-        <button type="button" className="d-btn white wide d-candado-urgencia" disabled={paso === 'abriendo'} onClick={emergencia}><span>Algo rápido: abrir {EMERGENCIA_MIN} min</span><small>Contestar un mensaje o publicar. No gasta tus minutos.</small></button>
+        <button type="button" className="d-btn white wide d-candado-urgencia" disabled={paso === 'abriendo'} onClick={emergencia}>Algo rápido · {EMERGENCIA_MIN} min</button>
         <h2 className="d-sheet-h3">Gana más minutos</h2>
         <p className="d-hint left">Cualquier ejercicio que cuente la cámara suma: aquí, en tu rutina, en Libre o en un reto.</p>
         <GanarMinutos onElegir={setEj} minimo={bloqueado || s >= PASES[0] ? 0 : PASES[0] - s} />

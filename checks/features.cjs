@@ -2451,7 +2451,7 @@ async function audioChecks() {
   const cand = leer('src/Candado.tsx'), cam = leer('src/CamaraReps.tsx'), sw = leer('public/avisos-sw.js')
   assert.ok(cand.includes('Buscar ejercicio') && cand.includes('sinAcentos'), 'buscador de ejercicios sin acentos')
   assert.ok(cand.includes('Minutos libres cada día') && cand.includes('LIBRES_OPCIONES'), 'los minutos libres se cambian en Ajustes')
-  assert.ok(cand.includes('Devolverme los minutos') && cand.includes('Algo rápido: abrir') && !cand.includes('🚨'), 'el pase rápido no es rojo ni se llama emergencia')
+  assert.ok(cand.includes('Devolverme los minutos') && cand.includes('Algo rápido · {EMERGENCIA_MIN} min') && !cand.includes('🚨'), 'el pase rápido no es rojo ni se llama emergencia')
   assert.ok(cand.includes('Probar mi atajo') && /guardarPase\(llave, hastaTexto\(Date\.now\(\) \+ 60000\)\)/.test(cand), 'probar el atajo abre 1 minuto sin gastar minutos')
   assert.ok(cam.includes('d-cam-gana') && cam.includes("'minuto'"), 'la cámara dice cuánto vas ganando')
   assert.ok(sw.includes('Promise.race') && sw.includes('1500'), 'con señal lenta abre lo guardado')

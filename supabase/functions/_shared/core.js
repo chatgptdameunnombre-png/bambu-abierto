@@ -766,6 +766,7 @@ function cleanSettings(value) {
 		modo: v.modo === "competir" ? "competir" : void 0,
 		sinEdad: v.sinEdad === true ? true : void 0,
 		minLibres: int(v.minLibres, 0, 240),
+		sinUsoImportante: v.sinUsoImportante === true ? true : void 0,
 		legal: isRecord(v.legal) && typeof v.legal.version === "string" && /^\d{4}-\d\d-\d\d$/.test(v.legal.version) && typeof v.legal.fecha === "string" && v.legal.fecha.length <= 40 ? {
 			version: v.legal.version,
 			fecha: v.legal.fecha,

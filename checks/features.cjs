@@ -2451,6 +2451,8 @@ async function audioChecks() {
   const cand = leer('src/Candado.tsx'), cam = leer('src/CamaraReps.tsx'), sw = leer('public/avisos-sw.js')
   assert.ok(cand.includes('Buscar ejercicio') && cand.includes('sinAcentos'), 'buscador de ejercicios sin acentos')
   assert.ok(cand.includes('Minutos libres cada día') && cand.includes('LIBRES_OPCIONES'), 'los minutos libres se cambian en Ajustes')
+  assert.ok(cand.includes('{!data.settings.sinUsoImportante && <button') && cand.includes('role="switch"'), 'el botón de uso importante se prende o apaga en Ajustes')
+  assert.equal(normalizeData({ ...EMPTY_DATA, settings: { sinUsoImportante: true } }).settings.sinUsoImportante, true)
   assert.ok(cand.includes('Devolverme los minutos') && cand.includes('{EMERGENCIA_MIN} min para uso importante') && !cand.includes('🚨'), 'el pase rápido no es rojo ni se llama emergencia')
   assert.ok(cand.includes('Probar mi atajo') && /guardarPase\(llave, hastaTexto\(Date\.now\(\) \+ 60000\)\)/.test(cand), 'probar el atajo abre 1 minuto sin gastar minutos')
   assert.ok(cam.includes('d-cam-gana') && cam.includes("'minuto'"), 'la cámara dice cuánto vas ganando')

@@ -212,7 +212,7 @@ export function CandadoPage({ data, commit, app, onSalir }: { data: AppData; com
             <div className="d-candado-pases">{PASES.map(m => <button key={m} type="button" className="d-btn green" disabled={m > s || paso === 'abriendo'} onClick={() => void abrir(m)}>{m}<small>min</small></button>)}</div>
             {!PASES.includes(s as typeof PASES[number]) && s < PASES[PASES.length - 1] * 4 && <button type="button" className="d-btn white wide" disabled={paso === 'abriendo'} onClick={() => void abrir(s)}>Usar mis {s} min</button>}
           </div> : <p className="d-candado-falta">Ya no te quedan minutos. Gánalos con la cámara:</p>}
-        <button type="button" className="d-btn white wide d-candado-urgencia" disabled={paso === 'abriendo'} onClick={emergencia}>{EMERGENCIA_MIN} min para uso importante</button>
+        {!data.settings.sinUsoImportante && <button type="button" className="d-btn white wide d-candado-urgencia" disabled={paso === 'abriendo'} onClick={emergencia}>{EMERGENCIA_MIN} min para uso importante</button>}
         <h2 className="d-sheet-h3">Gana más minutos</h2>
         <p className="d-hint left">Cualquier ejercicio que cuente la cámara suma: aquí, en tu rutina, en Libre o en un reto.</p>
         <GanarMinutos onElegir={setEj} minimo={bloqueado || s >= PASES[0] ? 0 : PASES[0] - s} />
@@ -278,7 +278,10 @@ export function CandadoSetup({ data, commit, onMessage, cloud }: { data: AppData
     <div className="d-field">Minutos libres cada día
       <div className="d-chips">{LIBRES_OPCIONES.map(m => <button key={m} type="button" className={libres === m ? 'on' : ''} aria-pressed={libres === m} onClick={() => setLibres(m)}>{textoLibres(m)}</button>)}</div>
     </div>
-    <p className="d-hint left">{libres ? `Cada día te doy ${textoLibres(libres)} gratis` : 'No te doy minutos gratis'}; lo demás lo ganas con cualquier ejercicio que cuente la cámara. El botón "{EMERGENCIA_MIN} min para uso importante" sirve para contestar un mensaje o publicar, sin gastar tus minutos.</p>
+    <p className="d-hint left">{libres ? `Cada día te doy ${textoLibres(libres)} gratis` : 'No te doy minutos gratis'}; lo demás lo ganas con cualquier ejercicio que cuente la cámara.</p>
+    <button type="button" role="switch" aria-checked={!data.settings.sinUsoImportante} className={`d-switch ${data.settings.sinUsoImportante ? '' : 'on'}`} onClick={() => { haptic(6); commit(d => ({ ...d, settings: { ...d.settings, sinUsoImportante: d.settings.sinUsoImportante ? undefined : true } })) }}>
+      <span><strong>{EMERGENCIA_MIN} min para uso importante</strong><small>Para contestar un mensaje o publicar sin gastar tus minutos.</small></span><i aria-hidden="true" />
+    </button>
     <details className="d-more"><summary>Cuánto vale cada ejercicio</summary>
       <table className="d-rec-table"><tbody>{CAMARA_BASICOS.map(e => e.name).map(n => <tr key={n}><td><b>{n}</b></td><td>{tasaTexto(n).split(' = ')[0]}</td><td className="rec">{tasaTexto(n).split(' = ')[1]}</td></tr>)}</tbody></table>
     </details>

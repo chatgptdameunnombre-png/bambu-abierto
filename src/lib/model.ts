@@ -100,6 +100,7 @@ export type Settings = {
   modo?: 'competir'
   sinEdad?: boolean
   minLibres?: number
+  sinUsoImportante?: boolean
   legal?: { version: string; fecha: string; salud: boolean }
   walkDaily?: boolean
   cardioSetup?: boolean
@@ -492,6 +493,7 @@ export function cleanSettings(value: unknown): Settings {
     modo: v.modo === 'competir' ? 'competir' as const : undefined,
     sinEdad: v.sinEdad === true ? true : undefined,
     minLibres: int(v.minLibres, 0, 240),
+    sinUsoImportante: v.sinUsoImportante === true ? true : undefined,
     legal: isRecord(v.legal) && typeof v.legal.version === 'string' && /^\d{4}-\d\d-\d\d$/.test(v.legal.version) && typeof v.legal.fecha === 'string' && v.legal.fecha.length <= 40 ? { version: v.legal.version, fecha: v.legal.fecha, salud: v.legal.salud === true } : undefined,
   }) as Settings
 }

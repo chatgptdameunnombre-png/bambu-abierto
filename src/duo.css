@@ -1503,3 +1503,11 @@ button.d-card { box-shadow: 0 4px 0 var(--d-line); }
 .d-stat.redes b { color: var(--d-blue) !important; }
 .d-stat.redes.on { background: var(--d-green-light); }
 .d-stat.redes.on b { color: var(--d-green-ink) !important; }
+.d-switch { display: flex; align-items: center; gap: 14px; width: 100%; margin: 4px 0 10px; padding: 12px 14px; border: 2px solid var(--d-line); border-radius: 16px; background: var(--d-bg); color: var(--d-ink); text-align: left; cursor: pointer; font: inherit; }
+.d-switch span { flex: 1; display: grid; gap: 2px; }
+.d-switch strong { font-size: 16px; font-weight: 900; }
+.d-switch small { color: var(--d-dim); font-size: 13px; font-weight: 700; }
+.d-switch i { flex: none; width: 50px; height: 30px; border-radius: 99px; background: var(--d-off); position: relative; transition: background 200ms; }
+.d-switch i::after { content: ''; position: absolute; top: 4px; left: 4px; width: 22px; height: 22px; border-radius: 50%; background: var(--d-white); transition: transform 200ms cubic-bezier(.2, .8, .2, 1); }
+.d-switch.on i { background: var(--d-green); }
+.d-switch.on i::after { transform: translateX(20px); }

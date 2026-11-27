@@ -1137,9 +1137,9 @@ ok('comida: totales, nube, modo crecimiento sin calorías, fase por cintura, gas
   assert.equal(legs.items.find(i => i.name === 'Sentadillas').target, 15)
   const pistol = legs.items.find(i => i.name === 'Pistol squat')
   assert.equal(pistol.sides, true)
-  assert.equal(R.setsNeeded(legs, pistol), 6)
+  assert.equal(R.setsNeeded(legs, pistol), 4)
   const ps = R.stepsOf(legs).filter(s => s.item.name === pistol.name)
-  assert.deepEqual(ps.map(s => [s.round, s.side]), [[1, 1], [1, 2], [2, 1], [2, 2], [3, 1], [3, 2]])
+  assert.deepEqual(ps.map(s => [s.round, s.side]), [[1, 1], [1, 2], [2, 1], [2, 2]])
   assert.equal(R.label(pistol), '5 reps por lado')
   let d = base
   for (const st of R.stepsOf(legs)) { if (st.item.name === pistol.name) break; d = R.logSet(d, mon, st.item, st.item.target) }
@@ -2671,4 +2671,20 @@ async function audioChecks() {
   assert.equal(seg(() => acostado(0)).segundos, 0, 'acostado no cuenta')
   assert.ok(/GRACIA_P\[c\.patron\]/.test(fs.readFileSync(path.join(__dirname, '../src/lib/conteo.ts'), 'utf8')), 'los aguantes acostados aguantan un parpadeo de la cámara')
   ok('abs: crunch con piernas arriba cuenta por lo que suben los hombros (aunque el teléfono esté chueco), aguante isométrico de abs en V sin rodillas ni pies en el piso')
+}
+
+{
+  const R = moduleOf('rutina')
+  const semana = R.seedWeek()
+  const todos = semana.week.flatMap(rt => rt ? rt.items.map(i => [rt, i]) : [])
+  assert.ok(!todos.some(([, i]) => i.name === 'Salto de cuerda'), 'sin salto de cuerda en la rutina')
+  const pistols = todos.filter(([, i]) => i.name === 'Pistol squat')
+  assert.ok(pistols.length && pistols.every(([rt, i]) => R.roundsOf(rt, i) === 2 && R.setsNeeded(rt, i) === 4), 'pistol squat a 2 rondas por pierna')
+  const vieja = { ...semana, week: semana.week.map(rt => rt ? { ...rt, items: [...rt.items.map(i => i.name === 'Pistol squat' ? { ...i, rounds: undefined } : i), { id: 'x', name: 'Salto de cuerda', kind: 'reps', target: 20 }] } : rt) }
+  const d = R.cuerda2711(normalizeData({ ...EMPTY_DATA, profile: { name: 'K', onboardingComplete: true }, settings: { ...EMPTY_DATA.settings, train: vieja } }))
+  const items = d.settings.train.week.flatMap(rt => rt ? rt.items : [])
+  assert.ok(d.settings.cuerda2711 && !items.some(i => i.name === 'Salto de cuerda') && items.filter(i => i.name === 'Pistol squat').every(i => i.rounds === 2), 'tu rutina guardada se ajusta una vez')
+  assert.equal(normalizeData(d).settings.cuerda2711, true)
+  assert.ok(fs.readFileSync(path.join(__dirname, '../src/App.tsx'), 'utf8').includes('cuerda2711(d)'))
+  ok('rutina de Kiki: sin salto de cuerda y pistol squat a 2 rondas (también en su rutina guardada, una sola vez)')
 }

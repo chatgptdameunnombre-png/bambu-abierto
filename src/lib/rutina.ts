@@ -7,7 +7,7 @@ export const WEEK_SHORT = ['L', 'M', 'X', 'J', 'V', 'S', 'D']
 type Seed = [string, RoutineKind, number, { rounds?: number; when?: 'before' | 'after'; sides?: boolean }?]
 const r = (n: string, t: number): Seed => [n, 'reps', t]
 const s = (n: string, t: number): Seed => [n, 'seconds', t]
-const pistol: Seed = ['Pistol squat', 'reps', 5, { sides: true }]
+const pistol: Seed = ['Pistol squat', 'reps', 5, { sides: true, rounds: 2 }]
 const calfOne: Seed = ['Elevaciones de talón a una pierna', 'reps', 15, { sides: true }]
 const bridgeOne: Seed = ['Puente de glúteo a una pierna', 'reps', 12, { sides: true }]
 const sidePlank: Seed = ['Plancha lateral', 'seconds', 45, { sides: true }]
@@ -20,8 +20,8 @@ const PUSH_A: Seed[] = [s('Handstand contra pared', 30), r('Handstand toque de h
 const LEGS_A: Seed[] = [r('Sentadillas', 15), r('Desplantes', 15), pistol, s('Wall sit', 60), r('Subidas de talones en wall sit', 15), r('Elevaciones de talones', 15), calfOne, bridgeOne, s('Hollow hold', 45), r('Abs con piernas arriba', 25), r('Abs crackers', 15), r('Russian twist', 55), s('Plancha', 60), s('Aguante isométrico de abs', 30)]
 const PULL: Seed[] = [['Muscle up', 'reps', 2, { when: 'before' }], ['Dominadas', 'reps', 7, { rounds: 5 }], r('Curl de toalla superior', 15), r('Curl de toalla inferior', 20), r('Remo con toalla en barra', 10), ['Chin ups', 'reps', 7, { rounds: 5 }], s('Colgarse de la barra', 30)]
 const PUSH_B: Seed[] = [s('Handstand contra pared', 30), r('Handstand toque de hombros', 7), s('Tuck planche', 15), s('Planche lean', 10), r('Pike push ups', 5), r('Fondos', 10), r('Lagartijas down', 15), r('Lagartijas con toque de hombro', 10), r('Lagartijas lentas', 10), r('Lagartijas diamante', 10)]
-const LEGS_B: Seed[] = [r('Sentadillas', 15), r('Desplantes', 15), pistol, s('Wall sit', 60), r('Subidas de talones en wall sit', 15), r('Elevaciones de talones', 15), calfOne, bridgeOne, s('L sit', 15), r('Crunches', 30), sidePlank, s('Hollow hold', 45), r('Abs con piernas arriba', 25), s('Aguante isométrico de abs', 30), r('Salto de cuerda', 20)]
-const CORE: Seed[] = [s('Hollow hold', 45), r('Abs con piernas arriba', 25), r('Abs crackers', 15), r('Russian twist', 55), r('Crunches', 30), sidePlank, s('Plancha', 60), s('Aguante isométrico de abs', 30), r('Burpees suaves sin lagartija', 20), r('Salto de cuerda', 20), ['Correr 5 km o bici', 'free', 0, { when: 'after' }]]
+const LEGS_B: Seed[] = [r('Sentadillas', 15), r('Desplantes', 15), pistol, s('Wall sit', 60), r('Subidas de talones en wall sit', 15), r('Elevaciones de talones', 15), calfOne, bridgeOne, s('L sit', 15), r('Crunches', 30), sidePlank, s('Hollow hold', 45), r('Abs con piernas arriba', 25), s('Aguante isométrico de abs', 30)]
+const CORE: Seed[] = [s('Hollow hold', 45), r('Abs con piernas arriba', 25), r('Abs crackers', 15), r('Russian twist', 55), r('Crunches', 30), sidePlank, s('Plancha', 60), s('Aguante isométrico de abs', 30), r('Burpees suaves sin lagartija', 20), ['Correr 5 km o bici', 'free', 0, { when: 'after' }]]
 
 export function seedWeek(): TrainPlan {
   return {
@@ -190,6 +190,11 @@ function fijarMeta(train: TrainPlan | undefined, nombres: string[], target: numb
 export function metas2711(data: AppData): AppData {
   const train = fijarMeta(fijarMeta(data.settings.train, ['Crunches'], 30), ['Plancha lateral'], 45)
   return { ...data, settings: { ...data.settings, train, metas2711: true } }
+}
+export function cuerda2711(data: AppData): AppData {
+  const train = data.settings.train
+  const cambia = (rt: Routine): Routine => ({ ...rt, items: rt.items.filter(i => i.name !== 'Salto de cuerda').map(i => !i.when && /^pistol squat$/i.test(i.name) ? { ...i, rounds: 2 } : i) })
+  return { ...data, settings: { ...data.settings, train: train ? { ...train, week: train.week.map(rt => rt ? cambia(rt) : rt) } : undefined, cuerda2711: true } }
 }
 export function lsit2711(data: AppData): AppData {
   return { ...data, settings: { ...data.settings, train: fijarMeta(data.settings.train, ['L sit', 'L-sit', 'L Sit'], 15), lsit2711: true } }

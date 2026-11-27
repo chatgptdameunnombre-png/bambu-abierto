@@ -760,6 +760,7 @@ function cleanSettings(value) {
 		pistol2711: v.pistol2711 === true ? true : void 0,
 		lsit2711: v.lsit2711 === true ? true : void 0,
 		metas2711: v.metas2711 === true ? true : void 0,
+		cuerda2711: v.cuerda2711 === true ? true : void 0,
 		tablas: cleanTablas(v.tablas),
 		amigos: cleanAmigos(v.amigos),
 		aprobados: cleanAmigos(v.aprobados),
@@ -2196,7 +2197,10 @@ var pistol = [
 	"Pistol squat",
 	"reps",
 	5,
-	{ sides: true }
+	{
+		sides: true,
+		rounds: 2
+	}
 ];
 var calfOne = [
 	"Elevaciones de talón a una pierna",
@@ -2306,8 +2310,7 @@ var LEGS_B = [
 	sidePlank,
 	s("Hollow hold", 45),
 	r("Abs con piernas arriba", 25),
-	s("Aguante isométrico de abs", 30),
-	r("Salto de cuerda", 20)
+	s("Aguante isométrico de abs", 30)
 ];
 var CORE = [
 	s("Hollow hold", 45),
@@ -2319,7 +2322,6 @@ var CORE = [
 	s("Plancha", 60),
 	s("Aguante isométrico de abs", 30),
 	r("Burpees suaves sin lagartija", 20),
-	r("Salto de cuerda", 20),
 	[
 		"Correr 5 km o bici",
 		"free",

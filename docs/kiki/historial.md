@@ -45,6 +45,7 @@ Commits del sitio donde se publicó cada cambio.
 | `971b474` (27-nov) | Puente de glúteo con medida propia de lado (ángulo hombro-cadera-rodilla; a medias no cuenta y dice "Sube la cadera"). De lado te encuentra: los ejercicios generales pedían ver 3 de 4 puntos del tronco (de lado solo se ven 2), visibilidad mínima de 0.5 a 0.4 y el detector suelta menos (confianza 0.3). L sit de lado con los ángulos de la imagen (no depende de la profundidad) y a 15 s en la rutina de Kiki. |
 | `34a8694` (27-nov) | Ejercicios del día revisados: crunches y salto de cuerda con medida propia; la plancha lateral ya no cuenta con la cadera abajo; el hollow ya no se pausa con las piernas casi rectas; wall sit y L sit de lado. En la rutina, los aguantes paran solos al llegar a la meta. Crunches a 30 y plancha lateral a 45 s (tu rutina guardada se ajusta sola una vez). |
 | `07044a9` (27-nov) | Abs con piernas arriba cuentan por lo que suben tus hombros desde donde empezaste (aunque el teléfono esté chueco); a medias no cuenta. El aguante isométrico de abs ahora es en V (sentado, torso atrás y pies en el aire, rodillas dobladas o rectas): con rodillas o pies en el piso, o acostado, no cuenta. Los aguantes acostados aguantan un parpadeo de la cámara sin pausarse. |
+| `2a9b4fe` (27-nov) | Fuera el salto de cuerda de la rutina y pistol squat a 2 rondas (por pierna); tu rutina guardada se ajusta sola una vez. |
 
 ## Decisiones de Kiki
 

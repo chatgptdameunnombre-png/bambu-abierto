@@ -7,7 +7,7 @@ export const WEEK_SHORT = ['L', 'M', 'X', 'J', 'V', 'S', 'D']
 type Seed = [string, RoutineKind, number, { rounds?: number; when?: 'before' | 'after'; sides?: boolean }?]
 const r = (n: string, t: number): Seed => [n, 'reps', t]
 const s = (n: string, t: number): Seed => [n, 'seconds', t]
-const pistol: Seed = ['Pistol squat asistida', 'reps', 5, { sides: true }]
+const pistol: Seed = ['Pistol squat', 'reps', 5, { sides: true }]
 const calfOne: Seed = ['Elevaciones de talón a una pierna', 'reps', 15, { sides: true }]
 const bridgeOne: Seed = ['Puente de glúteo a una pierna', 'reps', 12, { sides: true }]
 const sidePlank: Seed = ['Plancha lateral', 'seconds', 30, { sides: true }]
@@ -195,6 +195,11 @@ export function quitar2611(data: AppData): AppData {
   const train = data.settings.train
   const next = train ? { ...train, week: train.week.map(rt => rt ? { ...rt, items: rt.items.filter(i => !QUITADOS_2611.includes(i.name)) } : rt) } : undefined
   return { ...data, settings: { ...data.settings, train: next, quitar2611: true } }
+}
+export function pistol2711(data: AppData): AppData {
+  const train = data.settings.train
+  const next = train ? { ...train, week: train.week.map(rt => rt ? { ...rt, items: rt.items.map(i => i.name === 'Pistol squat asistida' ? { ...i, name: 'Pistol squat' } : i) } : rt) } : undefined
+  return { ...data, settings: { ...data.settings, train: next, pistol2711: true } }
 }
 export function hspuA3(data: AppData): AppData {
   return { ...data, settings: { ...data.settings, train: fijarMeta(data.settings.train, ['Handstand push up con pared', 'Handstand push up'], 3), hspu2611: true } }

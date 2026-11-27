@@ -40,6 +40,7 @@ Commits del sitio donde se publicó cada cambio.
 | `c9cec6a` (27-nov) | Interruptor en Ajustes → Bloqueo de redes para quitar o poner el botón "10 min para uso importante" (prendido por defecto). |
 | `4e5c45b` (27-nov) | Prender avisos en el iPhone se quedaba cargando: pedía el permiso después de volver a bajar el archivo de avisos y esperar hasta 3 s, y el iPhone ya no lo mostraba. Ahora pide el permiso primero, no repite pasos lentos y nunca se queda cargando (tope de tiempo con mensaje). |
 | `b475647` (27-nov) | La rutina ya no da minutos de redes (nota `camara-rutina`: cuenta como récord con cámara, no como minutos). Libre, retos y Redes sí. En la rutina la cámara ya no enseña "vas ganando". |
+| `a626a5f` (27-nov) | En la rutina de Kiki, "Pistol squat asistida" pasa a "Pistol squat" (una vez, solo su cuenta, `pistol2711`). |
 
 ## Decisiones de Kiki
 

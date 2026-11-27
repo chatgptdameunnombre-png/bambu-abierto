@@ -1133,9 +1133,9 @@ ok('comida: totales, nube, modo crecimiento sin calorías, fase por cintura, gas
   const legs = R.routineFor(base, mon)
   assert.equal(legs.title, 'Piernas y abdomen')
   const names = legs.items.map(i => i.name)
-  assert.ok(names.indexOf('Pistol squat asistida') === names.indexOf('Wall sit') - 1)
+  assert.ok(names.indexOf('Pistol squat') === names.indexOf('Wall sit') - 1)
   assert.equal(legs.items.find(i => i.name === 'Sentadillas').target, 15)
-  const pistol = legs.items.find(i => i.name === 'Pistol squat asistida')
+  const pistol = legs.items.find(i => i.name === 'Pistol squat')
   assert.equal(pistol.sides, true)
   assert.equal(R.setsNeeded(legs, pistol), 6)
   const ps = R.stepsOf(legs).filter(s => s.item.name === pistol.name)
@@ -2554,4 +2554,17 @@ async function audioChecks() {
   const src = fs.readFileSync(path.join(__dirname, '../src/MiRutina.tsx'), 'utf8')
   assert.ok(src.includes('Date.now(), false, true)') && src.includes('sinMinutos'), 'la rutina guarda sin minutos y la cámara no enseña "vas ganando"')
   ok('la rutina no da minutos de redes (Libre, retos y Redes sí)')
+}
+
+{
+  const R = moduleOf('rutina')
+  const sem = R.seedWeek()
+  const conAsistida = { ...sem, week: sem.week.map(rt => rt ? { ...rt, items: rt.items.map(i => i.name === 'Pistol squat' ? { ...i, name: 'Pistol squat asistida' } : i) } : rt) }
+  const d = normalizeData({ ...EMPTY_DATA, profile: { name: 'K', onboardingComplete: true }, settings: { ...EMPTY_DATA.settings, train: conAsistida } })
+  const n = R.pistol2711(d)
+  const nombres = n.settings.train.week.flatMap(rt => rt ? rt.items.map(i => i.name) : [])
+  assert.ok(!nombres.includes('Pistol squat asistida') && nombres.includes('Pistol squat'), 'la pistol squat asistida pasa a pistol squat')
+  assert.equal(normalizeData(n).settings.pistol2711, true)
+  assert.ok(!R.seedWeek().week.some(rt => rt && rt.items.some(i => i.name === 'Pistol squat asistida')))
+  ok('rutina de Kiki: pistol squat sin asistir')
 }

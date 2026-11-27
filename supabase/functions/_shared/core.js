@@ -757,6 +757,7 @@ function cleanSettings(value) {
 		hspu2611: v.hspu2611 === true ? true : void 0,
 		quitar2611: v.quitar2611 === true ? true : void 0,
 		devolver2611: v.devolver2611 === true ? true : void 0,
+		pistol2711: v.pistol2711 === true ? true : void 0,
 		tablas: cleanTablas(v.tablas),
 		amigos: cleanAmigos(v.amigos),
 		aprobados: cleanAmigos(v.aprobados),
@@ -2190,7 +2191,7 @@ var s = (n, t) => [
 	t
 ];
 var pistol = [
-	"Pistol squat asistida",
+	"Pistol squat",
 	"reps",
 	5,
 	{ sides: true }

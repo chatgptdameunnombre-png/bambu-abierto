@@ -11,7 +11,7 @@ import { activeHabits, dateKey, EMPTY_DATA, modulesOf, type AppData } from './li
 import { bedAction, nfcServerAction, trainingAction } from './lib/nfcActions'
 import { devolver2611 } from './lib/minutos'
 import { PaseAbierto } from './PaseAbierto'
-import { ajustarRutina2611, clockOf, deshacerRondas2611, toquesA7, hspuA3, quitar2611 } from './lib/rutina'
+import { ajustarRutina2611, clockOf, deshacerRondas2611, toquesA7, hspuA3, quitar2611, pistol2711 } from './lib/rutina'
 import { semanaVacia } from './lib/armar'
 import { applyRecords, diffRecords, toRecords, type RecordRow } from './lib/records'
 import { SyncEngine, type SyncStatus } from './lib/sync'
@@ -304,7 +304,8 @@ export default function App() {
     if (ready && cloudReady && esKiki && data.profile.onboardingComplete && !data.settings.hspu2611) commit(d => d.settings.hspu2611 ? d : hspuA3(d))
     if (ready && cloudReady && esKiki && data.profile.onboardingComplete && !data.settings.quitar2611) commit(d => d.settings.quitar2611 ? d : quitar2611(d))
     if (ready && cloudReady && esKiki && data.profile.onboardingComplete && !data.settings.devolver2611) commit(d => d.settings.devolver2611 ? d : devolver2611(d))
-  }, [ready, cloudReady, esKiki, data.profile.onboardingComplete, data.settings.rutina2611, data.settings.rondas2611, data.settings.toques2611, data.settings.hspu2611, data.settings.quitar2611, data.settings.devolver2611]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (ready && cloudReady && esKiki && data.profile.onboardingComplete && !data.settings.pistol2711) commit(d => d.settings.pistol2711 ? d : pistol2711(d))
+  }, [ready, cloudReady, esKiki, data.profile.onboardingComplete, data.settings.rutina2611, data.settings.rondas2611, data.settings.toques2611, data.settings.hspu2611, data.settings.quitar2611, data.settings.devolver2611, data.settings.pistol2711]) // eslint-disable-line react-hooks/exhaustive-deps
   const nuevosAmigos = useAmigosNuevos(data, cloudConfigured && cloudReady ? userId : undefined, section)
   useEffect(() => {
     if (!cloudConfigured || !userId || !ready) return

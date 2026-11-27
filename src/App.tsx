@@ -60,6 +60,18 @@ const BOOT_STRETCH: StretchWhen | null = (() => {
   const url = new URL(window.location.href); url.searchParams.delete('estirar'); window.history.replaceState({}, '', url.pathname + url.search + url.hash)
   return v === 'noche' || v === 'manana' ? v : stretchSlot() ?? 'noche'
 })()
+/** Huella (SHA-256) de la cuenta de Kiki: sus ajustes personales de rutina solo se aplican a él. */
+const CUENTA_KIKI = 'c0170f1e0c878c53021befe41219e0910656e5e0b8807e90f0eb951edec2060b'
+function useEsCuenta(uid: string | undefined, huella: string): boolean {
+  const [es, setEs] = useState(false)
+  useEffect(() => {
+    if (!uid || !crypto?.subtle) { setEs(false); return }
+    let vivo = true
+    crypto.subtle.digest('SHA-256', new TextEncoder().encode(uid)).then(b => { if (vivo) setEs([...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('') === huella) }).catch(() => undefined)
+    return () => { vivo = false }
+  }, [uid, huella])
+  return es
+}
 const CANDADO_KEY = 'bambu.candado'
 const BOOT_CANDADO: string | null = (() => {
   const url = new URL(window.location.href)
@@ -279,16 +291,17 @@ export default function App() {
   }, [replace])
 
   const userId = session?.uid
+  const esKiki = useEsCuenta(userId, CUENTA_KIKI)
   usePublicarPerfil(data, cloudConfigured && cloudReady ? userId : undefined)
   usePublicarEstado(data, cloudConfigured && cloudReady ? userId : undefined)
   useFelicitar(cloudConfigured && cloudReady && data.settings.tablas ? userId : undefined)
   useEffect(() => {
     if (ready && cloudReady && data.profile.onboardingComplete && !data.settings.rutina2611) commit(d => d.settings.rutina2611 ? d : ajustarRutina2611(d))
     if (ready && cloudReady && data.settings.rondas2611) commit(d => d.settings.rondas2611 ? deshacerRondas2611(d) : d)
-    if (ready && cloudReady && data.profile.onboardingComplete && !data.settings.toques2611) commit(d => d.settings.toques2611 ? d : toquesA7(d))
-    if (ready && cloudReady && data.profile.onboardingComplete && !data.settings.hspu2611) commit(d => d.settings.hspu2611 ? d : hspuA3(d))
-    if (ready && cloudReady && data.profile.onboardingComplete && !data.settings.quitar2611) commit(d => d.settings.quitar2611 ? d : quitar2611(d))
-  }, [ready, cloudReady, data.profile.onboardingComplete, data.settings.rutina2611, data.settings.rondas2611, data.settings.toques2611, data.settings.hspu2611, data.settings.quitar2611]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (ready && cloudReady && esKiki && data.profile.onboardingComplete && !data.settings.toques2611) commit(d => d.settings.toques2611 ? d : toquesA7(d))
+    if (ready && cloudReady && esKiki && data.profile.onboardingComplete && !data.settings.hspu2611) commit(d => d.settings.hspu2611 ? d : hspuA3(d))
+    if (ready && cloudReady && esKiki && data.profile.onboardingComplete && !data.settings.quitar2611) commit(d => d.settings.quitar2611 ? d : quitar2611(d))
+  }, [ready, cloudReady, esKiki, data.profile.onboardingComplete, data.settings.rutina2611, data.settings.rondas2611, data.settings.toques2611, data.settings.hspu2611, data.settings.quitar2611]) // eslint-disable-line react-hooks/exhaustive-deps
   const nuevosAmigos = useAmigosNuevos(data, cloudConfigured && cloudReady ? userId : undefined, section)
   useEffect(() => {
     if (!cloudConfigured || !userId || !ready) return
@@ -548,7 +561,7 @@ export default function App() {
   if (cloudConfigured && !cloudReady) return <LoadingScreen text="Sincronizando tu espacio privado." />
   if (mostrarLegal && cloudConfigured && userId && !legalAceptado(data.settings)) return <Consentimiento onAceptar={salud => aceptar(commit, salud)} onSalir={() => void signOut()} />
   if (!data.profile.onboardingComplete) return <Onboarding initialName={data.profile.name} onComplete={r => commit(d => ({ ...d, profile: { name: r.name || 'Tú', onboardingComplete: true },
-    settings: { ...d.settings, modules: r.modules, habits: r.habits, train: r.competir ? { ...(d.settings.train ?? semanaVacia()), lock: false } : d.settings.train ?? semanaVacia(), walkDaily: true, cardioSetup: true, modo: r.competir ? 'competir' : undefined },
+    settings: { ...d.settings, modules: r.modules, habits: r.habits, ...(r.age ? { age: r.age } : {}), sinEdad: r.sinEdad, train: r.competir ? { ...(d.settings.train ?? semanaVacia()), lock: false } : d.settings.train ?? semanaVacia(), walkDaily: true, cardioSetup: true, modo: r.competir ? 'competir' : undefined },
     habits: r.firstVotes.length ? { ...d.habits, [dateKey()]: [...new Set([...(d.habits[dateKey()] ?? []), ...r.firstVotes])] } : d.habits }))} />
   if (candado) return <Suspense fallback={<Cargando />}><CandadoPage data={data} commit={commit} app={candado} onSalir={to => { try { sessionStorage.removeItem(CANDADO_KEY) } catch { void 0 } setCandado(null); if (to) go(to) }} /></Suspense>
 

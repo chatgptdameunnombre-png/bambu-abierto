@@ -46,7 +46,7 @@ export function Body({ stats, sel, onPick }: { stats: Record<Muscle, MuscleStat>
     if (mejor) onPick(mejor)
   }
   return <div className="d-body-img" onClick={tocar}>
-    <img src="cuerpo/base.png" alt="Mapa de tus músculos" width={623} height={629} draggable={false} />
+    <img src="cuerpo/base.webp" alt="Mapa de tus músculos" width={623} height={629} draggable={false} />
     {CAPAS.map(([m, f]) => stats[m].level > 0 || sel === m ? <span key={f} className={`mu-capa l${stats[m].level} ${sel === m ? 'sel' : ''}`} style={{ WebkitMaskImage: `url(cuerpo/${f}.png)`, maskImage: `url(cuerpo/${f}.png)` }} aria-hidden="true" /> : null)}
     <span className="mu-pie" style={{ left: '22.1%' }}>Frente</span><span className="mu-pie" style={{ left: '78.7%' }}>Espalda</span>
     <div className="visually-hidden">{CAPAS.map(([m]) => <button key={m} type="button" onClick={() => onPick(m)}>{m}: {stats[m].sets} series</button>)}</div>

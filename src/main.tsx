@@ -23,6 +23,10 @@ applyTheme()
 watchSystemTheme()
 
 
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => { navigator.serviceWorker.register(new URL('avisos-sw.js', document.baseURI).href, { scope: new URL('./', document.baseURI).href }).catch(() => undefined) })
+}
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <App />

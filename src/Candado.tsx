@@ -209,10 +209,10 @@ export function CandadoSetup({ data, commit, onMessage, cloud }: { data: AppData
           {ver && <ol className="d-steps-guide">
             <li><span>Abre <b>Atajos</b>, toca <b>+</b> y ponle de nombre <b>Bambú Candado</b>.</span></li>
             <li><span>Agrega <b>Obtener contenido de URL</b> y pega este enlace: <button type="button" className="d-link" onClick={() => copiar(urlPase(llave), 'Enlace de revisión')}>Copiar enlace de revisión</button></span></li>
-            <li><span>Agrega <b>Obtener valor del diccionario</b>, clave <b>fields.hasta.stringValue</b>.</span></li>
+            <li><span>Agrega <b>Obtener valor del diccionario</b> y en la clave pega esto (sin punto al final): <button type="button" className="d-link" onClick={() => copiar('fields.hasta.stringValue', 'Clave')}>Copiar clave</button></span></li>
             <li><span>Agrega <b>Obtener fechas de la entrada</b> con ese valor.</span></li>
-            <li><span>Agrega <b>Si</b>: Fechas <b>es posterior a</b> Fecha actual. Adentro pon <b>Detener este atajo</b>. Así, si tienes tiempo, te deja pasar.</span></li>
-            <li><span>Después del Si, agrega <b>Abrir URL</b> con este enlace: <button type="button" className="d-link" onClick={() => copiar(url, 'Enlace del candado')}>Copiar enlace del candado</button></span></li>
+            <li><span>Agrega <b>Si</b>: Fechas <b>es posterior a</b>, toca la fecha y elige la variable <b>Fecha actual</b> (no escribas una fecha). Entre <b>Si</b> y <b>Terminar si</b> pon <b>Detener este atajo</b>. Así, si tienes tiempo, te deja pasar.</span></li>
+            <li><span>Después de <b>Terminar si</b>, agrega <b>Abrir URL</b> (no la acción que solo dice URL) con este enlace: <button type="button" className="d-link" onClick={() => copiar(url, 'Enlace del candado')}>Copiar enlace del candado</button></span></li>
             <li><span>En <b>Automatización</b> toca <b>+</b>, elige <b>App</b>, marca Instagram, TikTok y las que quieras, <b>Se abre</b> y <b>Ejecutar de inmediato</b>. Acción: <b>Ejecutar atajo → Bambú Candado</b>.</span></li>
             <li><span>Abre bambú una vez en <b>Safari</b> con tu cuenta: ahí se abre el candado.</span></li>
           </ol>}

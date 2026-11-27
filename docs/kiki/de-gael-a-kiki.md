@@ -120,6 +120,19 @@ App personal de lectura (cronómetro, Biblia por capítulos, Crónica), entrenam
 - **La CSP va solo en el build**: el servidor de desarrollo de Vite usa scripts en línea.
 - **Decisiones de producto que cambiaron el diseño**: los minutos solo se ganan en Redes; las competencias son solo con cámara; el ajedrez se quitó para hacerlo después con otro enfoque.
 
+## Decisiones de Kiki sobre la versión de Gael (26-nov-2026)
+
+Gael quiere una sola base y un solo link. Por ahora cada quien sigue con su versión y su link; se unifica cuando los dos estén de acuerdo. De la versión de Gael, Kiki **no** quiere:
+
+| De Gael | Por qué no |
+|---|---|
+| Anillos (en vez del camino del día) | Prefiere el camino con nodos y cofre |
+| Su estilo: todo en minúsculas, letra Fraunces y su paleta | Se queda con el estilo oscuro con botones gruesos y el verde #37CB69 |
+| Coach como pantalla de inicio | El Coach vive dentro de Rutina; se entra cuando se quiere |
+| Quitar Aventura | Aventura se queda, dentro de Libre |
+
+Lo que sí se tomó de Gael: la rutina que arma Bambú, la sesión de 15 o 30 min, Progreso con peso y fotos, la Biblia y el verde nuevo.
+
 ## Lo que no está en este repo
 
 Las reglas completas de Firestore, el servidor de avisos y la revisión de seguridad viven en el repo privado de Kiki.

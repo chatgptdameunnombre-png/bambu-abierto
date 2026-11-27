@@ -2340,8 +2340,12 @@ async function audioChecks() {
     assert.equal(f.extra, goal === 'musculo' || goal === 'ambos' ? 450 : 0, 'sin subir en 4 semanas, el extra crece; nunca para bajar')
     assert.doesNotMatch(f.why, /bajar|déficit|pasaste|exceso|demasiad/)
   }
-  assert.ok(page.includes('<BodyInputs data={data} commit={commit} growth={growth} />'), 'un menor registra peso y estatura')
-  assert.doesNotMatch(page.slice(page.indexOf('function GrowthToday'), page.indexOf('function AdultToday')), /pasaste|Te quedan|exceso/, 'pasar el piso nunca es malo')
+  const metas = page.slice(page.indexOf('function Metas'), page.indexOf('export function FoodPage'))
+  assert.ok(metas.includes('Peso (kg)') && metas.includes('Estatura (cm)') && !/growth && <label>Peso|growth && <label>Estatura/.test(metas), 'un menor registra peso y estatura')
+  assert.ok(page.includes('<Metas data={data} commit={commit} growth={growth} plan={plan} />'))
+  const mensajeMenor = page.slice(page.indexOf(': growth ? (t.kcal'), page.indexOf('\n', page.indexOf(': growth ? (t.kcal')))
+  assert.ok(mensajeMenor.includes('piso'))
+  assert.doesNotMatch(mensajeMenor, /pasaste|Te quedan|exceso/, 'pasar el piso nunca es malo')
   const logger = fs.readFileSync(path.join(__dirname, '../src/FoodLogger.tsx'), 'utf8')
   const item = { name: 'Label protein only', qty: 1, unit: 'portion', kcal: 0, protein: 12, group: 'proteina' }
   const data = normalizeData({ ...EMPTY_DATA, settings: { age: 13 }, body: [{ day: '2026-11-22', weightKg: 50, heightCm: 160 }], meals: [1,2,3].map(i => ({ id: String(i), day: '2026-11-21', at: i, slot: 'comida', items: [item] })) })
@@ -2368,4 +2372,23 @@ async function audioChecks() {
   assert.deepEqual([0, 1, 2, 5, 9].map(P.breathSeconds), [5, 8, 11, 20, 20], 'la respiración crece y topa en 20 s')
   assert.match(P.passShortcutUrl(P.pauseApp('instagram'), 10), /^shortcuts:\/\/run-shortcut\?name=Bamb%C3%BA%20Pase&input=text&text=10%7Cinstagram%3A%2F%2F$/)
   ok('pausa antes de las apps: enlace, servidor, nube y fricción')
+}
+
+{
+  const leer = f => fs.readFileSync(path.join(__dirname, '..', f), 'utf8')
+  const rutina = leer('src/MiRutina.tsx'), app = leer('src/App.tsx'), ob = leer('src/Onboarding.tsx'), sw = leer('public/avisos-sw.js'), main = leer('src/main.tsx')
+  assert.doesNotMatch(rutina, /Recuperaci/, 'Recuperación ya no está en Mi rutina')
+  assert.ok(/esKiki && /.test(app) && !/uid === '[A-Za-z0-9]{20,}'/.test(app), 'los ajustes de rutina de Kiki solo corren en su cuenta y sin uid a la vista')
+  assert.ok(ob.includes("modules.food") && ob.includes("'edad'"), 'la edad solo se pregunta si eligen Comida')
+  assert.ok(ob.includes('Prefiero no decirla') && ob.includes('sinEdad'), 'la edad es opcional')
+  assert.equal(normalizeData({ ...EMPTY_DATA, settings: { sinEdad: true } }).settings.sinEdad, true, 'sin edad sobrevive a la limpieza')
+  assert.equal(normalizeData({ ...EMPTY_DATA, settings: { sinEdad: 'x' } }).settings.sinEdad, undefined)
+  assert.ok(fs.existsSync(path.join(__dirname, '../public/cuerpo/base.webp')) && !fs.existsSync(path.join(__dirname, '../public/cuerpo/base.png')), 'cuerpo en WebP')
+  assert.ok(sw.includes("addEventListener('fetch'") && sw.includes('caches.open') && main.includes('serviceWorker'), 'funciona sin internet')
+  const T = moduleOf('temporada')
+  const nombres = JSON.stringify(T)
+  assert.doesNotMatch(nombres, /Flojito|Gordito|Chiquito|ito"/, 'nombres serios en la temporada')
+  const foto = leer('src/lib/fotosComida.ts')
+  assert.ok(foto.includes('indexedDB') && !/fetch\(|firestore/i.test(foto), 'las fotos de comida no salen del teléfono')
+  ok('tanda 26-nov: sin Recuperación, ajustes solo en la cuenta de Kiki, edad con Comida, cuerpo WebP, sin internet, nombres serios y fotos locales')
 }

@@ -23,7 +23,7 @@ Enlaces directos: `?ir=hoy`, `entrenar`, `redes`, `retos`, `tareas`, `comida`, `
 
 ## Bienvenida
 
-3 pantallas con cielo de noche y amanecer: **despiertas a Brote** (duerme con el brote caído; al tocarlo dice "¡Ay!", brinca con chispas, amanece y te saluda) y le dices tu nombre; eliges qué medir (Entreno, Tareas, Lectura, Biblia, Comida) con el interruptor "Solo competir con mis amigos"; y tus objetivos diarios. El bambú se planta solo. Ya no hay que mantener presionado ni el "¿Ya hiciste alguno hoy?". Una cuenta nueva **no recibe rutina ni candado**: la elige en Entrenar.
+3 pantallas con cielo de noche y amanecer: **despiertas a Brote** (duerme con el brote caído; al tocarlo dice "¡Ay!", brinca con chispas, amanece y te saluda) y le dices tu nombre; eliges qué medir (Entreno, Tareas, Lectura, Biblia, Comida) con el interruptor "Solo competir con mis amigos"; si eliges Comida, te pregunta tu edad (sin Comida no la pide); y tus objetivos diarios. El bambú se planta solo. Ya no hay que mantener presionado ni el "¿Ya hiciste alguno hoy?". Una cuenta nueva **no recibe rutina ni candado**: la elige en Entrenar.
 
 ## Hoy
 
@@ -33,7 +33,7 @@ Lista vertical del día: hábitos, rutina, lectura, **Biblia** (si está prendid
 
 | Pestaña | Qué hace |
 |---|---|
-| **Rutina** | Tres botones arriba: **Hoy · Progreso · Recuperación**. La primera vez pregunta **"Que Bambú me la arme"** (equipo, días, tiempo por sesión y nivel; arma torso, pierna o cuerpo completo con ejercicios que puedes hacer) o **"La armo yo"**. Cada ejercicio tiene **Cambiar** (otro del mismo movimiento, más fácil o más difícil, en todos tus días) y Quitar; abajo, "Rehacer mi rutina". En Hoy: **¿Cuánto tiempo tienes? 15 min · 30 min · Completa** (15 = 3 ejercicios a 2 rondas; 30 = 5 a 3). **Progreso**: peso con gráfica y fotos de progreso (del coach de Gael). **Recuperación**: por grupo muscular, si está recuperando y cuándo queda listo, y series en 7 días contra la meta. Rutina semanal por día con medidor, temporizador, **Contar con cámara** y candado opcional. |
+| **Rutina** | Dos botones arriba: **Hoy · Progreso**. La primera vez pregunta **"Que Bambú me la arme"** (equipo, días, tiempo por sesión y nivel; arma torso, pierna o cuerpo completo con ejercicios que puedes hacer) o **"La armo yo"**. Cada ejercicio tiene **Cambiar** (otro del mismo movimiento, más fácil o más difícil, en todos tus días) y Quitar; abajo, "Rehacer mi rutina". En Hoy: **¿Cuánto tiempo tienes? 15 min · 30 min · Completa** (15 = 3 ejercicios a 2 rondas; 30 = 5 a 3). **Progreso**: peso con gráfica y fotos de progreso (del coach de Gael). Rutina semanal por día con medidor, temporizador, **Contar con cámara** y candado opcional. |
 | **Libre** | Arriba, la **Aventura**: tarjeta del monstruo con ¡Pelear! y Ver todo (jefe de la semana, mazmorra, temporada, álbum). Botones grandes **Romper tu récord** (lista de récords con cámara y botón Superar que abre la cámara directo) y **Tablas con amigos**. Reto de la semana. Buscador de ejercicios con filtros (Todos, Famosos, por músculo, WOD) y "Otro ejercicio". |
 | **Redes** | Saldo de minutos de redes del día. Eliges cuántos minutos quieres ganar (5, 10, 15, 30) y el ejercicio: te dice cuánto hacer y la cámara muestra la meta. Tabla de cuánto vale cada ejercicio. Estado del bloqueo de redes. |
 | **Retos** | Retos con la cámara de 2 a 10 personas: más repeticiones en 60 s, aguantar más o Cindy. Globo rojo cuando te toca. |
@@ -107,7 +107,15 @@ Correo y contraseña o Google. Los datos viven en el teléfono y se sincronizan 
 
 ## Biblia
 
-Módulo propio (Ajustes → Qué usas o bienvenida). Botón **Biblia** en Hoy: abre el registro rápido con La Biblia elegida, los capítulos que siguen a un toque, "Otro capítulo" y versículos si fue solo un pedazo. Abajo el avance (capítulos de 1,328).
+Módulo propio (Ajustes → Qué usas o bienvenida). Botón **Biblia** en Hoy abre **Tu Biblia hoy**: los capítulos que siguen en tarjetas grandes (libro chico, número grande, palomita dorada), "Otro capítulo", versículos si fue solo un pedazo, cuánto tiempo y **Guardar capítulo**. Ya guardado enseña "¡Ya leíste tu Biblia hoy!", "Agregar otro capítulo" y la tarjeta dorada con el % de la Biblia (de 1,328 capítulos), la barra y el que sigue ("Juan 2 · 1 de 21 de Juan"). La lectura queda anotada como "La Biblia".
+
+## Comida
+
+Rediseño 26-nov: arriba una tarjeta verde con las calorías del día, barras de calorías y proteína contra tus metas y lo que te falta (en menores, energía para crecer: piso, nunca techo). **¿Qué comiste?** con Desayuno, Comida, Cena y Colación; **Lo de siempre** registra en un toque lo que más repites a esa hora; botón de cámara para registrar **con foto** y **Registrar comida** para lo nuevo. La lista de hoy enseña la foto de cada comida y se borra con ×. Abajo **Tu semana** y **Tus metas** (peso, estatura, cintura, sexo, meta y años entrenando, con "Cómo decide bambú"). Las fotos de comida viven solo en tu teléfono, no suben a la nube.
+
+## Sin internet
+
+Desde el 26-nov la app abre sin señal: guarda la página y sus archivos en el teléfono la primera vez que la abres (lo nuevo se baja cuando hay señal). Lo que registras sin señal se sube cuando vuelve.
 
 ## Monstruos
 

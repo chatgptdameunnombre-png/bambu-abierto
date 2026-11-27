@@ -10,7 +10,7 @@ import { LibrePage } from './Libre'
 import { AventuraCard, AventuraPage } from './Aventura'
 import { ArmarSheet, CambiarSheet, ElegirRutina } from './ArmarRutina'
 import { cambiarEnSemana, minutosDe, quitarDeSemana, recortar, type Tiempo } from './lib/armar'
-import { Progreso, Recuperacion } from './Progreso'
+import { Progreso } from './Progreso'
 import { RedesPage } from './Candado'
 import { DuelosPage, useDuelosToca } from './Duelos'
 import { BotonCamara, CamaraValor } from './Candado'
@@ -277,10 +277,10 @@ export function MiRutina({ data, commit, onMessage, onIr }: { data: AppData; com
   const [armar, setArmar] = useState(false)
   const [cambiar, setCambiar] = useState<{ name: string; kind: 'reps' | 'seconds' | 'free' } | null>(null)
   const vacia = !plan.week.some(x => x && x.items.length)
-  const [sub, setSub] = useState<'hoy' | 'progreso' | 'recuperacion'>('hoy')
+  const [sub, setSub] = useState<'hoy' | 'progreso'>('hoy')
   const [tiempo, setTiempo] = useState<Tiempo>(0)
   const rtSesion = rt ? recortar(rt, tiempo) : null
-  const subBar = <div className="d-subtabs" role="tablist" aria-label="Secciones de rutina">{([['hoy', 'Hoy'], ['progreso', 'Progreso'], ['recuperacion', 'Recuperación']] as const).map(([k, l]) => <button key={k} type="button" role="tab" aria-selected={sub === k} className={sub === k ? 'on' : ''} onClick={() => setSub(k)}>{l}</button>)}</div>
+  const subBar = <div className="d-subtabs" role="tablist" aria-label="Secciones de rutina">{([['hoy', 'Hoy'], ['progreso', 'Progreso']] as const).map(([k, l]) => <button key={k} type="button" role="tab" aria-selected={sub === k} className={sub === k ? 'on' : ''} onClick={() => setSub(k)}>{l}</button>)}</div>
   const modeBar = <div className="d-mode four" role="tablist" aria-label="Tipo de entreno">
     {MODOS.map(m => <button key={m} type="button" role="tab" aria-selected={mode === m} className={mode === m ? 'on' : ''} onClick={() => { setMode(m); setAventura(false) }}>{MODO_NOMBRE[m]}{m === 'duelos' && toca > 0 && <i className="d-mode-badge" aria-label={`${toca} retos te esperan`}>{toca}</i>}</button>)}
   </div>
@@ -300,7 +300,7 @@ export function MiRutina({ data, commit, onMessage, onIr }: { data: AppData; com
   if (sub !== 'hoy') return <section className="d-page">
     {modeBar}
     {subBar}
-    {sub === 'progreso' ? <Progreso data={data} commit={commit} onMessage={onMessage} /> : <Recuperacion data={data} />}
+    <Progreso data={data} commit={commit} onMessage={onMessage} />
   </section>
   return <section className="d-page">
     {modeBar}

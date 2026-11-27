@@ -2,11 +2,11 @@ import { useEffect, useState, type MouseEvent } from 'react'
 import { makeId, type HabitDef, type Modules } from './lib/model'
 import { BroteArt } from './Brote'
 import { haptic } from './lib/haptic'
-import { Chips, celebrate } from './ui'
+import { Chips, Stepper, celebrate } from './ui'
 import { burst } from './juice'
 import type { Mood } from './lib/brote'
 
-export type OnboardingResult = { name: string; modules: Modules; habits: HabitDef[]; firstVotes: string[]; competir: boolean }
+export type OnboardingResult = { name: string; modules: Modules; habits: HabitDef[]; firstVotes: string[]; competir: boolean; age?: number; sinEdad?: boolean }
 type Props = { initialName: string; onComplete: (result: OnboardingResult) => void }
 
 /** Hábitos de ejemplo para elegir. Ninguno es obligatorio: cada quien arma los suyos. */
@@ -24,7 +24,7 @@ const MODULES: { key: keyof Modules; label: string; text: string }[] = [
   { key: 'bible', label: 'Biblia', text: 'Los capítulos que lees y tu avance en toda la Biblia.' },
   { key: 'food', label: 'Comida', text: 'Registra lo que comes en segundos.' },
 ]
-type Step = 'wake' | 'modules' | 'habits' | 'grow'
+type Step = 'wake' | 'modules' | 'edad' | 'habits' | 'grow'
 const ESTRELLAS = [[12, 18, 0], [26, 9, 1.1], [41, 22, 2.3], [58, 12, .6], [73, 25, 1.7], [86, 10, 2.9], [92, 30, .3], [18, 34, 2.1], [64, 36, 1.4], [35, 40, 3.2]]
 /** El cielo de la bienvenida: estrellas de noche y, con dia, el amanecer que sale cuando despiertas a Brote. */
 export function Cielo({ dia = false }: { dia?: boolean }) {
@@ -47,7 +47,10 @@ export function Onboarding({ initialName, onComplete }: Props) {
   const [competir, setCompetir] = useState(false)
   // El id del hábito propio se fija una vez: si cambiara en cada pantalla, el primer voto apuntaría a otro.
   const [customId] = useState(() => `h-${makeId().slice(0, 8)}`)
-  const flow: Step[] = competir ? ['wake', 'modules'] : ['wake', 'modules', 'habits']
+  const [age, setAge] = useState(18)
+  const [sinEdad, setSinEdad] = useState(false)
+  const edad: Step[] = modules.food ? ['edad'] : []
+  const flow: Step[] = competir ? ['wake', 'modules', ...edad] : ['wake', 'modules', ...edad, 'habits']
   const index = flow.indexOf(step)
   const toggle = (k: keyof Modules) => setModules(m => ({ ...m, [k]: !m[k] }))
   const go = (next: Step) => { haptic(10); setStep(next) }
@@ -86,7 +89,7 @@ export function Onboarding({ initialName, onComplete }: Props) {
       const t = window.setTimeout(() => {
         if (competir) celebrate({ kind: 'rank', title: `¡A competir${name.trim() ? `, ${name.trim()}` : ''}!`, text: 'Agrega a tus amigos en Amigos y reta a quien quieras.', image: 'img/rango-02-brote.webp' })
         else celebrate({ kind: 'rank', title: `Ya echaste raíz${name.trim() ? `, ${name.trim()}` : ''}.`, text: 'Tu bambú ya está plantado. Lo que repites echa raíces.', image: 'img/rango-02-brote.webp' })
-        onComplete({ name: name.trim(), modules, habits: competir ? [] : habits(), firstVotes: [], competir })
+        onComplete({ name: name.trim(), modules, habits: competir ? [] : habits(), firstVotes: [], competir, age: modules.food && !sinEdad ? age : undefined, sinEdad: modules.food && sinEdad ? true : undefined })
       }, 500)
       return () => window.clearTimeout(t)
     }
@@ -126,6 +129,13 @@ export function Onboarding({ initialName, onComplete }: Props) {
           <span><strong>Solo competir con mis amigos</strong><small>Sin racha ni objetivos diarios. Entrenas, retas y subes en la liga.</small></span><i aria-hidden="true" />
         </button>
       </>}
+      {step === 'edad' && <>
+        <span className="ob-mini"><BroteArt mood="calma" size={84} /></span>
+        <h1 className="ob-q">¿Cuántos años tienes?</h1>
+        <p className="ob-copy">Es opcional. Solo sirve para calcular tu comida y no sale de tu cuenta.</p>
+        <Stepper label="Edad" unit="años" value={age} min={8} max={99} onChange={setAge} />
+        <button type="button" className="d-link ob-saltar" onClick={() => { setSinEdad(true); forward() }}>Prefiero no decirla</button>
+      </>}
       {step === 'habits' && <>
         <span className="ob-mini"><BroteArt mood="animo" size={84} /></span>
         <h1 className="ob-q">Tus objetivos diarios</h1>
@@ -140,7 +150,7 @@ export function Onboarding({ initialName, onComplete }: Props) {
       </div>}
     </section>
     {step !== 'grow' && <footer className="ob-foot">
-      <button type="button" className="primary-button wide" onClick={forward}>{index === flow.length - 1 ? 'Listo' : 'Continuar'} <span>→</span></button>
+      <button type="button" className="primary-button wide" onClick={() => { if (step === 'edad') setSinEdad(false); forward() }}>{index === flow.length - 1 ? 'Listo' : 'Continuar'} <span>→</span></button>
     </footer>}
   </main>
 }

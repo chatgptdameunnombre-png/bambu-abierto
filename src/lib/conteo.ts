@@ -1,11 +1,11 @@
 export type Punto = { x: number; y: number; z: number; v: number }
 export type Cuadro = { img: Punto[]; mundo: Punto[]; aspecto?: number }
-export type Patron = 'empuje' | 'fondo' | 'sentadilla' | 'dominada' | 'pike' | 'hspu' | 'remo' | 'elevacion' | 'saltos' | 'burpee' | 'generico'
+export type Patron = 'empuje' | 'fondo' | 'sentadilla' | 'talones' | 'dominada' | 'pike' | 'hspu' | 'remo' | 'elevacion' | 'saltos' | 'burpee' | 'generico'
   | 'plancha' | 'lateral' | 'wallsit' | 'colgado' | 'lsit' | 'parado' | 'hollow' | 'planche' | 'lever' | 'bandera' | 'quieto'
 export type Aviso = 'acomodate' | 'posicion' | 'baja' | 'recto' | 'rapido' | 'sube' | 'extiende' | 'cadera' | 'alta' | 'rodillas' | 'pies'
-type Repeticion = 'empuje' | 'fondo' | 'sentadilla' | 'dominada' | 'pike' | 'hspu' | 'remo' | 'elevacion' | 'saltos' | 'burpee'
+type Repeticion = 'empuje' | 'fondo' | 'sentadilla' | 'talones' | 'dominada' | 'pike' | 'hspu' | 'remo' | 'elevacion' | 'saltos' | 'burpee'
 export type Tipo = 'reps' | 'seconds' | 'free'
-export type Opciones = { inclinado?: boolean; rodillas?: boolean; doblado?: boolean; estirados?: boolean; tuck?: boolean }
+export type Opciones = { inclinado?: boolean; rodillas?: boolean; doblado?: boolean; estirados?: boolean; tuck?: boolean; salto?: boolean }
 export type Base = { pie: number; mano: number; largo: number }
 
 const CARDIO = /^(correr|caminar|trotar|nadar|bici|cardio|f[uú]tbol)/i
@@ -30,6 +30,7 @@ const FAMILIAS: [RegExp, Patron][] = [
   [/lagartija|push ?ups?|flexi[oó]n(es)? de pecho/i, 'empuje'],
   [/dominadas? australianas?|australian|\bremo\b|\brows?\b|inverted row/i, 'remo'],
   [/dominada|pull ?ups?|chin ?ups?|muscle ?ups?|jal[oó]n/i, 'dominada'],
+  [/tal[oó]n|calf raises?|pantorrilla/i, 'talones'],
   [/^(?!.*tal[oó]n).*(sentadilla|squat|desplante|zancada|lunge|pistol|step ?ups?)/i, 'sentadilla'],
   [/jumping jacks?|saltos de (estrella|tijera)/i, 'saltos'],
 ]
@@ -47,7 +48,7 @@ export const esCamara = (name: string, kind?: Tipo) => patronDe(name, kind) !== 
 export const tipoDe = (name: string, kind?: Tipo): 'reps' | 'seconds' => esAguante(patronDe(name, kind) ?? 'generico') ? 'seconds' : 'reps'
 export const esGeneral = (name: string, kind?: Tipo) => { const p = patronDe(name, kind); return p === 'generico' || p === 'quieto' }
 export function opcionesDe(name: string): Opciones {
-  return { inclinado: /inclinad|declinad|en (la )?pared|elevad/i.test(name), rodillas: /rodillas|de rodilla/i.test(name), doblado: /cuervo|\bcrow\b|frog|\brana\b/i.test(name), estirados: /brazos (estirados|rectos)|plancha alta|high plank/i.test(name), tuck: /\btuck\b|agrupad/i.test(name) }
+  return { inclinado: /inclinad|declinad|en (la )?pared|elevad/i.test(name), rodillas: /rodillas|de rodilla/i.test(name), doblado: /cuervo|\bcrow\b|frog|\brana\b/i.test(name), estirados: /brazos (estirados|rectos)|plancha alta|high plank/i.test(name), tuck: /\btuck\b|agrupad/i.test(name), salto: /salto|jump/i.test(name) }
 }
 
 const FRENTE = 'Recarga el teléfono en la pared o en una botella, frente a ti, a unos 2 metros.'
@@ -55,7 +56,8 @@ const DE_LADO = 'Pon el teléfono de lado, a unos 2 metros.'
 export const COMO: Record<Patron, string> = {
   empuje: 'Pon el teléfono en el piso frente a tu cabeza, a 1 metro, o de lado a 2 metros. De frente basta con que se vean tu cabeza, hombros y manos.',
   fondo: `${FRENTE} Que se te vean hombros, codos y manos.`,
-  sentadilla: `${FRENTE} Que se te vean cadera, rodillas y tobillos.`,
+  sentadilla: `${FRENTE} Que se te vea todo el cuerpo, de los hombros a los pies. De frente cuenta cuánto baja tu cadera.`,
+  talones: `${FRENTE} Que se te vea de los hombros a los pies. Sube en puntas, aguanta un instante y baja completo.`,
   dominada: 'Pon el teléfono abajo mirando hacia la barra, a unos 2 metros. Que se te vean las manos y la cabeza.',
   pike: `${DE_LADO} Cuenta con la cadera arriba y la cabeza bajando entre las manos.`,
   hspu: `${DE_LADO} Cuenta cuando bajas de cabeza y vuelves a estirar los brazos.`,
@@ -126,6 +128,7 @@ const RANGO: Record<Repeticion, Rango> = {
   empuje: { arriba: 150, abajo: 100, min: 450 },
   fondo: { arriba: 150, abajo: 100, min: 450 },
   sentadilla: { arriba: 160, abajo: 100, min: 600 },
+  talones: { arriba: 160, abajo: 100, min: 500 },
   dominada: { arriba: 155, abajo: 90, min: 500 },
   pike: { arriba: 150, abajo: 100, min: 450 },
   hspu: { arriba: 150, abajo: 100, min: 600 },
@@ -141,6 +144,7 @@ const GRACIA = 700
 const CAIDA = 0.55
 const CAIDA_H = 0.65
 const VENTANA = 3500
+const CAIDA_P: Partial<Record<Patron, [number, number, number]>> = { sentadilla: [0.15, 0.7, 8000], talones: [0.04, 0.14, 8000] }
 const VENTANA_G = 8000
 const QUIETO = 0.15
 const CANALES: [number, number, number][] = [[11, 13, 15], [12, 14, 16], [23, 25, 27], [24, 26, 28], [11, 23, 25], [12, 24, 26], [23, 11, 13], [24, 12, 14], [25, 27, 31], [26, 28, 32]]
@@ -254,7 +258,16 @@ export function medir(p: Patron, f: Cuadro, op: Opciones = {}, base?: Base, dent
     const rodilla = flexion(N.cadera, N.rodilla, N.tobillo)
     if (rodilla === null) return NADA
     const t = torso(mejor(N.hombro, N.cadera))
-    return { visto: true, postura: t === null || t >= 0.45, recto: true, ang: rodilla }
+    const caderaFrente = frente && lados(N.cadera).length === 2 && !op.salto
+    return { visto: true, postura: t === null || t >= 0.45, recto: true, ang: rodilla, ...(caderaFrente ? { hy: medio(N.cadera), esc: ancho } : {}) }
+  }
+  if (p === 'talones') {
+    const s = mejor(N.hombro, N.cadera)
+    if (s === -1 || !lados(N.tobillo).length) return NADA
+    const t = torso(s)
+    const esc = frente ? ancho : d2(img[N.hombro[s]], img[N.cadera[s]]) * 0.75
+    if (!(esc > 0.02)) return NADA
+    return { visto: true, postura: t === null || t >= 0.75, recto: true, ang: 180, hy: -medio(N.hombro), esc }
   }
   if (p === 'elevacion') {
     if (!ver(N.nariz) || !lados(N.muneca).length) return NADA
@@ -459,10 +472,11 @@ export function pasoMedida(c: Conteo, m: Medida | null, t: number): Conteo {
   const r = RANGO[c.patron as Repeticion]
   let medida = m.ang, rTop = c.rTop, hist = c.hist, escS = c.escS
   if (m.hy !== undefined && m.esc) {
-    hist = [...c.hist.filter(([tt]) => t - tt <= VENTANA), [t, m.hy] as [number, number]]
+    const [ini, fin, ven] = CAIDA_P[c.patron] ?? [0.12, CAIDA_H, VENTANA]
+    hist = [...c.hist.filter(([tt]) => t - tt <= ven), [t, m.hy] as [number, number]]
     escS = c.escS ? c.escS * 0.8 + m.esc * 0.2 : m.esc
     const caida = (m.hy - Math.min(...hist.map(([, y]) => y))) / escS
-    const eq = caida <= 0.12 ? 180 : r.arriba - tope((caida - 0.12) / (CAIDA_H - 0.12)) * (r.arriba - c.abajo) - (caida >= CAIDA_H ? 5 : 0)
+    const eq = caida <= ini ? 180 : r.arriba - tope((caida - ini) / (fin - ini)) * (r.arriba - c.abajo) - (caida >= fin ? 5 : 0)
     medida = m.ang <= c.abajo ? Math.min(m.ang, eq) : eq
   } else if (m.r !== undefined && m.r > 0) {
     rTop = Math.max(c.rTop * 0.998, m.r)

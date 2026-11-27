@@ -41,6 +41,7 @@ Commits del sitio donde se publicó cada cambio.
 | `4e5c45b` (27-nov) | Prender avisos en el iPhone se quedaba cargando: pedía el permiso después de volver a bajar el archivo de avisos y esperar hasta 3 s, y el iPhone ya no lo mostraba. Ahora pide el permiso primero, no repite pasos lentos y nunca se queda cargando (tope de tiempo con mensaje). |
 | `b475647` (27-nov) | La rutina ya no da minutos de redes (nota `camara-rutina`: cuenta como récord con cámara, no como minutos). Libre, retos y Redes sí. En la rutina la cámara ya no enseña "vas ganando". |
 | `a626a5f` (27-nov) | En la rutina de Kiki, "Pistol squat asistida" pasa a "Pistol squat" (una vez, solo su cuenta, `pistol2711`). |
+| `c79d37b` (27-nov) | Cámara de frente: sentadillas, desplantes y pistol squat ya cuentan midiendo cuánto baja la cadera (en hombros de ancho); de frente la profundidad de la rodilla casi no se ve y la versión vieja contaba 0. Elevaciones de talones con su propia medida (cuánto suben los hombros). Comparado contra la versión vieja con posturas simuladas. |
 
 ## Decisiones de Kiki
 

@@ -15,6 +15,7 @@ export const TASAS: Record<Patron, { cada: number; min: number; unidad: 'reps' |
   empuje: { cada: 2, min: 1, unidad: 'reps' },
   fondo: { cada: 2, min: 1, unidad: 'reps' },
   sentadilla: { cada: 4, min: 1, unidad: 'reps' },
+  talones: { cada: 6, min: 1, unidad: 'reps' },
   dominada: { cada: 1, min: 2, unidad: 'reps' },
   pike: { cada: 2, min: 1, unidad: 'reps' },
   hspu: { cada: 1, min: 2, unidad: 'reps' },

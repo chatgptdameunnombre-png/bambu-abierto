@@ -1549,7 +1549,7 @@ ok('datos de antes: se suben sin duplicar ni pisar lo de la cuenta, y conservan 
   const C = moduleOf('conteo')
   const { pasoMedida, nuevoConteo, medir, patronDe, tipoDe, opcionesDe, esGeneral, CAMARA, CAMARA_GRUPOS } = C
   const nombres = ['Lagartijas abiertas', 'Lagartijas arqueras', 'Lagartijas inclinadas', 'Dominadas arqueras', 'Sentadilla sumo', 'Tuck planche', 'Planche', 'Cuervo', 'Front lever tuck', 'Back lever', 'Bandera humana', 'Crunches', 'Russian twist', 'Aguante isométrico de abs', 'Planche lean', 'Elevaciones de talones', 'Pseudo planche push ups', 'Handstand toque de hombros', 'Burpees suaves sin lagartija', 'Dragon flag', 'Elevaciones de piernas colgado', 'Correr 5 km o bici']
-  assert.deepEqual(nombres.map(n => patronDe(n)), ['empuje', 'empuje', 'empuje', 'dominada', 'sentadilla', 'planche', 'planche', 'planche', 'lever', 'lever', 'bandera', 'generico', 'generico', 'quieto', 'plancha', 'generico', 'empuje', 'generico', 'burpee', 'generico', 'elevacion', null])
+  assert.deepEqual(nombres.map(n => patronDe(n)), ['empuje', 'empuje', 'empuje', 'dominada', 'sentadilla', 'planche', 'planche', 'planche', 'lever', 'lever', 'bandera', 'generico', 'generico', 'quieto', 'plancha', 'talones', 'empuje', 'generico', 'burpee', 'generico', 'elevacion', null])
   assert.equal(patronDe('Plancha', 'reps'), 'generico')
   assert.equal(patronDe('Lagartijas', 'seconds'), 'quieto')
   assert.equal(patronDe('Mi ejercicio raro', 'seconds'), 'quieto')
@@ -1557,7 +1557,7 @@ ok('datos de antes: se suben sin duplicar ni pisar lo de la cuenta, y conservan 
   assert.equal(patronDe('Subidas de talones en wall sit', 'reps'), 'generico')
   assert.equal(tipoDe('Tuck planche'), 'seconds'); assert.equal(tipoDe('Lagartijas diamante'), 'reps')
   assert.ok(esGeneral('Crunches') && !esGeneral('Lagartijas'))
-  assert.deepEqual(opcionesDe('Lagartijas inclinadas'), { inclinado: true, rodillas: false, doblado: false, estirados: false, tuck: false })
+  assert.deepEqual(opcionesDe('Lagartijas inclinadas'), { inclinado: true, rodillas: false, doblado: false, estirados: false, tuck: false, salto: false })
   assert.equal(opcionesDe('Cuervo').doblado, true)
   assert.ok(CAMARA.length >= 50 && CAMARA_GRUPOS.length === 7)
   assert.ok(CAMARA.every(e => tipoDe(e.name) === e.kind), 'cada ejercicio de la lista se mide como reps o segundos según su tipo')
@@ -2567,4 +2567,24 @@ async function audioChecks() {
   assert.equal(normalizeData(n).settings.pistol2711, true)
   assert.ok(!R.seedWeek().week.some(rt => rt && rt.items.some(i => i.name === 'Pistol squat asistida')))
   ok('rutina de Kiki: pistol squat sin asistir')
+}
+
+{
+  const C = moduleOf('conteo')
+  const P = (x, y, z = 0, v = 1) => ({ x, y, z, v })
+  const ruido = s => (Math.sin(s * 12.9898) * 43758.5453 % 1) * 0.004
+  const frente = (o) => { const img = Array.from({ length: 33 }, () => P(0.5, 0.95, 0, 0)); for (const [i, p] of Object.entries(o)) img[i] = p; return { img, mundo: img.map(p => ({ ...p, z: p.z * 0.25 })), aspecto: 1 } }
+  const cuerpo = (baja, k, extra = {}) => { const h = 0.55 + baja, sh = h - 0.22, rod = 0.72 + baja * 0.15, z = -baja * 0.9, r = s => ruido(k * 7 + s); return frente({ 0: P(0.5, sh - 0.08 + r(1)), 11: P(0.41, sh + r(2)), 12: P(0.59, sh + r(3)), 13: P(0.39, sh + 0.12), 14: P(0.61, sh + 0.12), 15: P(0.4, sh + 0.24), 16: P(0.6, sh + 0.24), 23: P(0.45, h + r(4)), 24: P(0.55, h + r(5)), 25: P(0.43 - baja * 0.1, rod, z), 26: P(0.57 + baja * 0.1, rod, z), 27: P(0.44, 0.92), 28: P(0.56, 0.92), ...extra }) }
+  const talon = (sube, k) => { const d = -sube + ruido(k) * 0.5; return frente({ 0: P(0.5, 0.25 + d), 11: P(0.41, 0.33 + d), 12: P(0.59, 0.33 + d), 13: P(0.39, 0.45 + d), 14: P(0.61, 0.45 + d), 15: P(0.4, 0.56 + d), 16: P(0.6, 0.56 + d), 23: P(0.45, 0.55 + d), 24: P(0.55, 0.55 + d), 25: P(0.44, 0.72 + d), 26: P(0.56, 0.72 + d), 27: P(0.44, 0.92 + d * 0.5), 28: P(0.56, 0.92 + d * 0.5) }) }
+  const corre = (ej, reps, hondo, hacer, dur = 2200) => { let c = C.nuevoConteo(ej), t = 0, k = 0; for (let i = 0; i < 1500; i += 33) { c = C.paso(c, hacer(0, k++), t); t += 33 } for (let r = 0; r < reps; r++) { for (let i = 0; i <= dur; i += 33) { c = C.paso(c, hacer(hondo * Math.sin(Math.PI * i / dur), k++), t); t += 33 } for (let i = 0; i < 500; i += 33) { c = C.paso(c, hacer(0, k++), t); t += 33 } } return c.reps }
+  assert.equal(corre('Sentadillas', 5, 0.15, cuerpo), 5, 'de frente cuenta por cuánto baja la cadera aunque la rodilla se vea poco doblada')
+  assert.equal(corre('Sentadillas', 5, 0.06, cuerpo), 0, 'media sentadilla no cuenta')
+  assert.equal(corre('Desplantes', 6, 0.14, cuerpo), 6, 'desplantes de frente alternando')
+  assert.equal(corre('Pistol squat', 4, 0.17, (b, k) => cuerpo(b, k, { 26: P(0.6, 0.6, -0.15), 28: P(0.62, 0.66, -0.3) })), 4, 'pistol con la pierna libre doblada')
+  assert.equal(corre('Sentadillas', 4, 0, cuerpo), 0, 'parado no cuenta')
+  assert.equal(C.patronDe('Elevaciones de talones'), 'talones')
+  assert.equal(corre('Elevaciones de talones', 8, 0.035, talon, 1400), 8, 'talones: cuenta cuando subes en puntas y bajas')
+  assert.equal(corre('Elevaciones de talones', 8, 0.008, talon, 1400), 0, 'talones a medias no cuentan')
+  assert.equal(C.opcionesDe('Sentadilla con salto').salto, true, 'la sentadilla con salto sigue midiendo la rodilla')
+  ok('piernas de frente: sentadillas, desplantes y pistol por la caída de la cadera; talones por la subida de los hombros')
 }

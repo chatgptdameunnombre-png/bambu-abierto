@@ -759,6 +759,7 @@ function cleanSettings(value) {
 		devolver2611: v.devolver2611 === true ? true : void 0,
 		pistol2711: v.pistol2711 === true ? true : void 0,
 		lsit2711: v.lsit2711 === true ? true : void 0,
+		metas2711: v.metas2711 === true ? true : void 0,
 		tablas: cleanTablas(v.tablas),
 		amigos: cleanAmigos(v.amigos),
 		aprobados: cleanAmigos(v.aprobados),
@@ -2212,7 +2213,7 @@ var bridgeOne = [
 var sidePlank = [
 	"Plancha lateral",
 	"seconds",
-	30,
+	45,
 	{ sides: true }
 ];
 function routine(day, title, seeds) {
@@ -2301,7 +2302,7 @@ var LEGS_B = [
 	calfOne,
 	bridgeOne,
 	s("L sit", 15),
-	r("Crunches", 25),
+	r("Crunches", 30),
 	sidePlank,
 	s("Hollow hold", 45),
 	r("Abs con piernas arriba", 25),
@@ -2313,7 +2314,7 @@ var CORE = [
 	r("Abs con piernas arriba", 25),
 	r("Abs crackers", 15),
 	r("Russian twist", 55),
-	r("Crunches", 25),
+	r("Crunches", 30),
 	sidePlank,
 	s("Plancha", 60),
 	s("Aguante isométrico de abs", 30),

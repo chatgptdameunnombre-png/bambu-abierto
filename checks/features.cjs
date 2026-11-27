@@ -1549,14 +1549,14 @@ ok('datos de antes: se suben sin duplicar ni pisar lo de la cuenta, y conservan 
   const C = moduleOf('conteo')
   const { pasoMedida, nuevoConteo, medir, patronDe, tipoDe, opcionesDe, esGeneral, CAMARA, CAMARA_GRUPOS } = C
   const nombres = ['Lagartijas abiertas', 'Lagartijas arqueras', 'Lagartijas inclinadas', 'Dominadas arqueras', 'Sentadilla sumo', 'Tuck planche', 'Planche', 'Cuervo', 'Front lever tuck', 'Back lever', 'Bandera humana', 'Crunches', 'Russian twist', 'Aguante isométrico de abs', 'Planche lean', 'Elevaciones de talones', 'Pseudo planche push ups', 'Handstand toque de hombros', 'Burpees suaves sin lagartija', 'Dragon flag', 'Elevaciones de piernas colgado', 'Correr 5 km o bici']
-  assert.deepEqual(nombres.map(n => patronDe(n)), ['empuje', 'empuje', 'empuje', 'dominada', 'sentadilla', 'planche', 'planche', 'planche', 'lever', 'lever', 'bandera', 'generico', 'generico', 'quieto', 'plancha', 'talones', 'empuje', 'generico', 'burpee', 'generico', 'elevacion', null])
+  assert.deepEqual(nombres.map(n => patronDe(n)), ['empuje', 'empuje', 'empuje', 'dominada', 'sentadilla', 'planche', 'planche', 'planche', 'lever', 'lever', 'bandera', 'crunch', 'generico', 'barco', 'plancha', 'talones', 'empuje', 'generico', 'burpee', 'generico', 'elevacion', null])
   assert.equal(patronDe('Plancha', 'reps'), 'generico')
   assert.equal(patronDe('Lagartijas', 'seconds'), 'quieto')
   assert.equal(patronDe('Mi ejercicio raro', 'seconds'), 'quieto')
   assert.equal(patronDe('Mi ejercicio raro'), 'generico')
-  assert.equal(patronDe('Subidas de talones en wall sit', 'reps'), 'generico')
+  assert.equal(patronDe('Subidas de talones en wall sit', 'reps'), 'talones')
   assert.equal(tipoDe('Tuck planche'), 'seconds'); assert.equal(tipoDe('Lagartijas diamante'), 'reps')
-  assert.ok(esGeneral('Crunches') && !esGeneral('Lagartijas'))
+  assert.ok(esGeneral('Russian twist') && !esGeneral('Lagartijas') && !esGeneral('Crunches'))
   assert.deepEqual(opcionesDe('Lagartijas inclinadas'), { inclinado: true, rodillas: false, doblado: false, estirados: false, tuck: false, salto: false })
   assert.equal(opcionesDe('Cuervo').doblado, true)
   assert.ok(CAMARA.length >= 50 && CAMARA_GRUPOS.length === 7)
@@ -1589,9 +1589,9 @@ ok('datos de antes: se suben sin duplicar ni pisar lo de la cuenta, y conservan 
   assert.equal(run('Curl de toalla superior', [...curl(0), ...curl(1500, [170, 40, 40, 170, 170], 60)]).aviso, 'rapido')
   assert.equal(run('Curl de toalla superior', [[null, 0], [{ visto: false, postura: false, recto: false, ang: 0 }, 100]]).aviso, 'acomodate')
   const Q = (dx) => ({ visto: true, postura: true, recto: true, ang: 180, pts: Array.from({ length: 26 }, (_, i) => i % 2 ? 0.5 : 0.3 + dx), esc: 0.3 })
-  const quieto = run('Aguante isométrico de abs', Array.from({ length: 31 }, (_, i) => [Q(0), i * 200]), 'seconds')
+  const quieto = run('Aguante raro', Array.from({ length: 31 }, (_, i) => [Q(0), i * 200]), 'seconds')
   assert.ok(quieto.segundos >= 4 && quieto.segundos <= 5, String(quieto.segundos))
-  const moviendo = run('Aguante isométrico de abs', Array.from({ length: 31 }, (_, i) => [Q(i * 0.02), i * 200]), 'seconds')
+  const moviendo = run('Aguante raro', Array.from({ length: 31 }, (_, i) => [Q(i * 0.02), i * 200]), 'seconds')
   assert.equal(moviendo.segundos, 0)
   assert.equal(moviendo.aviso, 'posicion')
 }
@@ -2609,7 +2609,7 @@ async function audioChecks() {
   const P = (x, y, v) => ({ x, y, z: 0, v })
   const dePieLado = (lejos) => { const img = Array.from({ length: 33 }, () => P(0.5, 0.95, 0)); for (const [i, [x, y]] of Object.entries({ 0: [0.5, 0.15], 11: [0.5, 0.28], 13: [0.5, 0.42], 15: [0.5, 0.55], 23: [0.5, 0.55], 25: [0.5, 0.73], 27: [0.5, 0.9] })) { img[i] = P(x, y, 0.95); img[+i + 1] = P(x + 0.01, y, lejos) } return { img, mundo: img, aspecto: 1 } }
   assert.ok(C.medir('generico', dePieLado(0.2), C.opcionesDe('Crunches')).visto, 'de lado te ve aunque el lado lejano casi no se vea')
-  assert.ok(C.medir('quieto', dePieLado(0.2), C.opcionesDe('Aguante isométrico de abs')).visto)
+  assert.ok(C.medir('quieto', dePieLado(0.2), C.opcionesDe('Aguante raro')).visto)
   const cam = fs.readFileSync(path.join(__dirname, '../src/CamaraReps.tsx'), 'utf8')
   assert.ok(/minTrackingConfidence: 0\.3/.test(cam), 'el detector no te suelta tan fácil de lado')
   const lsit = (caida, mal) => { const img = Array.from({ length: 33 }, () => P(0.5, 0.95, 0)); const pon = (i, x, y) => { img[i] = P(x, y, 0.9); img[i + 1] = P(x + 0.01, y, 0.25) }; img[0] = P(0.42, 0.27, 0.9); pon(11, 0.45, 0.35); pon(13, 0.47, 0.48); pon(15, 0.48, 0.62); pon(23, 0.47, 0.6); pon(25, 0.65, 0.6 + caida * 0.4); pon(27, 0.82, 0.6 + caida); const mundo = img.map((p, i) => mal && i >= 25 && i <= 28 ? { ...p, y: p.y + 0.15, x: p.x - 0.06 } : p); return { img, mundo, aspecto: 1 } }
@@ -2622,4 +2622,53 @@ async function audioChecks() {
   const viejo = { ...d, settings: { ...d.settings, train: { ...d.settings.train, week: d.settings.train.week.map(rt => rt ? { ...rt, items: rt.items.map(i => i.name === 'L sit' ? { ...i, target: 10 } : i) } : rt) } } }
   assert.ok(R.lsit2711(viejo).settings.train.week.flatMap(rt => rt ? rt.items.filter(i => i.name === 'L sit') : []).every(i => i.target === 15))
   ok('de lado: te encuentra aunque no vea el lado lejano; L sit con ángulos de la imagen; L sit a 15 s')
+}
+
+{
+  const C = moduleOf('conteo'), R = moduleOf('rutina')
+  const P = (x, y, v = 0.9) => ({ x, y, z: 0, v })
+  const rr = (k, s) => (Math.sin((k * 7 + s) * 12.9898) * 43758.5453 % 1) * 0.006
+  const cuadro = (o, k) => { const img = Array.from({ length: 33 }, () => P(0.5, 0.95, 0)); for (const [i, [x, y]] of Object.entries(o)) { img[i] = P(x + rr(k, +i), y + rr(k, +i + 40)); img[+i + 1] = P(x + 0.01, y, 0.25) } return { img, mundo: img, aspecto: 1 } }
+  const hollow = (k, a) => cuadro({ 0: [0.16, 0.78 - a], 11: [0.22, 0.79 - a], 13: [0.15, 0.78 - a], 15: [0.08, 0.77 - a], 23: [0.48, 0.79], 25: [0.66, 0.79 - a * 0.5], 27: [0.84, 0.79 - a], 29: [0.86, 0.79 - a], 31: [0.88, 0.78 - a] }, k)
+  const lateral = (k, caida) => cuadro({ 0: [0.16, 0.42], 11: [0.22, 0.5], 13: [0.22, 0.62], 15: [0.3, 0.62], 23: [0.5, 0.6 + caida], 25: [0.66, 0.66], 27: [0.82, 0.72], 29: [0.84, 0.73], 31: [0.86, 0.73] }, k)
+  const crunch = (k, e) => { const a = e * Math.PI / 180, L = 0.28; return cuadro({ 0: [0.5 - 0.34 * Math.cos(a), 0.78 - 0.34 * Math.sin(a)], 11: [0.5 - L * Math.cos(a), 0.8 - L * Math.sin(a)], 13: [0.5 - L * Math.cos(a) + 0.04, 0.78 - L * Math.sin(a)], 15: [0.5 - L * Math.cos(a) + 0.08, 0.76 - L * Math.sin(a)], 23: [0.5, 0.8], 25: [0.66, 0.66], 27: [0.78, 0.8], 29: [0.8, 0.81], 31: [0.84, 0.81] }, k) }
+  const seg = (ej, f) => { let c = C.nuevoConteo(ej), t = 0; for (let k = 0; k < 330; k++) { c = C.paso(c, f(k), t); t += 33 } return c.segundos }
+  const reps = (ej, f, n, alto) => { let c = C.nuevoConteo(ej), t = 0, k = 0; for (let i = 0; i < 1200; i += 33) { c = C.paso(c, f(k++, 0), t); t += 33 } for (let r = 0; r < n; r++) { for (let i = 0; i <= 1600; i += 33) { c = C.paso(c, f(k++, alto * Math.sin(Math.PI * i / 1600)), t); t += 33 } for (let i = 0; i < 500; i += 33) { c = C.paso(c, f(k++, 0), t); t += 33 } } return c.reps }
+  assert.equal(seg('Hollow hold', k => hollow(k, 0.013)), 10, 'hollow con las piernas casi rectas ya no se pausa')
+  assert.equal(seg('Hollow hold', k => hollow(k, 0)), 0, 'acostado plano no cuenta como hollow')
+  assert.equal(seg('Plancha lateral', k => lateral(k, 0)), 10)
+  assert.equal(seg('Plancha lateral', k => lateral(k, 0.06)), 0, 'plancha lateral con la cadera abajo no cuenta')
+  assert.equal(reps('Crunches', crunch, 10, 32), 10, 'crunches con medida propia')
+  assert.equal(reps('Crunches', crunch, 10, 12), 0, 'crunch a medias no cuenta')
+  assert.equal(C.patronDe('Salto de cuerda'), 'cuerda')
+  const d = normalizeData({ ...EMPTY_DATA, profile: { name: 'K', onboardingComplete: true }, settings: { ...EMPTY_DATA.settings, train: R.seedWeek() } })
+  const meta = n => d.settings.train.week.flatMap(rt => rt ? rt.items.filter(i => i.name === n).map(i => i.target) : [])
+  assert.ok(meta('Crunches').every(t => t === 30) && meta('Plancha lateral').every(t => t === 45), 'crunches a 30 y plancha lateral a 45 s')
+  const mr = fs.readFileSync(path.join(__dirname, '../src/MiRutina.tsx'), 'utf8'), cam = fs.readFileSync(path.join(__dirname, '../src/CamaraReps.tsx'), 'utf8')
+  assert.ok(mr.includes('paraEnMeta') && cam.includes('if (paraEnMeta && aguante) { terminar(); return }'), 'en la rutina la cámara para sola al llegar a los segundos')
+  ok('ejercicios del día: hollow sin pausas, plancha lateral sin cadera abajo, crunches y cuerda con medida propia, metas 30 y 45 s, la cámara para en la meta')
+}
+
+{
+  const C = moduleOf('conteo')
+  const P = (x, y, v = 0.85) => ({ x, y, z: 0, v })
+  const R = Math.PI / 180, pol = (h, L, a) => [h[0] + L * Math.cos(a * R), h[1] - L * Math.sin(a * R)]
+  const cuadro = (o, k, tau = 0) => { const h = o[23], c = Math.cos(tau * R), s = Math.sin(tau * R), img = Array.from({ length: 33 }, () => P(0.5, 0.95, 0)); for (const [i, [x, y]] of Object.entries(o)) { const dx = x - h[0], dy = y - h[1], n = (Math.sin((k * 13 + +i) * 12.9898) * 43758.5453 % 1) * 0.005; img[i] = P(h[0] + dx * c - dy * s + n, h[1] + dx * s + dy * c + n); img[+i + 1] = P(img[i].x + 0.01, img[i].y, 0.25) } return { img, mundo: img, aspecto: 1 } }
+  const acostado = e => { const h = [0.5, 0.8], sh = pol(h, 0.28, 180 - e), kn = pol(h, 0.22, 80), an = pol(kn, 0.2, 80); return { 0: pol(h, 0.36, 180 - e), 11: sh, 13: [sh[0] + 0.05, sh[1] - 0.02], 15: [sh[0] + 0.1, sh[1] - 0.03], 23: h, 25: kn, 27: an } }
+  const crunch = (alto, tau) => { let c = C.nuevoConteo('Abs con piernas arriba'), t = 0, k = 0; const ir = e => { c = C.paso(c, cuadro(acostado(e), k++, tau), t); t += 33 }; for (let i = 0; i < 1500; i += 33) ir(0); for (let r = 0; r < 10; r++) { for (let i = 0; i <= 1600; i += 33) ir(alto * Math.sin(Math.PI * i / 1600)); for (let i = 0; i < 500; i += 33) ir(0) } return c.reps }
+  assert.equal(crunch(22, 0), 10, 'crunch con piernas arriba cuenta aunque subas poco los hombros')
+  assert.equal(crunch(30, -10), 10, 'cuenta aunque el teléfono quede chueco')
+  assert.equal(crunch(10, 0), 0, 'a medias no cuenta')
+  assert.equal(C.patronDe('Aguante isométrico de abs'), 'barco')
+  assert.ok(C.comoDe('Aguante isométrico de abs', 'barco').includes('forma una V'))
+  const V = () => { const h = [0.5, 0.75], sh = pol(h, 0.28, 135), kn = pol(h, 0.22, 45); return { 0: pol(h, 0.36, 135), 11: sh, 13: [sh[0] + 0.06, sh[1] + 0.06], 15: [sh[0] + 0.14, sh[1] + 0.08], 23: h, 25: kn, 27: [kn[0] + 0.2, kn[1]] } }
+  const rodillas = () => ({ 0: [0.24, 0.68], 11: [0.3, 0.72], 13: [0.3, 0.85], 15: [0.38, 0.86], 23: [0.55, 0.79], 25: [0.75, 0.85], 27: [0.88, 0.72] })
+  const sentado = () => { const h = [0.5, 0.8], sh = pol(h, 0.28, 110); return { 0: pol(h, 0.36, 110), 11: sh, 13: [sh[0] + 0.05, sh[1] + 0.1], 15: [sh[0] + 0.1, sh[1] + 0.18], 23: h, 25: [0.62, 0.62], 27: [0.78, 0.82] } }
+  const seg = f => { let c = C.nuevoConteo('Aguante isométrico de abs', 'seconds'), t = 0; for (let k = 0; k < 330; k++) { c = C.paso(c, cuadro(f(), k), t); t += 33 } return c }
+  assert.equal(seg(V).segundos, 10, 'aguante en V cuenta')
+  assert.equal(seg(rodillas).segundos, 0, 'con las rodillas en el piso no cuenta')
+  const pies = seg(sentado); assert.equal(pies.segundos, 0, 'sentado con los pies en el piso no cuenta'); assert.equal(pies.aviso, 'pies')
+  assert.equal(seg(() => acostado(0)).segundos, 0, 'acostado no cuenta')
+  assert.ok(/GRACIA_P\[c\.patron\]/.test(fs.readFileSync(path.join(__dirname, '../src/lib/conteo.ts'), 'utf8')), 'los aguantes acostados aguantan un parpadeo de la cámara')
+  ok('abs: crunch con piernas arriba cuenta por lo que suben los hombros (aunque el teléfono esté chueco), aguante isométrico de abs en V sin rodillas ni pies en el piso')
 }

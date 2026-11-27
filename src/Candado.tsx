@@ -16,9 +16,9 @@ type Commit = (update: (d: AppData) => AppData) => void
 const APPS = PAUSE_APPS.filter(a => a.scheme)
 const hora = (ms: number) => new Date(ms).toLocaleTimeString('es-MX', { hour: 'numeric', minute: '2-digit' })
 
-export function CamaraValor({ ej, kind, onValor, onCerrar, limite, meta, redes = false, hastaFallar = false, sinMinutos = false }: { ej: string; kind?: Tipo; onValor: (valor: number) => void; onCerrar: () => void; limite?: number; meta?: number; redes?: boolean; hastaFallar?: boolean; sinMinutos?: boolean }) {
+export function CamaraValor({ ej, kind, onValor, onCerrar, limite, meta, redes = false, hastaFallar = false, sinMinutos = false, paraEnMeta = false }: { ej: string; kind?: Tipo; onValor: (valor: number) => void; onCerrar: () => void; limite?: number; meta?: number; redes?: boolean; hastaFallar?: boolean; sinMinutos?: boolean; paraEnMeta?: boolean }) {
   return <Suspense fallback={<div className="d-cam cargando"><div className="d-cam-intro"><h2>Preparando la cámara…</h2></div></div>}>
-    <CamaraReps ej={ej} kind={kind} onCerrar={onCerrar} onGuardar={onValor} limite={limite} meta={meta} redes={redes} hastaFallar={hastaFallar} sinMinutos={sinMinutos} />
+    <CamaraReps ej={ej} kind={kind} onCerrar={onCerrar} onGuardar={onValor} limite={limite} meta={meta} redes={redes} hastaFallar={hastaFallar} sinMinutos={sinMinutos} paraEnMeta={paraEnMeta} />
   </Suspense>
 }
 

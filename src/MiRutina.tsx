@@ -159,7 +159,7 @@ function Runner({ data, commit, rt, today, start, rest, onClose }: { data: AppDa
       </button>}
       {item.kind === 'free' && <div className="d-dial gold"><DuoIcon name="estrella" size={96} /></div>}
       {item.kind !== 'free' && !feedback && !running && prepUntil === null && <BotonCamara ej={item.name} kind={item.kind} onClick={() => setCam(true)} />}
-      {cam && <CamaraValor ej={item.name} kind={item.kind} sinMinutos onCerrar={() => setCam(false)} onValor={v => { setCam(false); save(v, true) }} />}
+      {cam && <CamaraValor ej={item.name} kind={item.kind} sinMinutos meta={item.target > 0 ? item.target : undefined} paraEnMeta onCerrar={() => setCam(false)} onValor={v => { setCam(false); save(v, true) }} />}
     </div>
     if (!feedback) footer = item.kind === 'reps'
       ? <button type="button" className="d-btn green wide" disabled={(adjust || item.target === 0) && count === 0} onClick={() => save(adjust || item.target === 0 ? count : item.target)}>{adjust || item.target === 0 ? `Guardar ${count}` : `Hice las ${item.target}${step.side ? ' de este lado' : ''}`}</button>

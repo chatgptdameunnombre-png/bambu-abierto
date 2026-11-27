@@ -2758,3 +2758,18 @@ async function audioChecks() {
   assert.ok(fs.readFileSync(path.join(__dirname, '../src/App.tsx'), 'utf8').includes('orden2711(d)'))
   ok('viernes alternado: pierna, abs, pierna, abs (tu rutina guardada se ajusta una vez)')
 }
+
+{
+  const R = moduleOf('rutina')
+  const rt = R.seedWeek().week[4]
+  const hoy = '2026-11-27', t0 = Date.parse('2026-11-27T10:00:00-06:00')
+  let d = normalizeData({ ...EMPTY_DATA, profile: { name: 'K', onboardingComplete: true }, settings: { ...EMPTY_DATA.settings, train: R.seedWeek() } })
+  d = { ...d, sets: [...d.sets, { id: 'x0', day: hoy, at: t0 - 3 * 3600000, exercise: 'Sentadillas', reps: 20, note: 'camara' }] }
+  rt.items.forEach((it, i) => { d = R.logSet(d, hoy, it, it.target || 1, t0 + i * 7 * 60000) })
+  const fin = t0 + 92 * 60000, abrioHace = fin - 34 * 60000
+  assert.equal(R.minutosRutina(d, hoy, rt, abrioHace, fin), 92, 'el tiempo cuenta desde tu primera serie aunque la app se haya recargado')
+  assert.equal(R.minutosRutina(d, hoy, rt, t0 - 60000, fin), 93)
+  const mr = fs.readFileSync(path.join(__dirname, '../src/MiRutina.tsx'), 'utf8')
+  assert.ok(mr.includes('minutosRutina(data, today, rt, opened)') && mr.includes('prog.done * XP.set + XP.routine'))
+  ok('rutina completa: el tiempo y el XP cuentan toda la rutina del día, no solo desde que volviste a abrirla')
+}

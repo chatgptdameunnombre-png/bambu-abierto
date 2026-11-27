@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { dateKey, type AppData, type Routine, type RoutineItem, type RoutineKind, type TrainPlan } from './lib/model'
-import { applyBump, bumps, CATALOG, clockOf, doneCount, label, lockActive, logSet, newItem, nextStep, planOf, quietBump, roundsOf, routineFor, routineProgress, setsNeeded, stepsOf, undoLast, weekIndex, WEEK_DAYS, WEEK_SHORT, type Step } from './lib/rutina'
+import { applyBump, bumps, CATALOG, clockOf, doneCount, label, lockActive, logSet, minutosRutina, newItem, nextStep, planOf, quietBump, roundsOf, routineFor, routineProgress, setsNeeded, stepsOf, undoLast, weekIndex, WEEK_DAYS, WEEK_SHORT, type Step } from './lib/rutina'
 import { XP } from './lib/xp'
 import { chime, useNow, useWakeLock } from './ui'
 import { haptic } from './lib/haptic'
@@ -135,12 +135,12 @@ function Runner({ data, commit, rt, today, start, rest, onClose }: { data: AppDa
     </div>
     footer = <button type="button" className="d-btn blue wide" onClick={() => setRestUntil(null)}>Saltar descanso</button>
   } else if (done) {
-    const min = Math.max(1, Math.round((Date.now() - opened) / 60000))
+    const min = minutosRutina(data, today, rt, opened)
     body = <div className="d-run-body">
       <BroteArt mood="orgulloso" size={150} />
       <h2 className="d-run-title">¡Rutina completa!</h2>
       <div className="d-tiles">
-        <div className="d-tile gold"><span>XP ganado</span><b><DuoIcon name="rayo" size={24} />{earned}</b></div>
+        <div className="d-tile gold"><span>XP ganado</span><b><DuoIcon name="rayo" size={24} />{Math.max(earned, prog.done * XP.set + XP.routine)}</b></div>
         <div className="d-tile green"><span>Series</span><b><DuoIcon name="pesa" size={24} />{prog.done}</b></div>
         <div className="d-tile blue"><span>Tiempo</span><b><DuoIcon name="reloj" size={24} />{min} min</b></div>
       </div>

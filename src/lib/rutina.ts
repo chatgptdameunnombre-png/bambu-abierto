@@ -110,6 +110,11 @@ export function routineProgress(data: AppData, day: string, rt: Routine): { done
   const steps = stepsOf(rt)
   return { done: steps.filter(st => doneCount(data, day, st.item) >= st.slot).length, total: steps.length }
 }
+export function minutosRutina(data: AppData, day: string, rt: Routine, desde: number, ahora = Date.now()): number {
+  const nombres = new Set(rt.items.map(i => i.name))
+  const ats = data.sets.filter(x => x.day === day && nombres.has(x.exercise) && x.note !== 'camara' && x.note !== 'redes').map(x => x.at)
+  return Math.max(1, Math.round((ahora - Math.min(desde, ...ats)) / 60000))
+}
 export function trainedOn(data: AppData, day: string): boolean {
   return data.sets.some(x => x.day === day)
 }

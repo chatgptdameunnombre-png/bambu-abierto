@@ -20,8 +20,8 @@ const PUSH_A: Seed[] = [s('Handstand contra pared', 30), r('Handstand toque de h
 const LEGS_A: Seed[] = [r('Sentadillas', 15), r('Desplantes', 15), pistol, s('Wall sit', 60), r('Elevaciones de talones', 15), calfOne, bridgeOne, s('Hollow hold', 45), r('Abs con piernas arriba', 25), r('Abs crackers', 15), r('Russian twist', 55), s('Plancha', 60), s('Aguante isométrico de abs', 30)]
 const PULL: Seed[] = [['Muscle up', 'reps', 2, { when: 'before' }], ['Dominadas', 'reps', 7, { rounds: 5 }], r('Curl de toalla superior', 15), r('Curl de toalla inferior', 20), r('Remo con toalla en barra', 10), ['Chin ups', 'reps', 7, { rounds: 5 }], s('Colgarse de la barra', 30)]
 const PUSH_B: Seed[] = [s('Handstand contra pared', 30), r('Handstand toque de hombros', 7), s('Tuck planche', 15), s('Planche lean', 10), r('Pike push ups', 5), r('Fondos', 10), r('Lagartijas down', 15), r('Lagartijas con toque de hombro', 10), r('Lagartijas lentas', 10), r('Lagartijas diamante', 10)]
-const LEGS_B: Seed[] = [r('Sentadillas', 15), r('Desplantes', 15), pistol, s('Wall sit', 60), r('Elevaciones de talones', 15), calfOne, bridgeOne, s('L sit', 15), r('Crunches', 30), sidePlank, s('Hollow hold', 45), r('Abs con piernas arriba', 25), s('Aguante isométrico de abs', 30)]
-const CORE: Seed[] = [s('Hollow hold', 45), r('Abs con piernas arriba', 25), r('Abs crackers', 15), r('Russian twist', 55), r('Crunches', 30), sidePlank, s('Plancha', 60), s('Aguante isométrico de abs', 30), r('Burpees suaves sin lagartija', 20), ['Correr 5 km o bici', 'free', 0, { when: 'after' }]]
+const LEGS_B: Seed[] = [r('Sentadillas', 15), r('Desplantes', 15), pistol, s('Wall sit', 60), r('Elevaciones de talones', 15), calfOne, bridgeOne, s('L sit', 15), r('Leg raises', 15), sidePlank, s('Hollow hold', 45), r('Abs con piernas arriba', 25), s('Aguante isométrico de abs', 30)]
+const CORE: Seed[] = [s('Hollow hold', 45), r('Abs con piernas arriba', 25), r('Abs crackers', 15), r('Russian twist', 55), r('Leg raises', 15), sidePlank, s('Plancha', 60), s('Aguante isométrico de abs', 30), r('Burpees suaves sin lagartija', 20), ['Correr 5 km o bici', 'free', 0, { when: 'after' }]]
 
 export function seedWeek(): TrainPlan {
   return {
@@ -43,7 +43,7 @@ export const CATALOG: [string, RoutineKind, number, string, boolean?][] = [
   ['Subidas de talones en wall sit', 'reps', 15, 'Piernas'], ['Elevaciones de talones', 'reps', 15, 'Piernas'], ['Elevaciones de talón a una pierna', 'reps', 15, 'Piernas', true],
   ['Puente de glúteo a una pierna', 'reps', 12, 'Piernas', true], ['Hollow hold', 'seconds', 45, 'Abdomen'], ['Abs con piernas arriba', 'reps', 25, 'Abdomen'],
   ['Abs crackers', 'reps', 15, 'Abdomen'], ['Russian twist', 'reps', 55, 'Abdomen'], ['Plancha', 'seconds', 60, 'Abdomen'], ['Plancha con brazos estirados', 'seconds', 45, 'Abdomen'], ['L sit', 'seconds', 10, 'Abdomen'],
-  ['Crunches', 'reps', 25, 'Abdomen'], ['Plancha lateral', 'seconds', 30, 'Abdomen', true], ['Aguante isométrico de abs', 'seconds', 30, 'Abdomen'],
+  ['Crunches', 'reps', 25, 'Abdomen'], ['Leg raises', 'reps', 15, 'Abdomen'], ['Plancha lateral', 'seconds', 30, 'Abdomen', true], ['Aguante isométrico de abs', 'seconds', 30, 'Abdomen'],
   ['Dominadas lentas', 'reps', 5, 'Espalda'], ['Curl de toalla superior', 'reps', 15, 'Espalda'], ['Curl de toalla inferior', 'reps', 20, 'Espalda'],
   ['Remo con toalla en barra', 'reps', 10, 'Espalda'], ['Muscle up', 'reps', 2, 'Espalda'], ['Chin ups lentas', 'reps', 5, 'Bíceps'], ['Colgarse de la barra', 'seconds', 30, 'Antebrazo'],
   ['Dominadas', 'reps', 8, 'Espalda'], ['Dominadas australianas', 'reps', 12, 'Espalda'], ['Chin ups', 'reps', 8, 'Bíceps'], ['Front lever tuck', 'seconds', 10, 'Espalda'],
@@ -199,6 +199,10 @@ export function cuerda2711(data: AppData): AppData {
 export function talones2711(data: AppData): AppData {
   const train = data.settings.train
   return { ...data, settings: { ...data.settings, train: train ? { ...train, week: train.week.map(rt => rt ? { ...rt, items: rt.items.filter(i => i.name !== 'Subidas de talones en wall sit') } : rt) } : undefined, talones2711: true } }
+}
+export function legs2711(data: AppData): AppData {
+  const train = data.settings.train
+  return { ...data, settings: { ...data.settings, train: train ? { ...train, week: train.week.map(rt => rt ? { ...rt, items: rt.items.map(i => i.name === 'Crunches' ? { ...i, name: 'Leg raises', target: 15, quiet: undefined } : i) } : rt) } : undefined, legs2711: true } }
 }
 export function lsit2711(data: AppData): AppData {
   return { ...data, settings: { ...data.settings, train: fijarMeta(data.settings.train, ['L sit', 'L-sit', 'L Sit'], 15), lsit2711: true } }

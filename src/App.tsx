@@ -11,7 +11,7 @@ import { activeHabits, dateKey, EMPTY_DATA, modulesOf, type AppData } from './li
 import { bedAction, nfcServerAction, trainingAction } from './lib/nfcActions'
 import { devolver2611 } from './lib/minutos'
 import { PaseAbierto } from './PaseAbierto'
-import { ajustarRutina2611, clockOf, deshacerRondas2611, toquesA7, hspuA3, quitar2611, pistol2711, lsit2711, metas2711, cuerda2711, talones2711 } from './lib/rutina'
+import { ajustarRutina2611, clockOf, deshacerRondas2611, toquesA7, hspuA3, quitar2611, pistol2711, lsit2711, metas2711, cuerda2711, talones2711, legs2711 } from './lib/rutina'
 import { semanaVacia } from './lib/armar'
 import { applyRecords, diffRecords, toRecords, type RecordRow } from './lib/records'
 import { SyncEngine, type SyncStatus } from './lib/sync'
@@ -309,7 +309,8 @@ export default function App() {
     if (ready && cloudReady && esKiki && data.profile.onboardingComplete && !data.settings.metas2711) commit(d => d.settings.metas2711 ? d : metas2711(d))
     if (ready && cloudReady && esKiki && data.profile.onboardingComplete && !data.settings.cuerda2711) commit(d => d.settings.cuerda2711 ? d : cuerda2711(d))
     if (ready && cloudReady && esKiki && data.profile.onboardingComplete && !data.settings.talones2711) commit(d => d.settings.talones2711 ? d : talones2711(d))
-  }, [ready, cloudReady, esKiki, data.profile.onboardingComplete, data.settings.rutina2611, data.settings.rondas2611, data.settings.toques2611, data.settings.hspu2611, data.settings.quitar2611, data.settings.devolver2611, data.settings.pistol2711, data.settings.lsit2711, data.settings.metas2711, data.settings.cuerda2711, data.settings.talones2711]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (ready && cloudReady && esKiki && data.profile.onboardingComplete && !data.settings.legs2711) commit(d => d.settings.legs2711 ? d : legs2711(d))
+  }, [ready, cloudReady, esKiki, data.profile.onboardingComplete, data.settings.rutina2611, data.settings.rondas2611, data.settings.toques2611, data.settings.hspu2611, data.settings.quitar2611, data.settings.devolver2611, data.settings.pistol2711, data.settings.lsit2711, data.settings.metas2711, data.settings.cuerda2711, data.settings.talones2711, data.settings.legs2711]) // eslint-disable-line react-hooks/exhaustive-deps
   const nuevosAmigos = useAmigosNuevos(data, cloudConfigured && cloudReady ? userId : undefined, section)
   useEffect(() => {
     if (!cloudConfigured || !userId || !ready) return

@@ -2706,3 +2706,40 @@ async function audioChecks() {
   assert.ok(/prefers-reduced-motion: reduce\) \{ \.d-hecho/.test(css))
   ok('rutina: animación ¡Completado! al acabar el tiempo o la meta con cámara (se cierra sola a los 2 s); sin subidas de talones en wall sit')
 }
+
+{
+  const C = moduleOf('conteo'), R = moduleOf('rutina')
+  const P = (x, y, v = 0.9) => ({ x, y, z: 0, v })
+  const rr = s => (Math.sin(s * 12.9898) * 43758.5453 % 1) * 0.004
+  const frente = (k, { vCadera = 0.6, pose = 'l' } = {}) => {
+    const img = Array.from({ length: 33 }, () => P(0.5, 0.95, 0))
+    const par = (i, x, y, v = 0.9) => { img[i] = P(0.5 - x + rr(k + i), y + rr(k + i + 40), v); img[i + 1] = P(0.5 + x + rr(k + i + 7), y + rr(k + i + 47), v) }
+    img[0] = P(0.5, 0.25, 0.95); par(11, 0.08, 0.33, 0.95); par(13, 0.1, 0.45); par(15, 0.1, 0.58)
+    if (pose === 'parado') { par(23, 0.05, 0.6); par(25, 0.05, 0.78); par(27, 0.05, 0.95) }
+    else if (pose === 'encogido') { par(23, 0.05, 0.6, vCadera); par(25, 0.06, 0.48); par(27, 0.06, 0.6) }
+    else { par(23, 0.05, 0.6, vCadera); par(25, 0.06, 0.63); par(27, 0.07, 0.68) }
+    const mundo = img.map(p => ({ ...p, y: p.y + 0.3 }))
+    return { img, mundo, aspecto: 1 }
+  }
+  const seg = f => { let c = C.nuevoConteo('L sit'), t = 0; for (let k = 0; k < 330; k++) { c = C.paso(c, f(k), t); t += 33 } return c.segundos }
+  assert.equal(seg(k => frente(k, { vCadera: 0.2 })), 10, 'L sit de frente cuenta aunque las piernas tapen la cadera')
+  assert.equal(seg(k => frente(k)), 10)
+  assert.equal(seg(k => frente(k, { pose: 'encogido' })), 0, 'rodillas al pecho no es L sit')
+  assert.equal(seg(k => frente(k, { pose: 'parado' })), 0, 'parado no cuenta')
+  assert.ok(C.comoDe('L sit', 'lsit').includes('enfrente de ti'))
+  assert.equal(C.patronDe('Leg raises'), 'piernas'); assert.equal(C.patronDe('Elevaciones de piernas'), 'piernas'); assert.equal(C.patronDe('Elevaciones de piernas colgado'), 'elevacion'); assert.equal(C.patronDe('Hanging leg raises'), 'elevacion')
+  const piernas = (k, a) => { const h = [0.5, 0.8], an = [h[0] + 0.42 * Math.cos(a * Math.PI / 180), h[1] - 0.42 * Math.sin(a * Math.PI / 180)]; const img = Array.from({ length: 33 }, () => P(0.5, 0.95, 0)); const pon = (i, [x, y]) => { img[i] = P(x + rr(k + i), y + rr(k + i + 9)); img[i + 1] = P(x + 0.01, y, 0.25) }; img[0] = P(0.16, 0.79); pon(11, [0.22, 0.8]); pon(23, h); pon(25, [(h[0] + an[0]) / 2, (h[1] + an[1]) / 2]); pon(27, an); return { img, mundo: img, aspecto: 1 } }
+  const reps = alto => { let c = C.nuevoConteo('Leg raises'), t = 0, k = 0; const ir = a => { c = C.paso(c, piernas(k++, a), t); t += 33 }; for (let i = 0; i < 1500; i += 33) ir(0); for (let r = 0; r < 10; r++) { for (let i = 0; i <= 2000; i += 33) ir(alto * Math.sin(Math.PI * i / 2000)); for (let i = 0; i < 500; i += 33) ir(0) } return c }
+  assert.equal(reps(80).reps, 10, 'leg raises cuentan al subir las piernas')
+  const medias = reps(35); assert.equal(medias.reps, 0, 'a medias no cuenta'); assert.equal(medias.aviso, 'mas')
+  assert.equal(C.AVISOS.mas, 'Sube más. Esa no contó.')
+  const semana = R.seedWeek(), todos = semana.week.flatMap(rt => rt ? rt.items : [])
+  assert.ok(!todos.some(i => i.name === 'Crunches') && todos.filter(i => i.name === 'Leg raises').length === 2, 'leg raises en lugar de crunches')
+  const vieja = { ...semana, week: semana.week.map(rt => rt ? { ...rt, items: rt.items.map(i => i.name === 'Leg raises' ? { ...i, name: 'Crunches', target: 30 } : i) } : rt) }
+  const d = R.legs2711(normalizeData({ ...EMPTY_DATA, profile: { name: 'K', onboardingComplete: true }, settings: { ...EMPTY_DATA.settings, train: vieja } }))
+  const items = d.settings.train.week.flatMap(rt => rt ? rt.items : [])
+  assert.ok(d.settings.legs2711 && !items.some(i => i.name === 'Crunches') && items.filter(i => i.name === 'Leg raises').every(i => i.target === 15))
+  assert.equal(normalizeData(d).settings.legs2711, true)
+  assert.ok(fs.readFileSync(path.join(__dirname, '../src/App.tsx'), 'utf8').includes('legs2711(d)'))
+  ok('L sit de frente (piernas hacia la cámara, cadera tapada) y de lado mezclando los dos lados; leg raises con medida propia en lugar de crunches (tu rutina se ajusta una vez)')
+}

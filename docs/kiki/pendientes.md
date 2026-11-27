@@ -28,5 +28,6 @@ Se hizo y se publicó el 25-nov-2026 (commit `abb4090` del sitio) y **ese mismo 
 | Los ajustes de la rutina de Kiki (toques a 7, sin parado de cabeza ni handstand push up) se aplican a todos: limitarlos a su cuenta | Claude |
 | Decidir con Gael: una sola nube, amigos solo por código, quitar "Pasar mis datos" | Kiki y Gael |
 | Una sola versión con Gael: por ahora cada quien su link; ver "Decisiones de Kiki sobre la versión de Gael" en [de-gael-a-kiki.md](de-gael-a-kiki.md) | Kiki y Gael |
+| Bloqueo de redes: con el teléfono sin internet el atajo falla y deja entrar; y ya dentro de Instagram no te saca cuando se acaba el pase (iOS solo avisa al abrir la app). Complemento posible: límite de Tiempo en pantalla | Kiki decide |
 | Mascota nueva: Brote no convenció a Kiki ni a Gael; generar opciones en ChatGPT y usar la elegida tal cual | Kiki |
 | Arte de monstruos menos caricatura (ChatGPT), para ponerlo tal cual | Kiki |

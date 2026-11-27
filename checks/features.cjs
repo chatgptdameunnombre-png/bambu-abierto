@@ -2431,6 +2431,7 @@ async function audioChecks() {
   assert.ok(cand.includes('Buscar ejercicio') && cand.includes('sinAcentos'), 'buscador de ejercicios sin acentos')
   assert.ok(cand.includes('Minutos libres cada día') && cand.includes('LIBRES_OPCIONES'), 'los minutos libres se cambian en Ajustes')
   assert.ok(cand.includes('Devolverme los minutos') && cand.includes('Emergencia: abrir'))
+  assert.ok(cand.includes('Probar mi atajo') && /guardarPase\(llave, hastaTexto\(Date\.now\(\) \+ 60000\)\)/.test(cand), 'probar el atajo abre 1 minuto sin gastar minutos')
   assert.ok(cam.includes('d-cam-gana') && cam.includes("'minuto'"), 'la cámara dice cuánto vas ganando')
   assert.ok(sw.includes('Promise.race') && sw.includes('1500'), 'con señal lenta abre lo guardado')
   ok('candado: hora del pase que entiende Atajos, devolver minutos si el atajo te regresa, emergencia de 10 min sin límite, tus minutos del 26-nov de vuelta, buscador y cuánto vas ganando')

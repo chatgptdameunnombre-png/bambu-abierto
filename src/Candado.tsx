@@ -244,6 +244,15 @@ export function CandadoSetup({ data, commit, onMessage, cloud }: { data: AppData
     } catch { onMessage('No se pudo activar. Revisa tu señal.') }
     setBusy(false)
   }
+  async function probar() {
+    if (!llave) return
+    setBusy(true)
+    try {
+      await guardarPase(llave, hastaTexto(Date.now() + 60000))
+      onMessage('Abre Instagram ahora. Si entras, tu atajo funciona. En 1 minuto se vuelve a cerrar.')
+    } catch { onMessage('No se pudo. Revisa tu señal.') }
+    setBusy(false)
+  }
   async function quitar() {
     if (!llave || !window.confirm('¿Quitar el candado? Después borra también la automatización en Atajos.')) return
     try { await borrarPase(llave) } catch { onMessage('No se pudo quitar. Revisa tu señal.'); return }
@@ -267,13 +276,14 @@ export function CandadoSetup({ data, commit, onMessage, cloud }: { data: AppData
     {!cloud ? <p className="d-hint left red">Necesitas una cuenta para el candado.</p>
       : !llave ? <button type="button" className="d-btn green wide" disabled={busy} onClick={() => void activar()}>{busy ? 'Activando…' : 'Activar candado'}</button>
         : <>
+          <button type="button" className="d-btn blue wide" disabled={busy} onClick={() => void probar()}>{busy ? 'Abriendo…' : 'Probar mi atajo (1 min gratis)'}</button>
           <button type="button" className="d-btn white wide" onClick={() => setVer(!ver)}>{ver ? 'Ocultar los pasos' : 'Ver cómo armar el atajo'}</button>
           {ver && <ol className="d-steps-guide">
             <li><span>Abre <b>Atajos</b>, toca <b>+</b> y ponle de nombre <b>Bambú Candado</b>.</span></li>
             <li><span>Agrega <b>Obtener contenido de URL</b> y pega este enlace: <button type="button" className="d-link" onClick={() => copiar(urlPase(llave), 'Enlace de revisión')}>Copiar enlace de revisión</button></span></li>
             <li><span>Agrega <b>Obtener valor del diccionario</b> y en la clave pega esto (sin punto al final): <button type="button" className="d-link" onClick={() => copiar('fields.hasta.stringValue', 'Clave')}>Copiar clave</button></span></li>
             <li><span>Agrega <b>Obtener fechas de la entrada</b> con ese valor.</span></li>
-            <li><span>Agrega <b>Si</b>: Fechas <b>es posterior a</b>, toca la fecha y elige la variable <b>Fecha actual</b> (no escribas una fecha). Entre <b>Si</b> y <b>Terminar si</b> pon <b>Detener este atajo</b>. Así, si tienes tiempo, te deja pasar.</span></li>
+            <li><span>Agrega <b>Si</b>: Fechas <b>es posterior a</b>, <b>mantén presionada</b> la fecha y elige <b>Fecha actual</b> (no escribas una fecha). Si sale una fila vacía de Condición, quítala con ⊖. Entre <b>Si</b> y <b>Terminar si</b> pon <b>Detener este atajo</b>. Así, si tienes tiempo, te deja pasar.</span></li>
             <li><span>Después de <b>Terminar si</b>, agrega <b>Abrir URL</b> (no la acción que solo dice URL) con este enlace: <button type="button" className="d-link" onClick={() => copiar(url, 'Enlace del candado')}>Copiar enlace del candado</button></span></li>
             <li><span>En <b>Automatización</b> toca <b>+</b>, elige <b>App</b>, marca Instagram, TikTok y las que quieras, <b>Se abre</b> y <b>Ejecutar de inmediato</b>. Acción: <b>Ejecutar atajo → Bambú Candado</b>.</span></li>
             <li><span>Abre bambú una vez en <b>Safari</b> con tu cuenta: ahí se abre el candado.</span></li>

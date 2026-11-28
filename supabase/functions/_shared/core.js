@@ -768,6 +768,7 @@ function cleanSettings(value) {
 		pecho2711: v.pecho2711 === true ? true : void 0,
 		ajuste2711: v.ajuste2711 === true ? true : void 0,
 		cierre2711: v.cierre2711 === true ? true : void 0,
+		planche2711: v.planche2711 === true ? true : void 0,
 		tablas: cleanTablas(v.tablas),
 		amigos: cleanAmigos(v.amigos),
 		aprobados: cleanAmigos(v.aprobados),
@@ -2235,14 +2236,63 @@ function routine(day, title, seeds) {
 	};
 }
 var colgar = s("Colgarse de la barra", 30);
+var practica = [
+	"Práctica de handstand",
+	"seconds",
+	300,
+	{
+		when: "before",
+		rounds: 1
+	}
+];
+var ranitaExtra = [
+	"Ranita",
+	"seconds",
+	20,
+	{
+		when: "before",
+		rounds: 3
+	}
+];
+var flexibilidad = [
+	"Estiramiento pancake y pike 5 min",
+	"free",
+	0,
+	{ when: "after" }
+];
 var PUSH_A = [
+	[
+		"Ranita",
+		"seconds",
+		20,
+		{
+			when: "before",
+			rounds: 5
+		}
+	],
+	[
+		"Tuck planche",
+		"seconds",
+		10,
+		{
+			when: "before",
+			rounds: 5
+		}
+	],
+	[
+		"Pike push ups",
+		"reps",
+		5,
+		{
+			when: "before",
+			rounds: 4
+		}
+	],
 	s("Handstand pecho a la pared", 30),
 	r("Despegar pies en handstand", 5),
-	s("Ranita", 20),
-	s("Tuck planche", 10),
+	r("Negativas de handstand a ranita", 3),
 	r("Handstand toque de hombros", 7),
 	s("Planche lean", 10),
-	r("Pike push ups", 5),
 	r("Fondos", 10),
 	r("Lagartijas", 15),
 	r("Lagartijas declinadas", 15),
@@ -2251,6 +2301,7 @@ var PUSH_A = [
 	colgar
 ];
 var LEGS_A = [
+	practica,
 	r("Sentadillas", 15),
 	r("Desplantes", 15),
 	pistol,
@@ -2264,10 +2315,13 @@ var LEGS_A = [
 	s("Plancha", 60),
 	s("Aguante isométrico de abs", 30),
 	r("Leg raises", 15),
+	r("Compresión sentado", 10),
 	s("Superman", 20),
-	colgar
+	colgar,
+	flexibilidad
 ];
 var PULL = [
+	practica,
 	[
 		"Muscle up",
 		"reps",
@@ -2293,13 +2347,38 @@ var PULL = [
 	s("Colgarse de la barra", 30)
 ];
 var PUSH_B = [
+	[
+		"Ranita",
+		"seconds",
+		20,
+		{
+			when: "before",
+			rounds: 5
+		}
+	],
+	[
+		"Tuck planche",
+		"seconds",
+		15,
+		{
+			when: "before",
+			rounds: 5
+		}
+	],
+	[
+		"Pike push ups",
+		"reps",
+		5,
+		{
+			when: "before",
+			rounds: 4
+		}
+	],
 	s("Handstand pecho a la pared", 30),
 	r("Despegar pies en handstand", 5),
-	s("Ranita", 20),
-	s("Tuck planche", 15),
+	r("Negativas de handstand a ranita", 3),
 	r("Handstand toque de hombros", 7),
 	s("Planche lean", 10),
-	r("Pike push ups", 5),
 	r("Fondos", 10),
 	r("Lagartijas", 15),
 	r("Lagartijas declinadas", 15),
@@ -2309,6 +2388,7 @@ var PUSH_B = [
 	colgar
 ];
 var LEGS_B = [
+	practica,
 	r("Sentadillas", 15),
 	r("Desplantes", 15),
 	pistol,
@@ -2321,9 +2401,12 @@ var LEGS_B = [
 	s("Hollow hold", 45),
 	r("Abs con piernas arriba", 25),
 	s("Aguante isométrico de abs", 30),
-	s("Superman", 20)
+	r("Compresión sentado", 10),
+	s("Superman", 20),
+	flexibilidad
 ];
 var CORE = [
+	practica,
 	colgar,
 	[
 		"Estiramientos 10 min",
@@ -2349,7 +2432,11 @@ function seedWeek() {
 			routine(2, "Espalda, bíceps y antebrazo", PULL),
 			routine(3, "Hombros, pecho y tríceps", PUSH_B),
 			conColgar(intercalarPiernas(routine(4, "Piernas y abdomen", LEGS_B))),
-			routine(5, "Espalda, bíceps y antebrazo", PULL),
+			routine(5, "Espalda, bíceps y antebrazo", [
+				practica,
+				ranitaExtra,
+				...PULL.slice(1)
+			]),
 			routine(6, "Descanso activo", CORE)
 		]
 	};
@@ -2378,6 +2465,66 @@ var CATALOG = [
 		"seconds",
 		20,
 		"Hombros"
+	],
+	[
+		"Práctica de handstand",
+		"seconds",
+		300,
+		"Hombros"
+	],
+	[
+		"Tuck planche en paralelas",
+		"seconds",
+		10,
+		"Hombros"
+	],
+	[
+		"Pike push ups en paralelas",
+		"reps",
+		5,
+		"Hombros"
+	],
+	[
+		"L sit en paralelas",
+		"seconds",
+		15,
+		"Abdomen"
+	],
+	[
+		"Planche lean en paralelas",
+		"seconds",
+		10,
+		"Hombros"
+	],
+	[
+		"Lagartijas en paralelas",
+		"reps",
+		10,
+		"Pecho"
+	],
+	[
+		"Negativas de press a handstand",
+		"reps",
+		3,
+		"Hombros"
+	],
+	[
+		"Negativas de handstand a ranita",
+		"reps",
+		3,
+		"Hombros"
+	],
+	[
+		"Compresión sentado",
+		"reps",
+		10,
+		"Abdomen"
+	],
+	[
+		"Estiramiento pancake y pike 5 min",
+		"free",
+		0,
+		"Movilidad"
 	],
 	[
 		"Handstand toque de hombros",

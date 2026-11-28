@@ -52,6 +52,7 @@ Commits del sitio donde se publicó cada cambio.
 | `cd7dafa` (27-nov) | Al acabar la rutina, el tiempo cuenta desde tu primera serie del día (antes contaba desde la última vez que abriste la rutina: si la app se recargaba o salías, te decía 34 min aunque llevaras 1 h 30). El XP también suma toda la rutina. |
 | `44b4f0e` (27-nov) | Habilidades en lunes y jueves, al inicio del circuito: handstand pecho a la pared 30 s (en lugar de contra la pared), 5 toe pulls, ranita 20 s y tuck planche (lunes 10 s, jueves 15 s). Colgarse de la barra 30 s todos los días. Lagartijas up y down pasan a declinadas e inclinadas. Sin elevaciones de talones normales (queda la de una pierna). La cámara reconoce la ranita. Tu rutina guardada se ajusta una vez. |
 | `3a48fdf` (27-nov, noche) | Semana nueva revisada por Kiki en su hoja antes de publicar: lunes y jueves con lagartijas normales, declinadas e inclinadas (sin lentas); "Despegar pies en handstand" (antes toe pulls); leg raises también el martes y martes alternado pierna/abs; front lever tuck 10 s al inicio de espalda; domingo de descanso activo (colgarse, estiramientos, correr o bici). |
+| `03ef760` (27-nov, noche) | Martes y viernes: el puente de glúteo a una pierna pasa a puente de glúteo sostenido 30 s y se agrega superman 20 s (espalda baja). Abdomen sin cambios. Revisado por Kiki en su hoja antes de publicar. |
 
 ## Decisiones de Kiki
 

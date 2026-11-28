@@ -767,6 +767,7 @@ function cleanSettings(value) {
 		habilidades2711: v.habilidades2711 === true ? true : void 0,
 		pecho2711: v.pecho2711 === true ? true : void 0,
 		ajuste2711: v.ajuste2711 === true ? true : void 0,
+		cierre2711: v.cierre2711 === true ? true : void 0,
 		tablas: cleanTablas(v.tablas),
 		amigos: cleanAmigos(v.amigos),
 		aprobados: cleanAmigos(v.aprobados),
@@ -2214,12 +2215,6 @@ var calfOne = [
 	15,
 	{ sides: true }
 ];
-var bridgeOne = [
-	"Puente de glúteo a una pierna",
-	"reps",
-	12,
-	{ sides: true }
-];
 var sidePlank = [
 	"Plancha lateral",
 	"seconds",
@@ -2260,8 +2255,8 @@ var LEGS_A = [
 	r("Desplantes", 15),
 	pistol,
 	s("Wall sit", 60),
+	s("Puente de glúteo sostenido", 30),
 	calfOne,
-	bridgeOne,
 	s("Hollow hold", 45),
 	r("Abs con piernas arriba", 25),
 	r("Abs crackers", 15),
@@ -2269,6 +2264,7 @@ var LEGS_A = [
 	s("Plancha", 60),
 	s("Aguante isométrico de abs", 30),
 	r("Leg raises", 15),
+	s("Superman", 20),
 	colgar
 ];
 var PULL = [
@@ -2317,14 +2313,15 @@ var LEGS_B = [
 	r("Desplantes", 15),
 	pistol,
 	s("Wall sit", 60),
+	s("Puente de glúteo sostenido", 30),
 	calfOne,
-	bridgeOne,
 	s("L sit", 15),
 	r("Leg raises", 15),
 	sidePlank,
 	s("Hollow hold", 45),
 	r("Abs con piernas arriba", 25),
-	s("Aguante isométrico de abs", 30)
+	s("Aguante isométrico de abs", 30),
+	s("Superman", 20)
 ];
 var CORE = [
 	colgar,
@@ -2883,6 +2880,30 @@ var CATALOG = [
 		"free",
 		0,
 		"Movilidad"
+	],
+	[
+		"Curl de isquios con toalla",
+		"reps",
+		10,
+		"Piernas"
+	],
+	[
+		"Puente de glúteo sostenido",
+		"seconds",
+		30,
+		"Piernas"
+	],
+	[
+		"Superman",
+		"seconds",
+		20,
+		"Espalda"
+	],
+	[
+		"Y acostado boca abajo",
+		"reps",
+		12,
+		"Hombros"
 	],
 	[
 		"Caminar 30 a 60 min",

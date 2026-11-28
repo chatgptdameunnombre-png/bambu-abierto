@@ -120,6 +120,7 @@ export type Settings = {
   habilidades2711?: boolean
   pecho2711?: boolean
   ajuste2711?: boolean
+  cierre2711?: boolean
 }
 /** `north` es en quién te quieres convertir, con tus palabras. La reflexión de la noche te lo pregunta. */
 export type Profile = { name: string; onboardingComplete: boolean; north?: string }
@@ -504,6 +505,7 @@ export function cleanSettings(value: unknown): Settings {
     habilidades2711: v.habilidades2711 === true ? true : undefined,
     pecho2711: v.pecho2711 === true ? true : undefined,
     ajuste2711: v.ajuste2711 === true ? true : undefined,
+    cierre2711: v.cierre2711 === true ? true : undefined,
     tablas: cleanTablas(v.tablas),
     amigos: cleanAmigos(v.amigos),
     aprobados: cleanAmigos(v.aprobados),

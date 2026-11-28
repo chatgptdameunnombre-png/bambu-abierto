@@ -11,7 +11,7 @@ import { activeHabits, dateKey, EMPTY_DATA, modulesOf, type AppData } from './li
 import { bedAction, nfcServerAction, trainingAction } from './lib/nfcActions'
 import { devolver2611 } from './lib/minutos'
 import { PaseAbierto } from './PaseAbierto'
-import { ajustarRutina2611, clockOf, deshacerRondas2611, toquesA7, hspuA3, quitar2611, pistol2711, lsit2711, metas2711, cuerda2711, talones2711, legs2711, orden2711, habilidades2711 } from './lib/rutina'
+import { ajustarRutina2611, clockOf, deshacerRondas2611, toquesA7, hspuA3, quitar2611, pistol2711, lsit2711, metas2711, cuerda2711, talones2711, legs2711, orden2711, habilidades2711, pecho2711, ajuste2711 } from './lib/rutina'
 import { semanaVacia } from './lib/armar'
 import { applyRecords, diffRecords, toRecords, type RecordRow } from './lib/records'
 import { SyncEngine, type SyncStatus } from './lib/sync'
@@ -312,7 +312,9 @@ export default function App() {
     if (ready && cloudReady && esKiki && data.profile.onboardingComplete && !data.settings.legs2711) commit(d => d.settings.legs2711 ? d : legs2711(d))
     if (ready && cloudReady && esKiki && data.profile.onboardingComplete && !data.settings.orden2711) commit(d => d.settings.orden2711 ? d : orden2711(d))
     if (ready && cloudReady && esKiki && data.profile.onboardingComplete && !data.settings.habilidades2711) commit(d => d.settings.habilidades2711 ? d : habilidades2711(d))
-  }, [ready, cloudReady, esKiki, data.profile.onboardingComplete, data.settings.rutina2611, data.settings.rondas2611, data.settings.toques2611, data.settings.hspu2611, data.settings.quitar2611, data.settings.devolver2611, data.settings.pistol2711, data.settings.lsit2711, data.settings.metas2711, data.settings.cuerda2711, data.settings.talones2711, data.settings.legs2711, data.settings.orden2711, data.settings.habilidades2711]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (ready && cloudReady && esKiki && data.profile.onboardingComplete && !data.settings.pecho2711) commit(d => d.settings.pecho2711 ? d : pecho2711(d))
+    if (ready && cloudReady && esKiki && data.profile.onboardingComplete && !data.settings.ajuste2711) commit(d => d.settings.ajuste2711 ? d : ajuste2711(d))
+  }, [ready, cloudReady, esKiki, data.profile.onboardingComplete, data.settings.rutina2611, data.settings.rondas2611, data.settings.toques2611, data.settings.hspu2611, data.settings.quitar2611, data.settings.devolver2611, data.settings.pistol2711, data.settings.lsit2711, data.settings.metas2711, data.settings.cuerda2711, data.settings.talones2711, data.settings.legs2711, data.settings.orden2711, data.settings.habilidades2711, data.settings.pecho2711, data.settings.ajuste2711]) // eslint-disable-line react-hooks/exhaustive-deps
   const nuevosAmigos = useAmigosNuevos(data, cloudConfigured && cloudReady ? userId : undefined, section)
   useEffect(() => {
     if (!cloudConfigured || !userId || !ready) return

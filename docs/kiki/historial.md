@@ -51,6 +51,7 @@ Commits del sitio donde se publicó cada cambio.
 | `0ac3673` (27-nov) | Viernes alternado: pierna, abs, pierna, abs (tu rutina se ajusta una vez). (Se probó que la app mandara la rutina para una hoja de Google; Kiki prefirió que no, se quitó en la siguiente versión.) |
 | `cd7dafa` (27-nov) | Al acabar la rutina, el tiempo cuenta desde tu primera serie del día (antes contaba desde la última vez que abriste la rutina: si la app se recargaba o salías, te decía 34 min aunque llevaras 1 h 30). El XP también suma toda la rutina. |
 | `44b4f0e` (27-nov) | Habilidades en lunes y jueves, al inicio del circuito: handstand pecho a la pared 30 s (en lugar de contra la pared), 5 toe pulls, ranita 20 s y tuck planche (lunes 10 s, jueves 15 s). Colgarse de la barra 30 s todos los días. Lagartijas up y down pasan a declinadas e inclinadas. Sin elevaciones de talones normales (queda la de una pierna). La cámara reconoce la ranita. Tu rutina guardada se ajusta una vez. |
+| `3a48fdf` (27-nov, noche) | Semana nueva revisada por Kiki en su hoja antes de publicar: lunes y jueves con lagartijas normales, declinadas e inclinadas (sin lentas); "Despegar pies en handstand" (antes toe pulls); leg raises también el martes y martes alternado pierna/abs; front lever tuck 10 s al inicio de espalda; domingo de descanso activo (colgarse, estiramientos, correr o bici). |
 
 ## Decisiones de Kiki
 
@@ -64,5 +65,7 @@ Commits del sitio donde se publicó cada cambio.
 - Quien solo quiere competir con sus amigos no debe cargar con racha, caminito ni objetivos: modo "Solo competir".
 - Lo que Kiki trae de ChatGPT (logo, cuerpo) se usa tal cual, sin redibujarlo.
 - Los anillos Cuerpo, Mente y Alma de Gael no entran por ahora.
+- Cambios de rutina: primero se ven completos en su hoja de Google como propuesta y se publican con su OK.
+- Domingo de descanso activo (no pierna): ya entrena pierna 2 veces y no tenía día de descanso.
 - La rutina no da minutos de redes y sus aguantes paran al llegar a la meta.
 - El aguante isométrico de abs se hace en V (Kiki lo eligió sobre la plancha con rodillas).

@@ -764,6 +764,9 @@ function cleanSettings(value) {
 		talones2711: v.talones2711 === true ? true : void 0,
 		legs2711: v.legs2711 === true ? true : void 0,
 		orden2711: v.orden2711 === true ? true : void 0,
+		habilidades2711: v.habilidades2711 === true ? true : void 0,
+		pecho2711: v.pecho2711 === true ? true : void 0,
+		ajuste2711: v.ajuste2711 === true ? true : void 0,
 		tablas: cleanTablas(v.tablas),
 		amigos: cleanAmigos(v.amigos),
 		aprobados: cleanAmigos(v.aprobados),
@@ -2236,23 +2239,27 @@ function routine(day, title, seeds) {
 		}))
 	};
 }
+var colgar = s("Colgarse de la barra", 30);
 var PUSH_A = [
-	s("Handstand contra pared", 30),
+	s("Handstand pecho a la pared", 30),
+	r("Despegar pies en handstand", 5),
+	s("Ranita", 20),
+	s("Tuck planche", 10),
 	r("Handstand toque de hombros", 7),
 	s("Planche lean", 10),
 	r("Pike push ups", 5),
 	r("Fondos", 10),
 	r("Lagartijas", 15),
-	r("Lagartijas up", 15),
-	r("Lagartijas lentas", 10),
-	r("Lagartijas diamante", 10)
+	r("Lagartijas declinadas", 15),
+	r("Lagartijas inclinadas", 15),
+	r("Lagartijas diamante", 10),
+	colgar
 ];
 var LEGS_A = [
 	r("Sentadillas", 15),
 	r("Desplantes", 15),
 	pistol,
 	s("Wall sit", 60),
-	r("Elevaciones de talones", 15),
 	calfOne,
 	bridgeOne,
 	s("Hollow hold", 45),
@@ -2260,7 +2267,9 @@ var LEGS_A = [
 	r("Abs crackers", 15),
 	r("Russian twist", 55),
 	s("Plancha", 60),
-	s("Aguante isométrico de abs", 30)
+	s("Aguante isométrico de abs", 30),
+	r("Leg raises", 15),
+	colgar
 ];
 var PULL = [
 	[
@@ -2269,6 +2278,7 @@ var PULL = [
 		2,
 		{ when: "before" }
 	],
+	s("Front lever tuck", 10),
 	[
 		"Dominadas",
 		"reps",
@@ -2287,23 +2297,26 @@ var PULL = [
 	s("Colgarse de la barra", 30)
 ];
 var PUSH_B = [
-	s("Handstand contra pared", 30),
-	r("Handstand toque de hombros", 7),
+	s("Handstand pecho a la pared", 30),
+	r("Despegar pies en handstand", 5),
+	s("Ranita", 20),
 	s("Tuck planche", 15),
+	r("Handstand toque de hombros", 7),
 	s("Planche lean", 10),
 	r("Pike push ups", 5),
 	r("Fondos", 10),
-	r("Lagartijas down", 15),
+	r("Lagartijas", 15),
+	r("Lagartijas declinadas", 15),
+	r("Lagartijas inclinadas", 15),
 	r("Lagartijas con toque de hombro", 10),
-	r("Lagartijas lentas", 10),
-	r("Lagartijas diamante", 10)
+	r("Lagartijas diamante", 10),
+	colgar
 ];
 var LEGS_B = [
 	r("Sentadillas", 15),
 	r("Desplantes", 15),
 	pistol,
 	s("Wall sit", 60),
-	r("Elevaciones de talones", 15),
 	calfOne,
 	bridgeOne,
 	s("L sit", 15),
@@ -2314,15 +2327,13 @@ var LEGS_B = [
 	s("Aguante isométrico de abs", 30)
 ];
 var CORE = [
-	s("Hollow hold", 45),
-	r("Abs con piernas arriba", 25),
-	r("Abs crackers", 15),
-	r("Russian twist", 55),
-	r("Leg raises", 15),
-	sidePlank,
-	s("Plancha", 60),
-	s("Aguante isométrico de abs", 30),
-	r("Burpees suaves sin lagartija", 20),
+	colgar,
+	[
+		"Estiramientos 10 min",
+		"free",
+		0,
+		{ when: "after" }
+	],
 	[
 		"Correr 5 km o bici",
 		"free",
@@ -2337,12 +2348,12 @@ function seedWeek() {
 		restSeconds: 60,
 		week: [
 			routine(0, "Hombros, pecho y tríceps", PUSH_A),
-			routine(1, "Piernas y abdomen", LEGS_A),
+			conColgar(intercalarPiernas(routine(1, "Piernas y abdomen", LEGS_A))),
 			routine(2, "Espalda, bíceps y antebrazo", PULL),
 			routine(3, "Hombros, pecho y tríceps", PUSH_B),
-			intercalarPiernas(routine(4, "Piernas y abdomen", LEGS_B)),
+			conColgar(intercalarPiernas(routine(4, "Piernas y abdomen", LEGS_B))),
 			routine(5, "Espalda, bíceps y antebrazo", PULL),
-			routine(6, "Abdomen y cardio", CORE)
+			routine(6, "Descanso activo", CORE)
 		]
 	};
 }
@@ -2351,6 +2362,24 @@ var CATALOG = [
 		"Handstand contra pared",
 		"seconds",
 		30,
+		"Hombros"
+	],
+	[
+		"Handstand pecho a la pared",
+		"seconds",
+		30,
+		"Hombros"
+	],
+	[
+		"Despegar pies en handstand",
+		"reps",
+		5,
+		"Hombros"
+	],
+	[
+		"Ranita",
+		"seconds",
+		20,
 		"Hombros"
 	],
 	[
@@ -2850,12 +2879,26 @@ var CATALOG = [
 		"Cardio intenso"
 	],
 	[
+		"Estiramientos 10 min",
+		"free",
+		0,
+		"Movilidad"
+	],
+	[
 		"Caminar 30 a 60 min",
 		"free",
 		0,
 		"Obligatorio"
 	]
 ];
+function newItem(name, kind, target) {
+	return {
+		id: `i-${makeId().slice(0, 8)}`,
+		name,
+		kind,
+		target
+	};
+}
 function weekIndex(day) {
 	return ((/* @__PURE__ */ new Date(`${day}T12:00:00`)).getDay() + 6) % 7;
 }
@@ -2885,7 +2928,8 @@ function clockOf(now) {
 var PIERNA_RE = /sentadilla|squat|desplante|zancada|lunge|wall sit|tal[oó]n|pantorrilla|puente de gl[uú]teo|nordic/i;
 var esPierna = (n) => CATALOG.find((c) => c[0] === n)?.[3] === "Piernas" || PIERNA_RE.test(n);
 function intercalarPiernas(rt) {
-	const circuito = rt.items.filter((i) => !i.when);
+	const colgar = rt.items.filter((i) => !i.when && i.name === "Colgarse de la barra");
+	const circuito = rt.items.filter((i) => !i.when && i.name !== "Colgarse de la barra");
 	const piernas = circuito.filter((i) => esPierna(i.name)), otros = circuito.filter((i) => !esPierna(i.name));
 	const mezcla = [];
 	for (let k = 0; k < Math.max(piernas.length, otros.length); k++) {
@@ -2897,7 +2941,22 @@ function intercalarPiernas(rt) {
 		items: [
 			...rt.items.filter((i) => i.when === "before"),
 			...mezcla,
+			...colgar,
 			...rt.items.filter((i) => i.when === "after")
+		]
+	};
+}
+function conColgar(rt) {
+	const colgar = rt.items.filter((i) => i.name === "Colgarse de la barra");
+	const resto = rt.items.filter((i) => i.name !== "Colgarse de la barra");
+	const item = colgar[0] ?? newItem("Colgarse de la barra", "seconds", 30);
+	const k = resto.findIndex((i) => i.when === "after");
+	return {
+		...rt,
+		items: k === -1 ? [...resto, item] : [
+			...resto.slice(0, k),
+			item,
+			...resto.slice(k)
 		]
 	};
 }

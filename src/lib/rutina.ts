@@ -16,26 +16,27 @@ function routine(day: number, title: string, seeds: Seed[]): Routine {
   return { title, rounds: 3, items: seeds.map(([name, kind, target, extra], i) => ({ id: `d${day}-${i}`, name, kind, target, ...(extra ?? {}) })) }
 }
 
-const PUSH_A: Seed[] = [s('Handstand contra pared', 30), r('Handstand toque de hombros', 7), s('Planche lean', 10), r('Pike push ups', 5), r('Fondos', 10), r('Lagartijas', 15), r('Lagartijas up', 15), r('Lagartijas lentas', 10), r('Lagartijas diamante', 10)]
-const LEGS_A: Seed[] = [r('Sentadillas', 15), r('Desplantes', 15), pistol, s('Wall sit', 60), r('Elevaciones de talones', 15), calfOne, bridgeOne, s('Hollow hold', 45), r('Abs con piernas arriba', 25), r('Abs crackers', 15), r('Russian twist', 55), s('Plancha', 60), s('Aguante isométrico de abs', 30)]
+const colgar = s('Colgarse de la barra', 30)
+const PUSH_A: Seed[] = [s('Handstand pecho a la pared', 30), r('Toe pulls en handstand', 5), s('Ranita', 20), s('Tuck planche', 10), r('Handstand toque de hombros', 7), s('Planche lean', 10), r('Pike push ups', 5), r('Fondos', 10), r('Lagartijas', 15), r('Lagartijas declinadas', 15), r('Lagartijas lentas', 10), r('Lagartijas diamante', 10), colgar]
+const LEGS_A: Seed[] = [r('Sentadillas', 15), r('Desplantes', 15), pistol, s('Wall sit', 60), calfOne, bridgeOne, s('Hollow hold', 45), r('Abs con piernas arriba', 25), r('Abs crackers', 15), r('Russian twist', 55), s('Plancha', 60), s('Aguante isométrico de abs', 30), colgar]
 const PULL: Seed[] = [['Muscle up', 'reps', 2, { when: 'before' }], ['Dominadas', 'reps', 7, { rounds: 5 }], r('Curl de toalla superior', 15), r('Curl de toalla inferior', 20), r('Remo con toalla en barra', 10), ['Chin ups', 'reps', 7, { rounds: 5 }], s('Colgarse de la barra', 30)]
-const PUSH_B: Seed[] = [s('Handstand contra pared', 30), r('Handstand toque de hombros', 7), s('Tuck planche', 15), s('Planche lean', 10), r('Pike push ups', 5), r('Fondos', 10), r('Lagartijas down', 15), r('Lagartijas con toque de hombro', 10), r('Lagartijas lentas', 10), r('Lagartijas diamante', 10)]
-const LEGS_B: Seed[] = [r('Sentadillas', 15), r('Desplantes', 15), pistol, s('Wall sit', 60), r('Elevaciones de talones', 15), calfOne, bridgeOne, s('L sit', 15), r('Leg raises', 15), sidePlank, s('Hollow hold', 45), r('Abs con piernas arriba', 25), s('Aguante isométrico de abs', 30)]
-const CORE: Seed[] = [s('Hollow hold', 45), r('Abs con piernas arriba', 25), r('Abs crackers', 15), r('Russian twist', 55), r('Leg raises', 15), sidePlank, s('Plancha', 60), s('Aguante isométrico de abs', 30), r('Burpees suaves sin lagartija', 20), ['Correr 5 km o bici', 'free', 0, { when: 'after' }]]
+const PUSH_B: Seed[] = [s('Handstand pecho a la pared', 30), r('Toe pulls en handstand', 5), s('Ranita', 20), s('Tuck planche', 15), r('Handstand toque de hombros', 7), s('Planche lean', 10), r('Pike push ups', 5), r('Fondos', 10), r('Lagartijas inclinadas', 15), r('Lagartijas con toque de hombro', 10), r('Lagartijas lentas', 10), r('Lagartijas diamante', 10), colgar]
+const LEGS_B: Seed[] = [r('Sentadillas', 15), r('Desplantes', 15), pistol, s('Wall sit', 60), calfOne, bridgeOne, s('L sit', 15), r('Leg raises', 15), sidePlank, s('Hollow hold', 45), r('Abs con piernas arriba', 25), s('Aguante isométrico de abs', 30)]
+const CORE: Seed[] = [s('Hollow hold', 45), r('Abs con piernas arriba', 25), r('Abs crackers', 15), r('Russian twist', 55), r('Leg raises', 15), sidePlank, s('Plancha', 60), s('Aguante isométrico de abs', 30), r('Burpees suaves sin lagartija', 20), colgar, ['Correr 5 km o bici', 'free', 0, { when: 'after' }]]
 
 export function seedWeek(): TrainPlan {
   return {
     deadline: '19:00', lock: true, restSeconds: 60,
     week: [
       routine(0, 'Hombros, pecho y tríceps', PUSH_A), routine(1, 'Piernas y abdomen', LEGS_A), routine(2, 'Espalda, bíceps y antebrazo', PULL),
-      routine(3, 'Hombros, pecho y tríceps', PUSH_B), intercalarPiernas(routine(4, 'Piernas y abdomen', LEGS_B)), routine(5, 'Espalda, bíceps y antebrazo', PULL),
+      routine(3, 'Hombros, pecho y tríceps', PUSH_B), conColgar(intercalarPiernas(routine(4, 'Piernas y abdomen', LEGS_B))), routine(5, 'Espalda, bíceps y antebrazo', PULL),
       routine(6, 'Abdomen y cardio', CORE),
     ],
   }
 }
 
 export const CATALOG: [string, RoutineKind, number, string, boolean?][] = [
-  ['Handstand contra pared', 'seconds', 30, 'Hombros'], ['Handstand toque de hombros', 'reps', 7, 'Hombros'], ['Handstand push up con pared', 'reps', 3, 'Hombros'],
+  ['Handstand contra pared', 'seconds', 30, 'Hombros'], ['Handstand pecho a la pared', 'seconds', 30, 'Hombros'], ['Toe pulls en handstand', 'reps', 5, 'Hombros'], ['Ranita', 'seconds', 20, 'Hombros'], ['Handstand toque de hombros', 'reps', 7, 'Hombros'], ['Handstand push up con pared', 'reps', 3, 'Hombros'],
   ['Tuck planche', 'seconds', 15, 'Hombros'], ['Planche lean', 'seconds', 10, 'Hombros'], ['Parado de cabeza', 'seconds', 20, 'Hombros'], ['Pike push ups', 'reps', 5, 'Hombros'],
   ['Fondos', 'reps', 10, 'Pecho'], ['Lagartijas', 'reps', 15, 'Pecho'], ['Lagartijas up', 'reps', 15, 'Pecho'], ['Lagartijas down', 'reps', 15, 'Pecho'],
   ['Lagartijas con toque de hombro', 'reps', 10, 'Pecho'], ['Lagartijas lentas', 'reps', 10, 'Pecho'], ['Lagartijas diamante', 'reps', 10, 'Tríceps'],
@@ -208,15 +209,43 @@ export function talones2711(data: AppData): AppData {
 const PIERNA_RE = /sentadilla|squat|desplante|zancada|lunge|wall sit|tal[oó]n|pantorrilla|puente de gl[uú]teo|nordic/i
 const esPierna = (n: string) => CATALOG.find(c => c[0] === n)?.[3] === 'Piernas' || PIERNA_RE.test(n)
 export function intercalarPiernas(rt: Routine): Routine {
-  const circuito = rt.items.filter(i => !i.when)
+  const colgar = rt.items.filter(i => !i.when && i.name === 'Colgarse de la barra')
+  const circuito = rt.items.filter(i => !i.when && i.name !== 'Colgarse de la barra')
   const piernas = circuito.filter(i => esPierna(i.name)), otros = circuito.filter(i => !esPierna(i.name))
   const mezcla: RoutineItem[] = []
   for (let k = 0; k < Math.max(piernas.length, otros.length); k++) { if (piernas[k]) mezcla.push(piernas[k]); if (otros[k]) mezcla.push(otros[k]) }
-  return { ...rt, items: [...rt.items.filter(i => i.when === 'before'), ...mezcla, ...rt.items.filter(i => i.when === 'after')] }
+  return { ...rt, items: [...rt.items.filter(i => i.when === 'before'), ...mezcla, ...colgar, ...rt.items.filter(i => i.when === 'after')] }
 }
 export function orden2711(data: AppData): AppData {
   const train = data.settings.train
   return { ...data, settings: { ...data.settings, train: train ? { ...train, week: train.week.map((rt, i) => rt && i === 4 ? intercalarPiernas(rt) : rt) } : undefined, orden2711: true } }
+}
+function conColgar(rt: Routine): Routine {
+  const colgar = rt.items.filter(i => i.name === 'Colgarse de la barra')
+  const resto = rt.items.filter(i => i.name !== 'Colgarse de la barra')
+  const item = colgar[0] ?? newItem('Colgarse de la barra', 'seconds', 30)
+  const k = resto.findIndex(i => i.when === 'after')
+  return { ...rt, items: k === -1 ? [...resto, item] : [...resto.slice(0, k), item, ...resto.slice(k)] }
+}
+function habilidades(rt: Routine, tuck: number): Routine {
+  const cambia = (i: RoutineItem): RoutineItem => i.name === 'Handstand contra pared' ? { ...i, name: 'Handstand pecho a la pared' } : i.name === 'Lagartijas up' ? { ...i, name: 'Lagartijas declinadas' } : i.name === 'Lagartijas down' ? { ...i, name: 'Lagartijas inclinadas' } : i
+  const items = rt.items.map(cambia)
+  const tiene = (n: string) => items.find(i => i.name === n)
+  const frente = [tiene('Handstand pecho a la pared') ?? newItem('Handstand pecho a la pared', 'seconds', 30), tiene('Toe pulls en handstand') ?? newItem('Toe pulls en handstand', 'reps', 5), tiene('Ranita') ?? newItem('Ranita', 'seconds', 20), tiene('Tuck planche') ?? newItem('Tuck planche', 'seconds', tuck)]
+  const nombres = new Set(frente.map(i => i.name))
+  const antes = items.filter(i => i.when === 'before'), despues = items.filter(i => i.when === 'after'), circuito = items.filter(i => !i.when && !nombres.has(i.name))
+  return conColgar({ ...rt, items: [...antes, ...frente, ...circuito, ...despues] })
+}
+export function habilidades2711(data: AppData): AppData {
+  const train = data.settings.train
+  const sinTalones = (rt: Routine): Routine => ({ ...rt, items: rt.items.filter(i => i.name !== 'Elevaciones de talones') })
+  const dia = (rt: Routine | null, i: number): Routine | null => !rt ? rt
+    : i === 0 ? habilidades(rt, 10)
+    : i === 3 ? habilidades(rt, 15)
+    : i === 1 ? conColgar(sinTalones(rt))
+    : i === 4 ? conColgar(intercalarPiernas(sinTalones(rt)))
+    : i === 6 ? conColgar(rt) : rt
+  return { ...data, settings: { ...data.settings, train: train ? { ...train, week: train.week.map(dia) } : undefined, habilidades2711: true } }
 }
 export function legs2711(data: AppData): AppData {
   const train = data.settings.train

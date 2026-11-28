@@ -12,7 +12,7 @@ const CARDIO = /^(correr|caminar|trotar|nadar|bici|cardio|f[uú]tbol)/i
 const AGUANTE_RE = /aguante|isom[eé]tric|\bhold\b|sost[eé]n|est[aá]tic/i
 const FAMILIAS: [RegExp, Patron][] = [
   [/planche lean/i, 'plancha'],
-  [/planche(?!.*push)|cuervo|\bcrow\b|frog stand|\brana\b/i, 'planche'],
+  [/planche(?!.*push)|cuervo|\bcrow\b|frog stand|\brana\b|\branita\b/i, 'planche'],
   [/lever/i, 'lever'],
   [/bandera|human flag/i, 'bandera'],
   [/tal[oó]n|calf raises?|pantorrilla/i, 'talones'],
@@ -53,7 +53,7 @@ export const esCamara = (name: string, kind?: Tipo) => patronDe(name, kind) !== 
 export const tipoDe = (name: string, kind?: Tipo): 'reps' | 'seconds' => esAguante(patronDe(name, kind) ?? 'generico') ? 'seconds' : 'reps'
 export const esGeneral = (name: string, kind?: Tipo) => { const p = patronDe(name, kind); return p === 'generico' || p === 'quieto' }
 export function opcionesDe(name: string): Opciones {
-  return { inclinado: /inclinad|declinad|en (la )?pared|elevad/i.test(name), rodillas: /rodillas|de rodilla/i.test(name), doblado: /cuervo|\bcrow\b|frog|\brana\b/i.test(name), estirados: /brazos (estirados|rectos)|plancha alta|high plank/i.test(name), tuck: /\btuck\b|agrupad/i.test(name), salto: /salto|jump/i.test(name) }
+  return { inclinado: /inclinad|declinad|en (la )?pared|elevad/i.test(name), rodillas: /rodillas|de rodilla/i.test(name), doblado: /cuervo|\bcrow\b|frog|\brana\b|\branita\b/i.test(name), estirados: /brazos (estirados|rectos)|plancha alta|high plank/i.test(name), tuck: /\btuck\b|agrupad/i.test(name), salto: /salto|jump/i.test(name) }
 }
 
 const FRENTE = 'Recarga el teléfono en la pared o en una botella, frente a ti, a unos 2 metros.'

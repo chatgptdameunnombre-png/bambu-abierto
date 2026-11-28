@@ -2693,7 +2693,7 @@ async function audioChecks() {
   const R = moduleOf('rutina')
   const semana = R.seedWeek()
   assert.ok(!semana.week.some(rt => rt && rt.items.some(i => i.name === 'Subidas de talones en wall sit')), 'sin subidas de talones en wall sit')
-  assert.ok(semana.week.some(rt => rt && rt.items.some(i => i.name === 'Wall sit')) && semana.week.some(rt => rt && rt.items.some(i => i.name === 'Elevaciones de talones')), 'wall sit y elevaciones de talones se quedan')
+  assert.ok(semana.week.some(rt => rt && rt.items.some(i => i.name === 'Wall sit')) && semana.week.some(rt => rt && rt.items.some(i => i.name === 'Elevaciones de talón a una pierna')), 'wall sit y talón a una pierna se quedan')
   const vieja = { ...semana, week: semana.week.map(rt => rt ? { ...rt, items: [...rt.items, { id: 'tw', name: 'Subidas de talones en wall sit', kind: 'reps', target: 15 }] } : rt) }
   const d = R.talones2711(normalizeData({ ...EMPTY_DATA, profile: { name: 'K', onboardingComplete: true }, settings: { ...EMPTY_DATA.settings, train: vieja } }))
   assert.ok(d.settings.talones2711 && !d.settings.train.week.some(rt => rt && rt.items.some(i => i.name === 'Subidas de talones en wall sit')))
@@ -2747,12 +2747,12 @@ async function audioChecks() {
 {
   const R = moduleOf('rutina')
   const viernes = R.seedWeek().week[4].items.map(i => i.name)
-  assert.deepEqual(viernes, ['Sentadillas', 'L sit', 'Desplantes', 'Leg raises', 'Pistol squat', 'Plancha lateral', 'Wall sit', 'Hollow hold', 'Elevaciones de talones', 'Abs con piernas arriba', 'Elevaciones de talón a una pierna', 'Aguante isométrico de abs', 'Puente de glúteo a una pierna'])
+  assert.deepEqual(viernes, ['Sentadillas', 'L sit', 'Desplantes', 'Leg raises', 'Pistol squat', 'Plancha lateral', 'Wall sit', 'Hollow hold', 'Elevaciones de talón a una pierna', 'Abs con piernas arriba', 'Puente de glúteo a una pierna', 'Aguante isométrico de abs', 'Colgarse de la barra'])
   const base = R.seedWeek()
   const vieja = { ...base, week: base.week.map((rt, i) => i === 4 ? { ...rt, items: [...rt.items].sort((a, b) => a.name.localeCompare(b.name)) } : rt) }
   const d = R.orden2711(normalizeData({ ...EMPTY_DATA, profile: { name: 'K', onboardingComplete: true }, settings: { ...EMPTY_DATA.settings, train: vieja } }))
   const orden = d.settings.train.week[4].items.map(i => i.name), pierna = n => /Sentadillas|Desplantes|Pistol|Wall sit|talón|talones|Puente/.test(n)
-  assert.ok(orden.every((n, k) => k >= 12 || pierna(n) === (k % 2 === 0)), orden.join(', '))
+  assert.ok(orden.filter(n => n !== 'Colgarse de la barra').every((n, k, xs) => k >= 2 * Math.min(xs.filter(pierna).length, xs.filter(x => !pierna(x)).length) || pierna(n) === (k % 2 === 0)), orden.join(', '))
   assert.equal(d.settings.train.week[1].items.length, vieja.week[1].items.length)
   assert.equal(normalizeData(d).settings.orden2711, true)
   assert.ok(fs.readFileSync(path.join(__dirname, '../src/App.tsx'), 'utf8').includes('orden2711(d)'))
@@ -2772,4 +2772,29 @@ async function audioChecks() {
   const mr = fs.readFileSync(path.join(__dirname, '../src/MiRutina.tsx'), 'utf8')
   assert.ok(mr.includes('minutosRutina(data, today, rt, opened)') && mr.includes('prog.done * XP.set + XP.routine'))
   ok('rutina completa: el tiempo y el XP cuentan toda la rutina del día, no solo desde que volviste a abrirla')
+}
+
+{
+  const R = moduleOf('rutina'), C = moduleOf('conteo')
+  const base = R.seedWeek()
+  const vieja = { ...base, week: base.week.map((rt, i) => {
+    if (!rt) return rt
+    const quita = n => n === 'Colgarse de la barra' && i !== 2 && i !== 5
+    let items = rt.items.filter(x => !quita(x.name)).map(x => x.name === 'Handstand pecho a la pared' ? { ...x, name: 'Handstand contra pared' } : x.name === 'Lagartijas declinadas' ? { ...x, name: 'Lagartijas up' } : x.name === 'Lagartijas inclinadas' ? { ...x, name: 'Lagartijas down' } : x).filter(x => !['Toe pulls en handstand', 'Ranita'].includes(x.name) && !(i === 0 && x.name === 'Tuck planche'))
+    if (i === 1 || i === 4) items = [...items, { id: 't' + i, name: 'Elevaciones de talones', kind: 'reps', target: 15 }]
+    return { ...rt, items }
+  }) }
+  const d = R.habilidades2711(normalizeData({ ...EMPTY_DATA, profile: { name: 'K', onboardingComplete: true }, settings: { ...EMPTY_DATA.settings, train: vieja } }))
+  const w = d.settings.train.week, nombres = i => w[i].items.map(x => x.name)
+  assert.deepEqual(nombres(0).slice(0, 4), ['Handstand pecho a la pared', 'Toe pulls en handstand', 'Ranita', 'Tuck planche'])
+  assert.equal(w[0].items.find(x => x.name === 'Tuck planche').target, 10); assert.equal(w[3].items.find(x => x.name === 'Tuck planche').target, 15)
+  assert.ok(nombres(0).includes('Lagartijas declinadas') && !nombres(0).includes('Lagartijas up') && nombres(3).includes('Lagartijas inclinadas') && !nombres(3).includes('Lagartijas down'))
+  assert.ok(w.every(rt => rt.items.filter(x => x.name === 'Colgarse de la barra').length === 1), 'colgarse todos los días, una vez')
+  assert.ok(!w.some(rt => rt.items.some(x => x.name === 'Elevaciones de talones')), 'sin talones normales')
+  assert.equal(nombres(6).at(-1), 'Correr 5 km o bici'); assert.equal(nombres(6).at(-2), 'Colgarse de la barra')
+  assert.equal(normalizeData(d).settings.habilidades2711, true)
+  assert.equal(C.patronDe('Ranita'), 'planche'); assert.ok(C.opcionesDe('Ranita').doblado)
+  assert.equal(C.patronDe('Handstand pecho a la pared'), 'parado')
+  assert.ok(fs.readFileSync(path.join(__dirname, '../src/App.tsx'), 'utf8').includes('habilidades2711(d)'))
+  ok('habilidades: handstand pecho a la pared, toe pulls, ranita y tuck planche al inicio de lunes y jueves; colgarse todos los días; lagartijas declinadas e inclinadas; sin talones normales')
 }

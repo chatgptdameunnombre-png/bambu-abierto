@@ -117,6 +117,7 @@ export type Settings = {
   talones2711?: boolean
   legs2711?: boolean
   orden2711?: boolean
+  habilidades2711?: boolean
 }
 /** `north` es en quién te quieres convertir, con tus palabras. La reflexión de la noche te lo pregunta. */
 export type Profile = { name: string; onboardingComplete: boolean; north?: string }
@@ -498,6 +499,7 @@ export function cleanSettings(value: unknown): Settings {
     talones2711: v.talones2711 === true ? true : undefined,
     legs2711: v.legs2711 === true ? true : undefined,
     orden2711: v.orden2711 === true ? true : undefined,
+    habilidades2711: v.habilidades2711 === true ? true : undefined,
     tablas: cleanTablas(v.tablas),
     amigos: cleanAmigos(v.amigos),
     aprobados: cleanAmigos(v.aprobados),

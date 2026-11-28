@@ -50,6 +50,7 @@ Commits del sitio donde se publicó cada cambio.
 | `ec7ecca` (27-nov) | L sit con el teléfono enfrente: antes no arrancaba porque las piernas tapan la cadera y la cámara no calcula bien la profundidad; ahora se mide en la imagen (torso derecho y pies a la altura de la cadera). De lado usa el lado que mejor se ve. Leg raises con medida propia en lugar de crunches (15, en viernes y domingo); a medias dice "Sube más". |
 | `0ac3673` (27-nov) | Viernes alternado: pierna, abs, pierna, abs (tu rutina se ajusta una vez). (Se probó que la app mandara la rutina para una hoja de Google; Kiki prefirió que no, se quitó en la siguiente versión.) |
 | `cd7dafa` (27-nov) | Al acabar la rutina, el tiempo cuenta desde tu primera serie del día (antes contaba desde la última vez que abriste la rutina: si la app se recargaba o salías, te decía 34 min aunque llevaras 1 h 30). El XP también suma toda la rutina. |
+| `44b4f0e` (27-nov) | Habilidades en lunes y jueves, al inicio del circuito: handstand pecho a la pared 30 s (en lugar de contra la pared), 5 toe pulls, ranita 20 s y tuck planche (lunes 10 s, jueves 15 s). Colgarse de la barra 30 s todos los días. Lagartijas up y down pasan a declinadas e inclinadas. Sin elevaciones de talones normales (queda la de una pierna). La cámara reconoce la ranita. Tu rutina guardada se ajusta una vez. |
 
 ## Decisiones de Kiki
 
